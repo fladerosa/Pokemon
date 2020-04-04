@@ -9,7 +9,7 @@
 IDIR =./include
 SHARED_IDIR = ../shared/include
 CC=gcc
-CFLAGS=-I$(IDIR) -I$(SHARED_IDIR)
+CFLAGS=-I$(IDIR) -I$(SHARED_IDIR) -g
 
 ODIR=./obj
 SRCDIR =./src
@@ -18,11 +18,11 @@ LIBS=-lcommons -lpthread
 SHARED_SRCDIR = ../shared/src
 SHARED_ODIR = ../shared/obj
 ##### en _DEPS se agregan los .h, por ejemplo "_DEPS = server.h utils.h queues.h"
-_DEPS = broker.h
+_DEPS = broker.h initializer.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 ##### en _OBJ se agregan todos los .c pero cambiandolo por .o, 
 # ej "_OBJ = server.o utils.o queues.o"
-_OBJ = broker.o
+_OBJ = broker.o initializer.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 #lo de abajo dice "para generar ./obj/(loquesea).o, agarrá

@@ -1,6 +1,6 @@
 #include "broker.h"
 
-int main(){
-    funcionABorrar();
+int main(int argc, char ** argv){
+    initialize();
     return 0;
 }
