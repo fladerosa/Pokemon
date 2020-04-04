@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "broker"
+		},
+		{
+			"path": "shared"
+		},
+		{
+			"path": "team"
+		},
+		{
+			"path": "gamecard"
+		},
+		{
+			"path": "gameboy"
+		}
+	],
+	"settings": {}
+}
