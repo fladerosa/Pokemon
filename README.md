@@ -1,5 +1,5 @@
-# Delibird
-UTN's Operating System Proyect
+# tp-2020-1c-Pandemiga Delibird
+UTN's Operating Systems Proyect
 
 # Instrucciones
 
