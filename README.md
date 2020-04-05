@@ -17,6 +17,8 @@ UTN's Operating Systems Proyect
 
 -Para ejecutar/debuggear, apretar f5
 
+-Alternativamente, Tareas->Ejecutar Tarea->(La que quieras, con o sin valgrind)
+
 -????
 
 -Profit
@@ -28,6 +30,8 @@ UTN's Operating Systems Proyect
 -Escribir make
 
 -Escribir ./(nombredelproyecto)
+
+-Alternativamente, escribir ./exec o ./exec_valgrind para realizar ambos pasos de una
 
 #### Para agregar más .c/.h a un proyecto:
 

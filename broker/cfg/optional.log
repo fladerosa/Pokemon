@@ -1,16 +1,56 @@
-[INFO] 03:23:45:584 EJEMPLO/(10083:10083): Este log viene de la shared
-[INFO] 03:26:14:251 EJEMPLO/(10167:10167): Este log viene de la shared
-[INFO] 03:26:27:727 EJEMPLO/(10181:10181): Este log viene de la shared
-[INFO] 19:21:57:185 BROKER-D/(8353:8353): Configuration and logs loaded successfully.
-[INFO] 19:23:50:567 BROKER-D/(8453:8453): Configuration and logs loaded successfully.
-[INFO] 19:24:21:162 BROKER-D/(8527:8527): Configuration and logs loaded successfully.
-[INFO] 19:24:38:246 BROKER-D/(8586:8586): Configuration and logs loaded successfully.
-[INFO] 19:25:19:60 BROKER-D/(8650:8650): Configuration and logs loaded successfully.
-[INFO] 19:33:23:401 BROKER-D/(8921:8921): Configuration and logs loaded successfully.
-[INFO] 19:33:37:794 BROKER-D/(8986:8986): Configuration and logs loaded successfully.
-[INFO] 19:33:46:23 BROKER-D/(9012:9012): Configuration and logs loaded successfully.
-[INFO] 19:38:16:615 BROKER-D/(9941:9941): Configuration and logs loaded successfully.
-[INFO] 19:39:09:127 BROKER-D/(10074:10074): Configuration and logs loaded successfully.
-[INFO] 19:39:20:895 BROKER-D/(10151:10151): Configuration and logs loaded successfully.
-[INFO] 19:42:25:525 BROKER-D/(10350:10350): Configuration and logs loaded successfully.
-[INFO] 19:51:20:915 BROKER-D/(10703:10703): Configuration and logs loaded successfully.
+[INFO] 02:16:54:72 BROKER-D/(6583:6583): Initializing Application...
+[INFO] 02:16:54:74 BROKER-D/(6583:6583): Configuration values: 
+
+	TAMANO_MEMORIA=2048
+	TAMANO_MINIMO_PARTICION=32
+	ALGORITMO_MEMORIA=BS
+	ALGORITMO_REEMPLAZO=FIFO
+	ALGORITMO_PARTICION_LIBRE=FF
+	IP_BROKER=127.0.0.1
+	PUERTO_BROKER=6009
+	FRECUENCIA_COMPACTACION=3
+
+[INFO] 02:16:54:76 BROKER-D/(6583:6583): Configuration and loggers loaded successfully.
+[INFO] 02:16:54:77 BROKER-D/(6583:6583): Shutting down.
+[INFO] 02:21:26:351 BROKER-D/(6968:6968): Initializing Application...
+[INFO] 02:21:26:436 BROKER-D/(6968:6968): Configuration values: 
+
+	TAMANO_MEMORIA=2048
+	TAMANO_MINIMO_PARTICION=32
+	ALGORITMO_MEMORIA=BS
+	ALGORITMO_REEMPLAZO=FIFO
+	ALGORITMO_PARTICION_LIBRE=FF
+	IP_BROKER=127.0.0.1
+	PUERTO_BROKER=6009
+	FRECUENCIA_COMPACTACION=3
+
+[INFO] 02:21:26:451 BROKER-D/(6968:6968): Configuration and loggers loaded successfully.
+[INFO] 02:21:26:454 BROKER-D/(6968:6968): Shutting down.
+[INFO] 02:25:26:658 BROKER-D/(7174:7174): Initializing Application...
+[INFO] 02:25:26:659 BROKER-D/(7174:7174): Configuration values: 
+
+	TAMANO_MEMORIA=2048
+	TAMANO_MINIMO_PARTICION=32
+	ALGORITMO_MEMORIA=BS
+	ALGORITMO_REEMPLAZO=FIFO
+	ALGORITMO_PARTICION_LIBRE=FF
+	IP_BROKER=127.0.0.1
+	PUERTO_BROKER=6009
+	FRECUENCIA_COMPACTACION=3
+
+[INFO] 02:25:26:659 BROKER-D/(7174:7174): Configuration and loggers loaded successfully.
+[INFO] 02:25:26:659 BROKER-D/(7174:7174): Shutting down.
+[INFO] 02:35:49:669 BROKER-D/(7794:7794): Initializing Application...
+[INFO] 02:35:49:669 BROKER-D/(7794:7794): Configuration values: 
+
+	TAMANO_MEMORIA=2048
+	TAMANO_MINIMO_PARTICION=32
+	ALGORITMO_MEMORIA=BS
+	ALGORITMO_REEMPLAZO=FIFO
+	ALGORITMO_PARTICION_LIBRE=FF
+	IP_BROKER=127.0.0.1
+	PUERTO_BROKER=6009
+	FRECUENCIA_COMPACTACION=3
+
+[INFO] 02:35:49:669 BROKER-D/(7794:7794): Configuration and loggers loaded successfully.
+[INFO] 02:35:49:669 BROKER-D/(7794:7794): Shutting down.

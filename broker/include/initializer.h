@@ -3,14 +3,21 @@
 
 #include "common_utils.h"
 
-typedef enum exit_status {
-    CONFIG_FAIL,
-    LOG_FAIL
+typedef struct config_values{
+    int tamano_memoria;
+    int tamano_minimo_particion;
+    char* algoritmo_memoria;
+    char* algoritmo_reemplazo;
+    char* algoritmo_particion_libre;
+    char* ip_broker;
+    char* puerto_broker;
+    int frecuencia_compactacion;
+} config_values;
 
-
-} exit_status;
+config_values cfg_values;
 
 void initialize();
-t_log* createLogFromConfig(char* path_key, char* name, char* show_key);
+void fill_config_values();
+t_log* create_log_from_config(char* path_key, char* name, char* show_key);
 
 #endif

@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Broker",
+            "name": "Gamecard",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/broker",
+            "program": "${workspaceFolder}/gamecard",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

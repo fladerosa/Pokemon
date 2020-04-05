@@ -9,7 +9,7 @@
 IDIR =./include
 SHARED_IDIR = ../shared/include
 CC=gcc
-CFLAGS=-I$(IDIR) -I$(SHARED_IDIR) -g
+CFLAGS=-I$(IDIR) -I$(SHARED_IDIR) -g -Wall
 
 ODIR=./obj
 SRCDIR =./src
@@ -37,7 +37,7 @@ $(SHARED_ODIR)/%.o: $(SHARED_SRCDIR)/%.c $(SHARED_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 ##### en _SHARED_DEPS se agregan los .h de la shared library,
 # ej "_SHARED_DEPS = common_utils.h common_otrafuncion.h"
-_SHARED_DEPS = common_utils.h 
+_SHARED_DEPS = common_utils.h exit_status.h
 SHARED_DEPS = $(patsubst %,$(SHARED_IDIR)/%,$(_SHARED_DEPS))
 ##### en _SHARED_OBJ se agregan los .c de la shared library pero con .o
 # ej "_SHARED_OBJ = common_utils.o common_otrafuncion.o"

@@ -16,5 +16,19 @@
 			"path": "gameboy"
 		}
 	],
-	"settings": {}
+	"settings": {},
+	"launch": {
+		"configurations": [],
+		"compounds": [
+			{
+				"name": "All 4",
+				"configurations": [
+					"Broker",
+					"Team",
+					"Gamecard",
+					"Gameboy"
+				]
+			}
+		]
+	}
 }
