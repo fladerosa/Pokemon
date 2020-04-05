@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include "exit_status.h"
 
 t_log* obligatory_logger,* optional_logger;
