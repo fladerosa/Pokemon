@@ -18,11 +18,11 @@ LIBS=-lcommons -lpthread
 SHARED_SRCDIR = ../shared/src
 SHARED_ODIR = ../shared/obj
 ##### en _DEPS se agregan los .h, por ejemplo "_DEPS = server.h utils.h queues.h"
-_DEPS = gamecard.h
+_DEPS = gamecard.h iniciarGameCard.h utils.h catchPokemon.h getPokemon.h newPokemon.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 ##### en _OBJ se agregan todos los .c pero cambiandolo por .o, 
 # ej "_OBJ = server.o utils.o queues.o"
-_OBJ = gamecard.o
+_OBJ = gamecard.o iniciarGameCard.o utils.o catchPokemon.o getPokemon.o newPokemon.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 #lo de abajo dice "para generar ./obj/(loquesea).o, agarrá
