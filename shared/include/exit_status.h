@@ -4,8 +4,10 @@
 typedef enum exit_status {
     SUCCESS,
     CONFIG_FAIL,
-    LOG_FAIL
-
+    LOG_FAIL,
+    SOCKET_BIND_FAILED,
+    SOCKET_INIT_FAILED,
+    LISTEN_FAILED
 
 } exit_status;
 

@@ -16,7 +16,11 @@
 			"path": "gameboy"
 		}
 	],
-	"settings": {},
+	"settings": {
+		"files.associations": {
+			"connections.h": "c"
+		}
+	},
 	"launch": {
 		"configurations": [],
 		"compounds": [

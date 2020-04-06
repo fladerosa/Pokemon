@@ -17,6 +17,7 @@ void initialize(){
     log_info(optional_logger, "Initializing Application...");
     fill_config_values();
     log_info(optional_logger, "Configuration and loggers loaded successfully.");
+    atexit(finalize);
 }
 
 t_log* create_log_from_config(char* path_key, char* name, char* show_key){
