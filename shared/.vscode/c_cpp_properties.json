@@ -12,14 +12,14 @@
                 "/usr/lib/gcc/i686-linux-gnu/5/include-fixed",
                 "/usr/include/i386-linux-gnu",
                 "/usr/include",
-                "${workspaceFolder}/include",
-                "../shared/include"
+                "${workspaceFolder}/include"
             ],
-            "defines": [],
+            "defines": ["_GNU_SOURCE"],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
                     "${workspaceFolder}",
+                    "${workspaceFolder}/include",
                     "/usr/include/c++/5",
                     "/usr/include/i386-linux-gnu/c++/5",
                     "/usr/include/c++/5/backward",

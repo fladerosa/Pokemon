@@ -2,6 +2,8 @@
 #define INITIALIZER_H
 
 #include "common_utils.h"
+#include "connections.h"
+#include "finalizer.h"
 
 typedef struct config_values{
     int tamano_memoria;
@@ -15,6 +17,8 @@ typedef struct config_values{
 } config_values;
 
 config_values cfg_values;
+int listening_socket;
+
 
 void initialize();
 void fill_config_values();
