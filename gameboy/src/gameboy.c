@@ -1,27 +1,5 @@
 #include "gameboy.h"
 
-int create_connection(char *ip, char* puerto)
-{
-	struct addrinfo hints;
-	struct addrinfo *server_info;
-
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
-
-	getaddrinfo(ip, puerto, &hints, &server_info);
-
-	int socket_cliente = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
-
-	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1)
-		printf("error");
-
-	freeaddrinfo(server_info);
-
-	return socket_cliente;
-}
-
 int main(int argc, char ** argv){
 
     t_log* obligatory_logger;
@@ -41,7 +19,7 @@ int main(int argc, char ** argv){
     char* ip; 
     char* port;
 
-    char* server = argv[0];
+    char* server = argv[1];
     //Busco el ip y el puerto
     if(strcmp(server,"BROKER")){
         ip = config_get_string_value(config, "IP_BROKER");
@@ -57,11 +35,63 @@ int main(int argc, char ** argv){
         exit(4);
     }
 
+    //Creo la conexion
     int connection = create_connection(ip, port);
 
+    //Mando el mensaje
+    send_message(argv,connection);
 
+    //Cierro y elimino todo
     closeAll(optional_logger, obligatory_logger,config,connection);
     return 0;
+}
+
+void send_message(char** message, int socket_cliente)
+{
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	
+    //El nombre de la funcion esta en el parametro 2 del argv que le paso como parametro
+    char* message_function = message[2]; 
+    op_code operation_code = stringToEnum(message_function);
+
+    switch(operation_code){
+        case 1:
+             
+        case 2: 
+        case 3: 
+        case 4: 
+        case 5: 
+    }
+    
+    
+    int size = strlen(message) + 1;
+
+	//paquete->codigo_operacion = MENSAJE;
+	paquete->buffer = malloc(sizeof(t_buffer));
+	paquete->buffer->size = size;
+	paquete->buffer->stream = malloc(paquete->buffer->size);
+	memcpy(paquete->buffer->stream, message, paquete->buffer->size);
+
+	int bytes = paquete->buffer->size + 2*sizeof(int);
+
+	void* a_enviar = serializar_paquete(paquete, bytes);
+
+	send(socket_cliente, a_enviar, bytes, 0);
+
+	free(a_enviar);
+	free(paquete->buffer->stream);
+	free(paquete->buffer);
+	free(paquete);
+}
+
+op_code stringToEnum(char* message_function){
+
+    for(int i = 0; i < sizeof(op_code); i++){
+        if(strcmp(message_string[i].name, message_function)){
+            return message_string[i].operation;
+        }
+    }
+    return 1; //Revisar cuando sale con error
 }
 
 closeAll(t_log* optional_logger,t_log* obligatory_logger, t_config* config, int connection){

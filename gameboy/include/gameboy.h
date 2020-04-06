@@ -2,6 +2,16 @@
 #define GAMEBOY_H
 
 #include "common_utils.h"
-#include "exit_status.h"
+
+const static struct{
+    op_code operation;
+    char* name; 
+}message_string [] = {
+    {NEW_POKEMON, "NEW_POKEMON"},
+    {APPEARED_POKEMON, "APPEARED_POKEMON"},
+    {CATCH_POKEMON, "CATCH_POKEMON"},
+    {CAUGHT_POKEMON, "CAUGHT_POKEMON"},
+    {GET_POKEMON, "GET_POKEMON"}
+};
 
 #endif
