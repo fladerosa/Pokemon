@@ -3,11 +3,11 @@
 
 #include "common_utils.h"
 
-typedef void (*on_request)(int codop, int client);
+typedef void (*on_request)(uint32_t codop, uint32_t sizeofstruct, uint32_t socketfd);
 
 typedef struct
 {
-	int* socket;
+	uint32_t socket;
 	on_request request_receiver;
 } t_process_request;
 
@@ -18,7 +18,7 @@ typedef enum
 
 typedef struct
 {
-	int size;
+	uint32_t size;
 	void* stream;
 } t_buffer;
 
@@ -28,13 +28,12 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
-void  receive_new_connections(int socket_escucha, on_request request_receiver);
+void  receive_new_connections(uint32_t socket_escucha, on_request request_receiver);
 void  start_server(char* ip, char* port, on_request request_receiver);
 void  serve_client(t_process_request* processor);
-void  devolver_mensaje(void* payload, int size, int socket_cliente);
-void* serializar_paquete(t_paquete* paquete, int bytes);
-void* recibir_mensaje(int socket_cliente, int* size);
-void  process_request(int cod_op, int cliente_fd);
-
-
+void  devolver_mensaje(void* payload, uint32_t size, uint32_t socket_cliente);
+void* serializar_paquete(t_paquete* paquete, uint32_t bytes);
+char* recibir_mensaje(uint32_t socket_cliente, uint32_t buffer_size);
+void  stop_server();
+void  process_message(uint32_t client_fd, uint32_t size);
 #endif

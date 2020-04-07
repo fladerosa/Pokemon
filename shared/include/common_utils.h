@@ -14,12 +14,14 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
+#include <stdint.h>
 #include "common_connections.h"
 #include "exit_status.h"
 
 t_log* obligatory_logger,* optional_logger;
 t_config* config;
 pthread_t client_listener;
+bool server_running;
 
 void funcionABorrar();
 

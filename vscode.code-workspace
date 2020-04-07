@@ -17,9 +17,6 @@
 		}
 	],
 	"settings": {
-		"files.associations": {
-			"connections.h": "c"
-		}
 	},
 	"launch": {
 		"configurations": [],
