@@ -7,9 +7,10 @@ int main(int argc, char ** argv){
     start_server(
         cfg_values.ip_broker, 
         cfg_values.puerto_broker,
-        process_request    
+        p_on_request    
     );
-
+    void* coso = NULL;
+    pthread_join(client_listener, coso);
     finalize();
     return EXIT_SUCCESS;
 }

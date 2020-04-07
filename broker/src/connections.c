@@ -1,17 +1,16 @@
 #include "connections.h"
 
-void process_request(int cod_op, int cliente_fd) {
-	int size;
-	void* msg;
-		switch (cod_op) {
-		case MENSAJE:
-			msg = recibir_mensaje(cliente_fd, &size);
-			devolver_mensaje(msg, size, cliente_fd);
-			free(msg);
-			break;
-		case 0:
-			pthread_exit(NULL);
-		case -1:
-			pthread_exit(NULL);
-		}
+void process_request(uint32_t cod_op, uint32_t size, uint32_t client_fd) {
+	switch (cod_op) {
+	case MENSAJE:
+		process_message(client_fd, size);
+		break;
+	case 0:
+		break;
+	case -1:
+		break;
+	default:
+		break;
+	}
 }
+

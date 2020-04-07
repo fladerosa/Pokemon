@@ -16,13 +16,13 @@ void initialize(){
     );
     log_info(optional_logger, "Initializing Application...");
     fill_config_values();
+    p_on_request = &process_request;
     log_info(optional_logger, "Configuration and loggers loaded successfully.");
-    atexit(finalize);
 }
 
 t_log* create_log_from_config(char* path_key, char* name, char* show_key){
     char* log_path = config_get_string_value(config, path_key);
-    int log_show = config_get_int_value(config, show_key);
+    uint32_t log_show = config_get_int_value(config, show_key);
     t_log* logger =  log_create(log_path, name, log_show, LOG_LEVEL_INFO);
     if (logger==NULL){
         error_show("Log %s in path: %s could not be loaded. Aborting.\n", name, log_path);
