@@ -2,7 +2,7 @@
 #define INITIALIZER_H
 
 #include "common_utils.h"
-#include "connections.h"
+#include "handler.h"
 #include "finalizer.h"
 
 typedef struct config_values{
