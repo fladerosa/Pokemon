@@ -26,10 +26,10 @@ SHARED_DEPS = $(wildcard $(SHARED_IDIR)/*.h)
 SHARED_SRC = $(wildcard $(SHARED_SRCDIR)/*.c)
 SHARED_OBJ = $(patsubst $(SHARED_SRCDIR)/%.c,$(SHARED_ODIR)/%.o,$(SHARED_SRC))
 
-gamecard: $(OBJ) $(SHARED_OBJ)
+gameboy: $(OBJ) $(SHARED_OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ gamecard $(SHARED_ODIR)/*.o 
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ gameboy $(SHARED_ODIR)/*.o 
