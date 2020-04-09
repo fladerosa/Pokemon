@@ -16,7 +16,8 @@
 			"path": "gameboy"
 		}
 	],
-	"settings": {},
+	"settings": {
+	},
 	"launch": {
 		"configurations": [],
 		"compounds": [

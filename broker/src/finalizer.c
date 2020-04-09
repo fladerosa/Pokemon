@@ -6,5 +6,5 @@ void finalize(){
     config_destroy(config);
     log_destroy(optional_logger);
     log_destroy(obligatory_logger);
-    exit(SUCCESS);
+    close(listening_socket);
 }

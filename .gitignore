@@ -54,3 +54,8 @@ dkms.conf
 .dist
 
 *.log
+
+broker
+team
+gamecard
+gameboy

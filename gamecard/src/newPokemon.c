@@ -1,0 +1,2 @@
+#include "newPokemon.h"
+//TODO
