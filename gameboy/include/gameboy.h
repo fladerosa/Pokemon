@@ -11,7 +11,10 @@ const static struct{
     {APPEARED_POKEMON, "APPEARED_POKEMON"},
     {CATCH_POKEMON, "CATCH_POKEMON"},
     {CAUGHT_POKEMON, "CAUGHT_POKEMON"},
-    {GET_POKEMON, "GET_POKEMON"}
+    {GET_POKEMON, "GET_POKEMON"},
+    {ERROR, "ERROR"}
 };
+
+op_code stringToEnum(char* message);
 
 #endif

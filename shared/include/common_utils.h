@@ -25,8 +25,39 @@ typedef enum
 	CATCH_POKEMON = 3,
 	CAUGHT_POKEMON = 4,
 	GET_POKEMON = 5,
+	ERROR = 6
 	
 }op_code;
+
+typedef struct{
+	char* pokemon;
+	uint32_t posx;
+	uint32_t posy;
+	uint32_t quantity;
+}new_pokemon;
+
+typedef struct{
+	char* pokemon;
+	uint32_t posx;
+	uint32_t posy;
+	uint32_t id_message;
+}appeared_pokemon;
+
+typedef struct{
+	char* pokemon;
+	uint32_t posx;
+	uint32_t posy;
+}catch_pokemon;
+
+typedef struct{
+	uint32_t id_message;
+	bool caught;
+}caught_pokemon;
+
+
+typedef struct{
+	char* pokemon;
+}get_pokemon;
 
 typedef struct
 {
@@ -41,6 +72,8 @@ typedef struct
 } t_paquete;
 
 void funcionABorrar();
+int create_connection(char *ip, char* puerto);
+void* serializar_paquete(t_paquete* paquete, int *bytes);
 
 
 #endif
