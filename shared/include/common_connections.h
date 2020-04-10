@@ -18,8 +18,9 @@ typedef enum
 	CATCH_POKEMON = 3,
 	CAUGHT_POKEMON = 4,
 	GET_POKEMON = 5,
-	ERROR = 6,
-	MENSAJE = 7
+	LOCALIZED_POKEMON = 6,
+	ERROR = 7,
+	MENSAJE = 8
 	
 }op_code;
 
