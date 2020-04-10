@@ -23,17 +23,6 @@ t_config* config;
 pthread_t client_listener;
 bool server_running;
 
-typedef enum
-{
-	NEW_POKEMON = 1,
-	APPEARED_POKEMON = 2,
-	CATCH_POKEMON = 3,
-	CAUGHT_POKEMON = 4,
-	GET_POKEMON = 5,
-	ERROR = 6
-	
-}op_code;
-
 typedef struct{
 	char* pokemon;
 	uint32_t posx;
@@ -64,21 +53,6 @@ typedef struct{
 	char* pokemon;
 }get_pokemon;
 
-typedef struct
-{
-	int size;
-	void* stream;
-} t_buffer;
-
-typedef struct
-{
-	op_code codigo_operacion;
-	t_buffer* buffer;
-} t_paquete;
-
-void funcionABorrar();
-int create_connection(char *ip, char* puerto);
-void* serializar_paquete(t_paquete* paquete, int *bytes);
 
 
 #endif

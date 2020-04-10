@@ -14,9 +14,9 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
              paquete->buffer->size = sizeof(new_pokemon);
              new_pokemon newPokemonMessage; 
              newPokemonMessage.pokemon = message[3];
-             newPokemonMessage.posx = message[4];
-             newPokemonMessage.posy = message[5];
-             newPokemonMessage.quantity = message[6];
+             newPokemonMessage.posx = (uint32_t) message[4];
+             newPokemonMessage.posy = (uint32_t) message[5];
+             newPokemonMessage.quantity = (uint32_t) message[6];
              paquete->buffer->stream = malloc(paquete->buffer->size);
 	         memcpy(paquete->buffer->stream, &newPokemonMessage, paquete->buffer->size);
              break;
@@ -25,9 +25,9 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
             paquete->buffer->size = sizeof(appeared_pokemon);
             appeared_pokemon appearedPokemonMessage; 
             appearedPokemonMessage.pokemon = message[3];
-            appearedPokemonMessage.posx = message[4];
-            appearedPokemonMessage.posy = message[5];
-            appearedPokemonMessage.id_message = message[6];
+            appearedPokemonMessage.posx = (uint32_t) message[4];
+            appearedPokemonMessage.posy = (uint32_t) message[5];
+            appearedPokemonMessage.id_message = (uint32_t) message[6];
             paquete->buffer->stream = malloc(paquete->buffer->size);
 	        memcpy(paquete->buffer->stream, &appearedPokemonMessage, paquete->buffer->size);
             break;
@@ -36,8 +36,8 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
             paquete->buffer->size = sizeof(catch_pokemon);
             catch_pokemon catchPokemonMessage; 
             catchPokemonMessage.pokemon = message[3];
-            catchPokemonMessage.posx = message[4];
-            catchPokemonMessage.posy = message[5];
+            catchPokemonMessage.posx = (uint32_t) message[4];
+            catchPokemonMessage.posy = (uint32_t) message[5];
             paquete->buffer->stream = malloc(paquete->buffer->size);
 	        memcpy(paquete->buffer->stream, &catchPokemonMessage, paquete->buffer->size);
             break;
@@ -45,7 +45,7 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
             paquete->codigo_operacion = CAUGHT_POKEMON;
             paquete->buffer->size = sizeof(caught_pokemon);
             caught_pokemon caughtPokemonMessage; 
-            caughtPokemonMessage.id_message = message[3];
+            caughtPokemonMessage.id_message = (uint32_t) message[3];
             caughtPokemonMessage.caught = message[4];
             paquete->buffer->stream = malloc(paquete->buffer->size);
 	        memcpy(paquete->buffer->stream, &caughtPokemonMessage, paquete->buffer->size);
@@ -129,10 +129,10 @@ int main(int argc, char ** argv){
     }
 
     //Creo la conexion
-    int connection = create_connection(ip, port);
+    int connection = crear_conexion(ip, port);
 
     //Mando el mensaje
-    send_message(argv,connection, optional_logger);
+    send_message(argv, connection, optional_logger);
 
     //Cierro y elimino todo
     closeAll(optional_logger, obligatory_logger,config,connection);
