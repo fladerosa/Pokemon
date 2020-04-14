@@ -29,9 +29,7 @@ void start_server(char* ip, char* port, on_request request_receiver){
     log_info(optional_logger, "Started listening on %s:%s", ip, port);
 
     freeaddrinfo(servinfo);
-    server_running = true;
-    signal(SIGINT,stop_server);
-    while(server_running)
+    while(true)
     	receive_new_connections(socket_servidor, request_receiver);
 }
 
@@ -98,10 +96,6 @@ void devolver_mensaje(void* payload, uint32_t size, uint32_t socket_cliente){
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
 	free(paquete);
-}
-
-void stop_server(){
-    server_running = false;
 }
 
 uint32_t crear_conexion(char *ip, char* puerto){

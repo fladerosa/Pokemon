@@ -14,6 +14,7 @@ typedef struct config_values{
     char* ip_broker;
     char* puerto_broker;
     uint32_t frecuencia_compactacion;
+    char* dump_file;
 } config_values;
 
 config_values cfg_values;

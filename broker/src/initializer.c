@@ -40,10 +40,11 @@ void fill_config_values(){
     cfg_values.ip_broker = config_get_string_value(config, "IP_BROKER");
     cfg_values.puerto_broker = config_get_string_value(config, "PUERTO_BROKER");
     cfg_values.frecuencia_compactacion = config_get_int_value(config, "FRECUENCIA_COMPACTACION");
+    cfg_values.dump_file = config_get_string_value(config, "DUMP_FILE");
     log_info(optional_logger, 
-        "Configuration values: \n\n\tTAMANO_MEMORIA=%d\n\tTAMANO_MINIMO_PARTICION=%d\n\tALGORITMO_MEMORIA=%s\n\tALGORITMO_REEMPLAZO=%s\n\tALGORITMO_PARTICION_LIBRE=%s\n\tIP_BROKER=%s\n\tPUERTO_BROKER=%s\n\tFRECUENCIA_COMPACTACION=%d\n",
+        "Configuration values: \n\n\tTAMANO_MEMORIA=%d\n\tTAMANO_MINIMO_PARTICION=%d\n\tALGORITMO_MEMORIA=%s\n\tALGORITMO_REEMPLAZO=%s\n\tALGORITMO_PARTICION_LIBRE=%s\n\tIP_BROKER=%s\n\tPUERTO_BROKER=%s\n\tFRECUENCIA_COMPACTACION=%d\n\tDUMP_FILE=%s\n\n",
         cfg_values.tamano_memoria, cfg_values.tamano_minimo_particion, cfg_values.algoritmo_memoria,
         cfg_values.algoritmo_reemplazo, cfg_values.algoritmo_particion_libre, cfg_values.ip_broker,
-        cfg_values.puerto_broker, cfg_values.frecuencia_compactacion
+        cfg_values.puerto_broker, cfg_values.frecuencia_compactacion, cfg_values.dump_file
     );
 }
