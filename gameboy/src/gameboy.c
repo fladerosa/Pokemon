@@ -6,8 +6,10 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
 
     //El nombre de la funcion esta en el parametro 2 del argv que le paso como parametro
     char* message_function = message[2]; 
+    //Encuentro el op_code correspondiente con lo que recibi de mensaje.
     op_code operation_code = stringToEnum(message_function);
     paquete->buffer = malloc(sizeof(t_buffer));
+    //Filtro por codigo de operacion segun el enum y creo el mensaje al servidor
     switch(operation_code){
         case 1:
              paquete->codigo_operacion = NEW_POKEMON;
@@ -61,15 +63,18 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
         case 6:
             paquete->codigo_operacion = ERROR;
             break;
+        case 7: //Para el op_code MENSAJE, despues borrar!!!!
+            break;
     }
 
 	int bytes = paquete->buffer->size + 2*sizeof(int);
 
-	/*void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+    //Creo el paquete y serializo 
+	void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
 	send(socket_cliente, a_enviar, bytes, 0);
 
-	free(a_enviar);*/
+	free(a_enviar);
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
 	free(paquete);
@@ -77,6 +82,7 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
 
 op_code stringToEnum(char* message_function){
 
+    //Encuentro el string que corresponde al numero del enum
     for(int i = 0; i < sizeof(op_code); i++){
         if(strcmp(message_string[i].name, message_function) == 0){
             return message_string[i].operation;
@@ -87,6 +93,7 @@ op_code stringToEnum(char* message_function){
 }
 
 void closeAll(t_log* optional_logger,t_log* obligatory_logger, t_config* config, int connection){
+    //Destruyo todo: logger opcional, logger obligatorio, config y conexion.
     log_destroy(optional_logger);
     log_destroy(obligatory_logger);
     config_destroy(config);
@@ -94,11 +101,6 @@ void closeAll(t_log* optional_logger,t_log* obligatory_logger, t_config* config,
 }
 
 int main(int argc, char ** argv){
-
-    t_log* obligatory_logger;
-    t_log* optional_logger; 
-
-    t_config* config;
 
     //Inicializando la config
     config = config_create("./cfg/gameboy.config");
