@@ -16,6 +16,7 @@ void initialize(){
     );
     log_info(optional_logger, "Initializing Application...");
     fill_config_values();
+    set_sig_handler();
     p_on_request = &process_request;
     log_info(optional_logger, "Configuration and loggers loaded successfully.");
 }
@@ -47,4 +48,27 @@ void fill_config_values(){
         cfg_values.algoritmo_reemplazo, cfg_values.algoritmo_particion_libre, cfg_values.ip_broker,
         cfg_values.puerto_broker, cfg_values.frecuencia_compactacion, cfg_values.dump_file
     );
+}
+
+void mask_sig(void)
+{
+	sigset_t mask;
+	sigemptyset(&mask); 
+    sigaddset(&mask, SIGUSR1);         
+    pthread_sigmask(SIG_BLOCK, &mask, NULL);
+}
+
+void set_sig_handler(void)
+{
+    struct sigaction* action = malloc(sizeof(sigaction));
+
+
+    (*action).sa_flags = SA_SIGINFO; 
+    (*action).sa_sigaction = dump;
+
+    if (sigaction(SIGUSR1, action, NULL) == -1) { 
+        perror("sigusr: sigaction");
+        _exit(1);
+    }
+
 }
