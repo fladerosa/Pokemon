@@ -29,7 +29,11 @@ void establecerConexionBroker()
     enviar_mensaje("Prueba", conexion);
 }
 
-//inicializo listas y valores del archivo de configuracion
+void stop_server(int socketServer)
+{
+    close(socketServer);
+}
+
 t_config * leer_config()
 {   
     char* config_path = "./cfg/team.config";
@@ -38,15 +42,15 @@ t_config * leer_config()
     {
         error_show("Error al leer el config del proceso TEAM en %s\n", config_path);
         exit(LOG_FAIL);
-    }
-             
+    }           
     return  config;
 }
 
-void cargar_valores_config()
+void cargar_valores_config(t_config * config)
 {
-    valores.ip_team = config_get_string_value(config, "IP_TEAM");
-    valores.puerto_team = config_get_int_value(config, "PUERTO_TEAM");
+    valores.posicion_entrenador = config_get_array_value(config, "POSICIONES_ENTRENADORES");
+    valores.pokemon_entrenador = config_get_array_value(config, "POKEMON_ENTRENADORES");
+    valores.objetivo_entrenador = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
     valores.tiempo_reconexion = config_get_int_value(config, "TIEMPO_RECONEXION");
     valores.retardo_ciclo_cpu = config_get_int_value(config, "RETARDO_CICLO_CPU");
     valores.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
@@ -54,6 +58,8 @@ void cargar_valores_config()
     valores.estimacion_inicial = config_get_int_value(config, "ESTIMACION_INICIAL");
     valores.ip_broker = config_get_string_value(config, "IP_BROKER");
     valores.puerto_broker= config_get_int_value(config, "PUERTO_BROKER");
+    valores.ip_team = config_get_string_value(config, "IP_TEAM");
+    valores.puerto_team = config_get_int_value(config, "PUERTO_TEAM");
 }
 
 t_logger * crear_logger()
@@ -71,28 +77,21 @@ t_logger * crear_logger()
 void inicializar()
 {    
     config = leer_config();
-
     logger = crear_logger();
     log_info(logger, "Log creado con exito\n", LOG_LEVEL_INFO);
-    cargar_valores_config();
+    cargar_valores_config(config);
     log_info(logger, "Inicializacion y carga de configuracion exitosa\n", LOG_LEVEL_INFO);
 }
 
-
 void liberar_recursos()
-{
-   
+{ 
     if(config)
-    {
         config_destroy(config);
-    }
 
     if(logger)
-    {
         log_destroy(logger);
-    }
-    
-    stop_server();
+     
+    stop_server(socketServer);
     close(conexion);
 }
 
