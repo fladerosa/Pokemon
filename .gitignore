@@ -55,7 +55,7 @@ dkms.conf
 
 *.log
 
-broker
-team
-gamecard
-gameboy
+broker/broker
+team/team
+gamecard/gamecard
+gameboy/gameboy
