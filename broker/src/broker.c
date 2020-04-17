@@ -9,8 +9,7 @@ int main(int argc, char ** argv){
         cfg_values.puerto_broker,
         p_on_request    
     );
-    void* coso = NULL;
-    pthread_join(client_listener, coso);
+    
     finalize();
     return EXIT_SUCCESS;
 }
