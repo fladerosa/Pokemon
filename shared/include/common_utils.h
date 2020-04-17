@@ -24,6 +24,7 @@ pthread_t client_listener;
 bool server_running;
 
 typedef struct{
+	uint32_t sizePokemon;
 	char* pokemon;
 	uint32_t posx;
 	uint32_t posy;
@@ -31,6 +32,7 @@ typedef struct{
 }new_pokemon;
 
 typedef struct{
+	uint32_t sizePokemon;
 	char* pokemon;
 	uint32_t posx;
 	uint32_t posy;
@@ -38,6 +40,7 @@ typedef struct{
 }appeared_pokemon;
 
 typedef struct{
+	uint32_t sizePokemon;
 	char* pokemon;
 	uint32_t posx;
 	uint32_t posy;
@@ -45,14 +48,19 @@ typedef struct{
 
 typedef struct{
 	uint32_t id_message;
-	bool caught;
+	uint32_t sizeCaught;
+	char* caught;
 }caught_pokemon;
 
 
 typedef struct{
+	uint32_t sizePokemon;
 	char* pokemon;
 }get_pokemon;
 
-
+typedef struct{
+	char* colaMensajes;
+	uint32_t sizeColaMensajes;
+}subscriptor;
 
 #endif

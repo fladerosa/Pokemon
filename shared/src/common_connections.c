@@ -150,7 +150,7 @@ char* recibir_mensaje(uint32_t socketfd, uint32_t buffer_size){
 void process_message(uint32_t client_fd, uint32_t size){
 	void* msg;
 	msg = recibir_mensaje(client_fd, size);
-	log_info(optional_logger, "The message received is: %s", msg);
+	log_info(optional_logger, "The message received is: %s", (char*)msg);
 	devolver_mensaje(msg, size, client_fd);
 	free(msg);
 }
