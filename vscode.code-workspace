@@ -17,6 +17,9 @@
 		}
 	],
 	"settings": {
+		"files.associations": {
+			"dump.h": "c"
+		}
 	},
 	"launch": {
 		"configurations": [],

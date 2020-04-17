@@ -43,4 +43,6 @@ void* serializar_paquete(t_paquete* paquete, uint32_t bytes);
 char* recibir_mensaje(uint32_t socket_cliente, uint32_t buffer_size);
 void  stop_server();
 void  process_message(uint32_t client_fd, uint32_t size);
+void  pthread_create_and_detach(void* function, void* args);
+void  run_server(void* processor);
 #endif

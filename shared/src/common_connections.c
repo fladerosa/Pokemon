@@ -29,8 +29,18 @@ void start_server(char* ip, char* port, on_request request_receiver){
     log_info(optional_logger, "Started listening on %s:%s", ip, port);
 
     freeaddrinfo(servinfo);
-    while(true)
-    	receive_new_connections(socket_servidor, request_receiver);
+	t_process_request* server_processor = malloc(sizeof(t_process_request));
+	(*server_processor).socket = socket_servidor;
+	(*server_processor).request_receiver = request_receiver;
+	pthread_create(&server, NULL, (void*)run_server, server_processor);
+}
+
+void run_server(void * server_processor){
+	uint32_t socket = (*(t_process_request*)server_processor).socket;
+	on_request request_receiver = (*(t_process_request*)server_processor).request_receiver;
+	while(true){
+		receive_new_connections(socket,request_receiver);
+	}
 }
 
 void receive_new_connections(uint32_t socket_escucha, on_request request_receiver){
@@ -46,7 +56,7 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
         t_process_request processor;
         processor.socket = connfd;
         processor.request_receiver = request_receiver;
-        pthread_create(&client_listener, NULL, 
+        pthread_create_and_detach( 
             (void*) serve_client, 
             &processor);
     }
@@ -147,4 +157,10 @@ void process_message(uint32_t client_fd, uint32_t size){
 	log_info(optional_logger, "The message received is: %s", msg);
 	devolver_mensaje(msg, size, client_fd);
 	free(msg);
+}
+
+void pthread_create_and_detach(void* function, void* args ){
+	pthread_t thread;
+	pthread_create(&thread, NULL, function, args);
+	pthread_detach(thread);
 }
