@@ -26,33 +26,36 @@ void leer_config()
         exit(CONFIG_FAIL);
     }           
 }
-void cargar_posiciones_team()
-{   
-    valores.posicion_entrenador = config_get_array_value(config, "POSICIONES_ENTRENADORES");
+char** cargar_posiciones_team()
+{     
+    char** posicion_config =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
+    return posicion_config;
 }
-void cargar_pokemones_team()
+char** cargar_pokemones_team()
 {
-    valores.pokemon_entrenador = config_get_array_value(config, "POKEMON_ENTRENADORES");
+    char** pokemon_config = config_get_array_value(config, "POKEMON_ENTRENADORES");
+    return pokemon_config;
 }
-void cargar_objetivo_team()
+char** cargar_objetivos_team()
 {
-    valores.objetivo_entrenador = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
+   char** objetivo_config = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
+   return objetivo_config;
 }
 
 void cargar_valores_config(t_config * config)
 {
-   // valores.posicion_entrenador = config_get_array_value(config, "POSICIONES_ENTRENADORES");
-    //valores.pokemon_entrenador = config_get_array_value(config, "POKEMON_ENTRENADORES");
-   // valores.objetivo_entrenador = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
+    valores.posicion_entrenador = cargar_posiciones_team();
+    valores.pokemon_entrenador = cargar_pokemones_team();
+    valores.objetivo_entrenador = cargar_objetivos_team();
     valores.tiempo_reconexion = (uint32_t)config_get_int_value(config, "TIEMPO_RECONEXION");
     valores.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
     valores.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
     valores.quantum = (uint32_t)config_get_int_value(config, "QUANTUM");
     valores.estimacion_inicial = (uint32_t)config_get_int_value(config, "ESTIMACION_INICIAL");
     valores.ip_broker = config_get_string_value(config, "IP_BROKER");
-    valores.puerto_broker= config_get_int_value(config, "PUERTO_BROKER");
+    valores.puerto_broker= config_get_string_value(config, "PUERTO_BROKER");
     valores.ip_team = config_get_string_value(config, "IP_TEAM");
-    valores.puerto_team = config_get_int_value(config, "PUERTO_TEAM");
+    valores.puerto_team = config_get_string_value(config, "PUERTO_TEAM");
 }
 
 void iniciar_logger_obligatorio()
