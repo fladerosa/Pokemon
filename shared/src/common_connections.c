@@ -49,7 +49,7 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
     uint32_t len = sizeof(cli); 
   
     connfd = accept(socket_escucha, (struct sockaddr*)&cli, &len);
-    if (connfd < 0 || !server_running) { 
+    if (connfd < 0) { 
         log_info(optional_logger, "Server accept failed..."); 
     } else {
         log_info(optional_logger, "Server accepted a new client...");
@@ -121,9 +121,15 @@ uint32_t crear_conexion(char *ip, char* puerto){
 
 	uint32_t socketfd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 
-	if(connect(socketfd, server_info->ai_addr, server_info->ai_addrlen) == -1)
-		log_info(optional_logger, "Could not connect to server on %s:%s.", ip, puerto);
-	else log_info(optional_logger, "Connected successfully with %s:%s.", ip, puerto);
+    while(connect(socketfd, server_info->ai_addr, server_info->ai_addrlen) == -1){
+        log_info(optional_logger, "Could not connect to server on %s:%s.", ip, puerto);
+        uint32_t timeConfig = config_get_int_value(config,"CONNECTION_TIME");
+        log_info(optional_logger, "Trying to connect again in: %d", timeConfig);
+        sleep(timeConfig);
+    }
+
+	log_info(optional_logger, "Connected successfully with %s:%s.", ip, puerto);
+		
 	freeaddrinfo(server_info);
 
 	return socketfd;
@@ -163,4 +169,81 @@ void pthread_create_and_detach(void* function, void* args ){
 	pthread_t thread;
 	pthread_create(&thread, NULL, function, args);
 	pthread_detach(thread);
+}
+
+void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd){
+
+    new_pokemon newPokemonMessage;
+    appeared_pokemon appearedPokemonMessage;
+    catch_pokemon catchPokemonMessage;
+    caught_pokemon caughtPokemonMessage;
+    get_pokemon getPokemonMessage; 
+
+    newPokemonMessage.sizePokemon = -1; 
+    appearedPokemonMessage.sizePokemon = -1;
+    catchPokemonMessage.sizePokemon = -1;
+    caughtPokemonMessage.sizeCaught = -1;
+
+    switch(cod_op){
+        case 1: 
+            recv(socketfd, (void*) newPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
+            newPokemonMessage.pokemon = malloc(newPokemonMessage.sizePokemon);
+            recv(socketfd, (void*) newPokemonMessage.pokemon, newPokemonMessage.sizePokemon, MSG_WAITALL);
+            recv(socketfd, (void*) newPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
+            recv(socketfd, (void*) newPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
+            recv(socketfd, (void*) newPokemonMessage.quantity, sizeof(uint32_t), MSG_WAITALL);
+            
+            log_info(optional_logger, "New pokemon!");
+            log_info(optional_logger, "This is the pokemon: ", newPokemonMessage.pokemon); 
+            log_info(optional_logger, "This is the position x: ", newPokemonMessage.posx);
+            log_info(optional_logger, "This is the position y: ", newPokemonMessage.posy);
+            log_info(optional_logger, "This is the quantity: ", newPokemonMessage.quantity);
+            break;
+        case 2:
+            recv(socketfd, (void*) appearedPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
+            appearedPokemonMessage.pokemon = malloc(appearedPokemonMessage.sizePokemon);
+            recv(socketfd, (void*) appearedPokemonMessage.pokemon, appearedPokemonMessage.sizePokemon, MSG_WAITALL);
+            recv(socketfd, (void*) appearedPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
+            recv(socketfd, (void*) appearedPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
+            recv(socketfd, (void*) appearedPokemonMessage.id_message, sizeof(uint32_t), MSG_WAITALL);
+            
+            log_info(optional_logger, "Appeared pokemon!");
+            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage.pokemon); 
+            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage.posx);
+            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage.posy);
+            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage.id_message);
+            break;
+        case 3:
+            recv(socketfd, (void*) catchPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
+            catchPokemonMessage.pokemon = malloc(catchPokemonMessage.sizePokemon);
+            recv(socketfd, (void*) catchPokemonMessage.pokemon, catchPokemonMessage.sizePokemon, MSG_WAITALL);
+            recv(socketfd, (void*) catchPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
+            recv(socketfd, (void*) catchPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
+            
+            log_info(optional_logger, "Catch pokemon!");
+            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage.pokemon); 
+            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage.posx);
+            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage.posy);
+            break;
+        case 4:
+            recv(socketfd, (void*) caughtPokemonMessage.sizeCaught, sizeof(uint32_t), MSG_WAITALL);
+            caughtPokemonMessage.caught = malloc(sizeof(caughtPokemonMessage.sizeCaught));
+            recv(socketfd, (void*) caughtPokemonMessage.caught, sizeof(caughtPokemonMessage.sizeCaught), MSG_WAITALL);
+            recv(socketfd, (void*) caughtPokemonMessage.id_message, sizeof(uint32_t), MSG_WAITALL);
+            
+            log_info(optional_logger, "Caught pokemon!");
+            log_info(optional_logger, "Was the pokemon catch?: ", caughtPokemonMessage.caught); 
+            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage.id_message);
+            break;
+        case 5:
+            recv(socketfd, (void*) getPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
+            getPokemonMessage.pokemon = malloc(getPokemonMessage.sizePokemon);
+            recv(socketfd, (void*) getPokemonMessage.pokemon, getPokemonMessage.sizePokemon, MSG_WAITALL);
+            
+            log_info(optional_logger, "Get pokemon!");
+            log_info(optional_logger, "This is the pokemon: ", getPokemonMessage.pokemon); 
+            break;
+        case -1:
+            break;
+    }
 }

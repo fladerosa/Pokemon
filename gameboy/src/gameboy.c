@@ -104,7 +104,7 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
 op_code stringToEnum(char* message_function){
 
     //Encuentro el string que corresponde al numero del enum
-    for(int i = 0; i < sizeof(op_code); i++){
+    for(int i = 0; i < 8; i++){
         if(strcmp(message_string[i].name, message_function) == 0){
             return message_string[i].operation;
         }
@@ -122,76 +122,9 @@ void closeAll(t_log* optional_logger,t_log* obligatory_logger, t_config* config,
     close(connection);
 }
 
-void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd){
-
-    new_pokemon newPokemonMessage;
-    appeared_pokemon appearedPokemonMessage;
-    catch_pokemon catchPokemonMessage;
-    caught_pokemon caughtPokemonMessage;
-    get_pokemon getPokemonMessage;
-
-    switch(cod_op){
-        case 1: 
-            recv(socketfd, (void*) newPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            newPokemonMessage.pokemon = malloc(newPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) newPokemonMessage.pokemon, newPokemonMessage.sizePokemon, MSG_WAITALL);
-            recv(socketfd, (void*) newPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) newPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) newPokemonMessage.quantity, sizeof(uint32_t), MSG_WAITALL);
-            
-            log_info(optional_logger, "New pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", newPokemonMessage.pokemon); 
-            log_info(optional_logger, "This is the position x: ", newPokemonMessage.posx);
-            log_info(optional_logger, "This is the position y: ", newPokemonMessage.posy);
-            log_info(optional_logger, "This is the quantity: ", newPokemonMessage.quantity);
-            break;
-        case 2:
-            recv(socketfd, (void*) appearedPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            appearedPokemonMessage.pokemon = malloc(appearedPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) appearedPokemonMessage.pokemon, appearedPokemonMessage.sizePokemon, MSG_WAITALL);
-            recv(socketfd, (void*) appearedPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) appearedPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) appearedPokemonMessage.id_message, sizeof(uint32_t), MSG_WAITALL);
-            
-            log_info(optional_logger, "Appeared pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage.pokemon); 
-            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage.posx);
-            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage.posy);
-            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage.id_message);
-            break;
-        case 3:
-            recv(socketfd, (void*) catchPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            catchPokemonMessage.pokemon = malloc(catchPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) catchPokemonMessage.pokemon, catchPokemonMessage.sizePokemon, MSG_WAITALL);
-            recv(socketfd, (void*) catchPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) catchPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
-            
-            log_info(optional_logger, "Catch pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage.pokemon); 
-            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage.posx);
-            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage.posy);
-            break;
-        case 4:
-            recv(socketfd, (void*) caughtPokemonMessage.sizeCaught, sizeof(uint32_t), MSG_WAITALL);
-            caughtPokemonMessage.caught = malloc(sizeof(caughtPokemonMessage.sizeCaught));
-            recv(socketfd, (void*) caughtPokemonMessage.caught, sizeof(caughtPokemonMessage.sizeCaught), MSG_WAITALL);
-            recv(socketfd, (void*) caughtPokemonMessage.id_message, sizeof(uint32_t), MSG_WAITALL);
-            
-            log_info(optional_logger, "Caught pokemon!");
-            log_info(optional_logger, "Was the pokemon catch?: ", caughtPokemonMessage.caught); 
-            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage.id_message);
-            break;
-        case 5:
-            recv(socketfd, (void*) getPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            getPokemonMessage.pokemon = malloc(getPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) getPokemonMessage.pokemon, getPokemonMessage.sizePokemon, MSG_WAITALL);
-            
-            log_info(optional_logger, "Get pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", getPokemonMessage.pokemon); 
-            break;
-    }
-    
-
+void countTime(void* timePassed){ 
+    sleep((uint32_t) timePassed);
+    exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char ** argv){
@@ -230,16 +163,18 @@ int main(int argc, char ** argv){
     //Mando el mensaje
     send_message(argv, connection, optional_logger);
 
-    if(strcmp(server, "SUSCRIPTOR")){
-        uint32_t time = (uint32_t) argv[3];
+    if(strcmp(server, "SUSCRIPTOR") == 0){
+       
         t_process_request* process_request = malloc(sizeof(t_process_request)); 
         (*process_request).socket = connection; 
         (*process_request).request_receiver = receiveMessageSubscriptor;
+    
+        pthread_t threadConnection;
+        pthread_create(&threadConnection, NULL, (void*) countTime, (void*) atoi(argv[3]));
 
-       while(time > 0){
+        while(1){
             serve_client(process_request);
-            time--; 
-       } 
+        }     
     }
 
     //Cierro y elimino todo

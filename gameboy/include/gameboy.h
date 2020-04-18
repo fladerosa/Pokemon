@@ -2,6 +2,7 @@
 #define GAMEBOY_H
 
 #include "common_utils.h"
+#include <time.h>
 
 const static struct{
     op_code operation;

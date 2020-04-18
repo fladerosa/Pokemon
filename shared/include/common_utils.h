@@ -21,7 +21,6 @@
 t_log* obligatory_logger,* optional_logger;
 t_config* config;
 pthread_t server;
-bool server_running;
 
 typedef struct{
 	uint32_t sizePokemon;
