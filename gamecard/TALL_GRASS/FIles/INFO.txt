@@ -17,3 +17,10 @@ Ej Archivo:
 De esta manera podremos formar el siguiente árbol de archivos en donde la metadata dentro del directorio Pokemon contiene un DIRECTORY con valor Y y Pikachu tiene un metadata con un DIRECTORY con el valor N.
 	/mnt/TALL_GRASS/Files/Pokemon/Metadata.bin
 		/mnt/TALL_GRASS/Files/Pokemon/Pikachu/Metadata.bin
+
+Cada archivo de tipo pokemon tendra internamente (por cada fila) la lista de posiciones en el mapa que se encuentra con la cantidad en dicha posición. De esta manera un posible archivo de pokemon puede ser:
+	1-1=10
+	1-5=1
+	3-1=2
+	7-6=1000
+La inclusión de una nueva línea o eliminación depende de la recepción de los distintos mensajes desde el Broker.  
