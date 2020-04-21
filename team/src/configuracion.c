@@ -26,27 +26,80 @@ void leer_config()
         exit(CONFIG_FAIL);
     }           
 }
-char** cargar_posiciones_team()
+void cargar_posiciones_config_team()
 {     
     char** posicion_config =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
-    return posicion_config;
+    valores.posicion_entrenador= list_create();
+    string_iterate_lines(posicion_config, imprimir_posicion);
+    list_iterate(valores.posicion_entrenador, mostrar);
 }
-char** cargar_pokemones_team()
+void agregar_posicion_a_la_lista(char *posicion) {
+    if (posicion != NULL) {
+      list_add(valores.posicion_entrenador, posicion);
+    }
+  }
+void imprimir_posicion(char *valor) {
+    if(valor != NULL) {
+      char **posiciones = string_split(valor, "|");
+      string_iterate_lines(posiciones, agregar_posicion_a_la_lista);
+      printf("Leo: %s\n", valor);
+    } else {
+      printf("Vacio\n");
+    }
+  }
+void mostrar(void *elemento) {
+    printf("El elemento: %s\n", (char *)elemento);
+  }
+
+void cargar_pokemones_config_team()
 {
     char** pokemon_config = config_get_array_value(config, "POKEMON_ENTRENADORES");
-    return pokemon_config;
+    valores.pokemon_entrenador = list_create();
+    string_iterate_lines(pokemon_config, imprimir_pokemon);
+    list_iterate(valores.pokemon_entrenador, mostrar);
+
 }
-char** cargar_objetivos_team()
+void agregar_pokemon_a_la_lista(char *pokemon) {
+    if (pokemon != NULL) {
+      list_add(valores.pokemon_entrenador, pokemon);
+    }
+  }
+void imprimir_pokemon(char *valor) {
+    if(valor != NULL) {
+      char **pokemones = string_split(valor, "|");
+      string_iterate_lines(pokemones, agregar_pokemon_a_la_lista);
+      printf("Leo: %s\n", valor);
+    } else {
+      printf("Vacio\n");
+    }
+  }
+void cargar_objetivos_config_team()
 {
    char** objetivo_config = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
-   return objetivo_config;
+   valores.objetivo_entrenador = list_create();
+   string_iterate_lines(objetivo_config, imprimir_objetivo);
+   list_iterate(valores.objetivo_entrenador, mostrar);
 }
 
+void agregar_objetivo_a_la_lista(char *objetivo) {
+    if (objetivo != NULL) {
+      list_add(valores.objetivo_entrenador, objetivo);
+    }
+  }
+void imprimir_objetivo(char *valor) {
+    if(valor != NULL) {
+      char **objetivos = string_split(valor, "|");
+      string_iterate_lines(objetivos, agregar_objetivo_a_la_lista);
+      printf("Leo: %s\n", valor);
+    } else {
+      printf("Vacio\n");
+    }
+  }
 void cargar_valores_config(t_config * config)
 {
-    valores.posicion_entrenador = cargar_posiciones_team();
-    valores.pokemon_entrenador = cargar_pokemones_team();
-    valores.objetivo_entrenador = cargar_objetivos_team();
+    cargar_posiciones_config_team();
+    cargar_pokemones_config_team();
+    cargar_objetivos_config_team();
     valores.tiempo_reconexion = (uint32_t)config_get_int_value(config, "TIEMPO_RECONEXION");
     valores.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
     valores.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
@@ -58,7 +111,7 @@ void cargar_valores_config(t_config * config)
     valores.puerto_team = config_get_string_value(config, "PUERTO_TEAM");
 }
 
-void iniciar_logger_obligatorio()
+void crear_logger_obligatorio()
 {      
     char* log_config = config_get_string_value(config, "LOG_FILE");
     obligatory_logger = log_create(log_config, "TEAM", 1, LOG_LEVEL_INFO);
@@ -70,7 +123,7 @@ void iniciar_logger_obligatorio()
     log_info(obligatory_logger, "Log Obligatorio creado correctamente\n");
 }
  
- void iniciar_logger_opcional()
+ void crear_logger_opcional()
 {      
     char* log_config = config_get_string_value(config, "LOG_FILE_OPTIONAL");
     optional_logger = log_create(log_config, "TEAM", 1, LOG_LEVEL_INFO);
@@ -83,9 +136,9 @@ void iniciar_logger_obligatorio()
 }
 void inicializar()
 {    
-    leer_config();
-    iniciar_logger_obligatorio();
-    iniciar_logger_opcional();
+    leer_config(config);
+    crear_logger_obligatorio();
+    crear_logger_opcional();
     cargar_valores_config(config);
     log_info(optional_logger, "Inicializacion y carga de configuracion exitosa\n", LOG_LEVEL_INFO);
 }
