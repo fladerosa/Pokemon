@@ -4,6 +4,7 @@
 #include<commons/collections/list.h>
 #include<commons/string.h>
 #include "common_utils.h"
+#include<pthread.h>
 
 typedef struct configuracion{
        char *ip_team;
@@ -22,6 +23,7 @@ typedef struct configuracion{
 }configuracion;
 
 configuracion valores;
+pthread_t thread_gameboy;
 
 void leer_config();
 void crear_logger_obligatorio();
@@ -39,8 +41,12 @@ void imprimir_objetivo(char *);
 void cargar_valores_config(t_config*);
 void inicializar();
 void liberar_recursos();   
-void establecerConexionGameBoy();
-void establecerConexioBroker();
+
+void escucharAGameBoy();
+void iniciar_servidor(t_config*);
+void esperar_a_gameboy(uint32_t);
+void cerrar_servidor();
+void establecerConexionDeBroker();
 enum t_algoritmo {fifo, rr, sjf_sd, sjf_cd};
 
 
