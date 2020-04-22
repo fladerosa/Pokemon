@@ -1,77 +1,20 @@
 
 #include "configuracion.h"
-void escucharAGameBoy()
-{
-   iniciar_servidor(config);
+
+void escuchar_gameboy()
+{ 
+   start_server(valores.ip_team, valores.puerto_team, respuesta);
   
 }
-/*
-void establecerConexionBroker()
+
+void establecer_conexion_broker()
 {
-    int conexion = crear_conexion(valores.ip_broker, valores.puerto_broker);
-    enviar_mensaje("Prueba", conexion);
-}
-
-void stop_server(int socketServer)
-{
-    close(socketServer);
-}
-*/
-void iniciar_servidor(t_config *config)
-{
-	uint32_t socket_team;
-
-    struct addrinfo hints, *servinfo, *p;
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-
-    getaddrinfo(config_get_string_value(config, "IP"), config_get_string_value(config, "PUERTO"), &hints, &servinfo);
-
-    for (p=servinfo; p != NULL; p = p->ai_next)
-    {
-        if ((socket_team = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
-            log_error(optional_logger, "No se pudo crear el socket\n");
-            continue;
-
-        if (bind(socket_team, p->ai_addr, p->ai_addrlen) == -1) {
-            close(socket_team);
-            log_error(optional_logger, "No se pudo establecer la conexion con el socket\n");
-            continue;
-        }
-        break;
-    }
-	listen(socket_team, SOMAXCONN);
-    log_info(optional_logger, "Escuchando en la ip %s y el puerto %s", valores.ip_team, valores.puerto_team);
-    freeaddrinfo(servinfo);
-
-    while(1)
-    	esperar_a_gameboy(socket_team);
-}
-void esperar_a_gameboy(uint32_t socket_team)
-{
-	struct sockaddr_in dir_cliente;
-
-	uint32_t tam_direccion = sizeof(struct sockaddr_in);
-
-	uint32_t socket_gameboy = accept(socket_team, (void*) &dir_cliente, &tam_direccion);
-    if(socket_gameboy < 0)
-    {
-        log_info(optional_logger, "No se acepto la conexion\n");
-    }
-    else{
-        log_info(optional_logger, "Conexion establecida con el Servidor \n");
-    }
-
-	pthread_create(&thread_gameboy,NULL,(void*)serve_client,&socket_gameboy);
-	pthread_detach(thread_gameboy);
-
+    uint32_t socketServer = crear_conexion(valores.ip_broker, valores.puerto_broker);
+    enviar_mensaje("Prueba", socketServer);
 }
 void cerrar_servidor()
 {
-   // close(socket_team);
+    close(socket_team);
 }
 void leer_config()
 {   
@@ -86,7 +29,7 @@ void leer_config()
 void cargar_posiciones_config_team()
 {     
     char** posicion_config =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
-    valores.posicion_entrenador= list_create();
+    valores.posicion_entrenador = list_create();
     string_iterate_lines(posicion_config, imprimir_posicion);
     list_iterate(valores.posicion_entrenador, mostrar);
 }
@@ -210,11 +153,13 @@ void liberar_recursos()
 
     if(optional_logger)
         log_destroy(optional_logger);
+
+    cerrar_servidor(socket_team);
      
    //  list_destroy_and_destroy_elements(valores.posicion_entrenador,posicion);
      //list_destroy_and_destroy_elements(valores.pokemon_entrenador, pokemon);
      //list_destroy_and_destroy_elements(valores.objetivo_entrenador, objetivo);
-  //  cerrar_servidor(socket_team);
+  
    // close(conexion);
 }
 

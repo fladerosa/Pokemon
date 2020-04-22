@@ -4,7 +4,21 @@
 #include<commons/collections/list.h>
 #include<commons/string.h>
 #include "common_utils.h"
-#include<pthread.h>
+
+typedef struct posicion_entrenador{
+    uint32_t posix;
+    uint32_t posiy;
+}posicion_entrenador;
+
+typedef struct pokemon_entrenador{
+    uint32_t id_entrenador;
+    char * pokemon;   
+}pokemon_entrenador;
+
+typedef struct objetivo_entrenador{
+    uint32_t id_entrenador;
+    char* pokemon;   
+}objetivo_entrenador;
 
 typedef struct configuracion{
        char *ip_team;
@@ -12,7 +26,7 @@ typedef struct configuracion{
        t_list *posicion_entrenador;
        t_list *pokemon_entrenador;
        t_list *objetivo_entrenador;
-       uint32_t  tiempo_reconexion; 
+       uint32_t tiempo_reconexion; 
        uint32_t  retardo_ciclo_cpu; 
        char *algoritmo_planificacion;
        uint32_t quantum;
@@ -23,7 +37,8 @@ typedef struct configuracion{
 }configuracion;
 
 configuracion valores;
-pthread_t thread_gameboy;
+uint32_t socket_team;
+on_request respuesta;
 
 void leer_config();
 void crear_logger_obligatorio();
@@ -42,11 +57,9 @@ void cargar_valores_config(t_config*);
 void inicializar();
 void liberar_recursos();   
 
-void escucharAGameBoy();
-void iniciar_servidor(t_config*);
-void esperar_a_gameboy(uint32_t);
+void escuchar_gameboy();
 void cerrar_servidor();
-void establecerConexionDeBroker();
+void establecer_conexion_broker();
 enum t_algoritmo {fifo, rr, sjf_sd, sjf_cd};
 
 

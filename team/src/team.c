@@ -3,12 +3,12 @@
 int main(int argc, char ** argv){
 
     inicializar();
-
-    //establecer conexion con broker como cliente
-    //establecerConexionDeBroker();
     
-    //establecer puerto escucha con gameb()oy como servidor
-    escucharAGameBoy();
+    //establecer conexion con broker como cliente
+    establecer_conexion_broker();
+    
+    //establecer puerto escucha con gameboy como servidor
+    escuchar_gameboy();
     
     liberar_recursos();
 
