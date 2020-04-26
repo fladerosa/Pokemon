@@ -173,75 +173,108 @@ void pthread_create_and_detach(void* function, void* args ){
 
 void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd){
 
-    new_pokemon newPokemonMessage;
-    appeared_pokemon appearedPokemonMessage;
-    catch_pokemon catchPokemonMessage;
-    caught_pokemon caughtPokemonMessage;
-    get_pokemon getPokemonMessage; 
-
-    newPokemonMessage.sizePokemon = -1; 
-    appearedPokemonMessage.sizePokemon = -1;
-    catchPokemonMessage.sizePokemon = -1;
-    caughtPokemonMessage.sizeCaught = -1;
-
+    void* stream = malloc(sizeofstruct);
+    recv(socketfd, stream, sizeofstruct, MSG_WAITALL);
+    
     switch(cod_op){
-        case 1: 
-            recv(socketfd, (void*) newPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            newPokemonMessage.pokemon = malloc(newPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) newPokemonMessage.pokemon, newPokemonMessage.sizePokemon, MSG_WAITALL);
-            recv(socketfd, (void*) newPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) newPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) newPokemonMessage.quantity, sizeof(uint32_t), MSG_WAITALL);
+        case NEW_POKEMON:;
+            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream);
             
             log_info(optional_logger, "New pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", newPokemonMessage.pokemon); 
-            log_info(optional_logger, "This is the position x: ", newPokemonMessage.posx);
-            log_info(optional_logger, "This is the position y: ", newPokemonMessage.posy);
-            log_info(optional_logger, "This is the quantity: ", newPokemonMessage.quantity);
+            log_info(optional_logger, "This is the pokemon: ", newPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the position x: ", newPokemonMessage->position.posx);
+            log_info(optional_logger, "This is the position y: ", newPokemonMessage->position.posy);
+            log_info(optional_logger, "This is the quantity: ", newPokemonMessage->quantity);
+            log_info(optional_logger, "This is the id message: ", newPokemonMessage->id_message);
             break;
-        case 2:
-            recv(socketfd, (void*) appearedPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            appearedPokemonMessage.pokemon = malloc(appearedPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) appearedPokemonMessage.pokemon, appearedPokemonMessage.sizePokemon, MSG_WAITALL);
-            recv(socketfd, (void*) appearedPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) appearedPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) appearedPokemonMessage.id_message, sizeof(uint32_t), MSG_WAITALL);
-            
+        case APPEARED_POKEMON:;
+            appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream);
+
             log_info(optional_logger, "Appeared pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage.pokemon); 
-            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage.posx);
-            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage.posy);
-            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage.id_message);
+            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage->position.posx);
+            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage->position.posy);
+            log_info(optional_logger, "This is the id correlational: ", appearedPokemonMessage->id_correlational);
+            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage->id_message);
             break;
-        case 3:
-            recv(socketfd, (void*) catchPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            catchPokemonMessage.pokemon = malloc(catchPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) catchPokemonMessage.pokemon, catchPokemonMessage.sizePokemon, MSG_WAITALL);
-            recv(socketfd, (void*) catchPokemonMessage.posx, sizeof(uint32_t), MSG_WAITALL);
-            recv(socketfd, (void*) catchPokemonMessage.posy, sizeof(uint32_t), MSG_WAITALL);
-            
+        case CATCH_POKEMON:;
+
+            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
+
             log_info(optional_logger, "Catch pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage.pokemon); 
-            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage.posx);
-            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage.posy);
+            log_info(optional_logger, "This is the pokemon: ", catchPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the position x: ", catchPokemonMessage->position.posx);
+            log_info(optional_logger, "This is the position y: ", catchPokemonMessage->position.posy);
+            log_info(optional_logger, "This is the id message: ", catchPokemonMessage->id_message);
             break;
-        case 4:
-            recv(socketfd, (void*) caughtPokemonMessage.sizeCaught, sizeof(uint32_t), MSG_WAITALL);
-            caughtPokemonMessage.caught = malloc(sizeof(caughtPokemonMessage.sizeCaught));
-            recv(socketfd, (void*) caughtPokemonMessage.caught, sizeof(caughtPokemonMessage.sizeCaught), MSG_WAITALL);
-            recv(socketfd, (void*) caughtPokemonMessage.id_message, sizeof(uint32_t), MSG_WAITALL);
-            
+        case CAUGHT_POKEMON:;
+
+            caught_pokemon* caughtPokemonMessage = stream_to_caught_pokemon(stream);
+
+            char* wasCaught; 
+
+            if(caughtPokemonMessage->success){
+                wasCaught = "OK";
+            }else{
+                wasCaught = "FAIL";
+            }
+
             log_info(optional_logger, "Caught pokemon!");
-            log_info(optional_logger, "Was the pokemon catch?: ", caughtPokemonMessage.caught); 
-            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage.id_message);
+            log_info(optional_logger, "Was the pokemon catch?: ", wasCaught); 
+            log_info(optional_logger, "This is the id correlational: ", caughtPokemonMessage->id_correlational);
+            log_info(optional_logger, "This is the id message: ", caughtPokemonMessage->id_message);
             break;
-        case 5:
-            recv(socketfd, (void*) getPokemonMessage.sizePokemon, sizeof(uint32_t), MSG_WAITALL);
-            getPokemonMessage.pokemon = malloc(getPokemonMessage.sizePokemon);
-            recv(socketfd, (void*) getPokemonMessage.pokemon, getPokemonMessage.sizePokemon, MSG_WAITALL);
-            
+        case GET_POKEMON:;
+
+            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream); 
+
             log_info(optional_logger, "Get pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", getPokemonMessage.pokemon); 
+            log_info(optional_logger, "This is the pokemon: ", getPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the id message: ", getPokemonMessage->id_message);
+            break;
+        case LOCALIZED_POKEMON:;
+
+            localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream);
+
+            log_info(optional_logger, "Localized pokemon!");
+            log_info(optional_logger, "This is the pokemon: ", localizedPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the size of the list of positions: ", (*localizedPokemonMessage->positions).elements_count);
+            log_info(optional_logger, "This is the id correlational: ", localizedPokemonMessage->id_correlational);
+            log_info(optional_logger, "This is the id message: ", localizedPokemonMessage->id_message);
+            break;
+        case SUSCRIPTOR:; 
+
+            subscribe* subscribeMessage = stream_to_subscribe(stream);
+
+            log_info(optional_logger, "Subscribe!");
+            log_info(optional_logger, "This is the queue: ", subscribeMessage->colaMensajes);            
+            break;
+        case NEW_CONNECTION:; 
+
+            new_connection* newConnectionMessage = stream_to_new_connection(stream);
+
+            log_info(optional_logger, "New connection!");
+            break;
+        case CONNECTION:;
+
+            connection* connectionMessage = stream_to_connection(stream);
+
+            log_info(optional_logger, "Connection!"); 
+            log_info(optional_logger, "This is the id connection: ", connectionMessage->id_connection);
+            break;
+        case RECONNECT:;
+
+            reconnect* reconnectMessage = stream_to_reconnect(stream);
+
+            log_info(optional_logger, "Reconnect!");
+            log_info(optional_logger, "This is the id connection: ",reconnectMessage->id_connection);
+            break; 
+        case ACK:;
+
+            ack* acknowledgementMessage = stream_to_ack(stream);
+
+            log_info(optional_logger, "Acknowledgement!");
+            log_info(optional_logger, "This is the id message: ", acknowledgementMessage->id_message);
             break;
         case -1:
             break;

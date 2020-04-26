@@ -20,9 +20,12 @@ typedef enum
 	GET_POKEMON = 5,
 	SUSCRIPTOR = 6,
 	LOCALIZED_POKEMON = 7,
-	ERROR = 8,
-	MENSAJE = 9
-	
+	NEW_CONNECTION = 8,
+	CONNECTION = 9,
+	RECONNECT = 10,
+	ACK = 11,
+	ERROR = 12,
+	MENSAJE = 13
 }op_code;
 
 typedef struct
