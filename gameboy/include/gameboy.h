@@ -14,6 +14,7 @@ const static struct{
     {CAUGHT_POKEMON, "CAUGHT_POKEMON"},
     {GET_POKEMON, "GET_POKEMON"},
     {SUSCRIPTOR, "SUSCRIPTOR"},
+    {LOCALIZED, "LOCALIZED"},
     {ERROR, "ERROR"}
 };
 

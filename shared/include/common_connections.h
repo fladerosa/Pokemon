@@ -21,7 +21,6 @@ typedef enum
 	SUSCRIPTOR = 6,
 	ERROR = 7,
 	MENSAJE = 8
-	
 }op_code;
 
 typedef struct
