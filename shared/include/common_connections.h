@@ -19,15 +19,10 @@ typedef enum
 	CAUGHT_POKEMON = 4,
 	GET_POKEMON = 5,
 	SUSCRIPTOR = 6,
-<<<<<<< HEAD
-	ERROR = 7,
-	MENSAJE = 8
-=======
 	LOCALIZED_POKEMON = 7,
 	ERROR = 8,
 	MENSAJE = 9
 	
->>>>>>> master
 }op_code;
 
 typedef struct
