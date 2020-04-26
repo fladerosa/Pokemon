@@ -24,6 +24,11 @@ t_config* config;
 pthread_t server;
 
 typedef struct{
+	uint32_t posx; 
+	uint32_t posy; 
+}t_position;
+
+typedef struct{
 	uint32_t sizePokemon;
 	char* pokemon;
 	t_position position; 
@@ -63,17 +68,50 @@ typedef struct{
 	char* pokemon; 
 	uint32_t id_message; 
 	uint32_t id_correlational; 
-	t_list positions; //al serializar se tiene que agregar la cantidad de posiciones
+	t_list* positions; //al serializar se tiene que agregar la cantidad de posiciones
 }localized_pokemon;
 
 typedef struct{
-	uint32_t posx; 
-	uint32_t posy; 
-}t_position;
+
+}new_connection;
 
 typedef struct{
-	uint32_t sizeColaMensajes;
-	char* colaMensajes;
-}subscriptor;
+	uint32_t id_connection;
+}reconnect;
 
+typedef struct{
+	uint32_t id_message;
+}ack;
+
+typedef struct{
+	uint32_t id_connection; 
+}connection;
+
+typedef struct{
+	uint32_t colaMensajes;
+}subscribe;
+
+
+new_pokemon* stream_to_new_pokemon(void* stream);
+void* new_pokemon_to_stream(new_pokemon* newPokemonMessage);
+appeared_pokemon* stream_to_appeared_pokemon(void* stream);
+void* appeared_pokemon_to_stream(appeared_pokemon* appearedPokemonMessage);
+catch_pokemon* stream_to_catch_pokemon(void* stream);
+void* catch_pokemon_to_stream(catch_pokemon* catchPokemonMessage);
+caught_pokemon* stream_to_caught_pokemon(void* stream);
+void* caught_pokemon_to_stream(caught_pokemon* caughtPokemonMessage);
+get_pokemon* stream_to_get_pokemon(void* stream);
+void* get_pokemon_to_stream(get_pokemon* getPokemonMessage);
+localized_pokemon* stream_to_localized_pokemon(void* stream);
+void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage);
+subscribe* stream_to_subscribe(void* stream);
+void* subscribe_to_stream(subscribe* subscribeMessage);
+new_connection* stream_to_new_connection(void* stream);
+void* new_connection_to_stream(new_connection* newConnectionMessage);
+reconnect* stream_to_reconnect(void* stream);
+void* reconnect_to_stream(reconnect* reconnectMessage);
+connection* stream_to_connection(void* stream);
+void* connection_to_stream(connection* connectionMessage);
+ack* stream_to_ack(void* stream);
+void* ack_to_stream(ack* acknowledgementMessage);
 #endif
