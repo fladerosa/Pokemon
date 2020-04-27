@@ -175,31 +175,31 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream);
             
             log_info(optional_logger, "New pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", newPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the position x: ", newPokemonMessage->position.posx);
-            log_info(optional_logger, "This is the position y: ", newPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the quantity: ", newPokemonMessage->quantity);
-            log_info(optional_logger, "This is the id message: ", newPokemonMessage->id_message);
+            log_info(optional_logger, "This is the pokemon: %s", newPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the position x: %d", newPokemonMessage->position.posx);
+            log_info(optional_logger, "This is the position y: %d", newPokemonMessage->position.posy);
+            log_info(optional_logger, "This is the quantity: %d", newPokemonMessage->quantity);
+            log_info(optional_logger, "This is the id message: %d", newPokemonMessage->id_message);
             break;
         case APPEARED_POKEMON:;
             appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream);
 
             log_info(optional_logger, "Appeared pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", appearedPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the position x: ", appearedPokemonMessage->position.posx);
-            log_info(optional_logger, "This is the position y: ", appearedPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the id correlational: ", appearedPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: ", appearedPokemonMessage->id_message);
+            log_info(optional_logger, "This is the pokemon: %s", appearedPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the position x: %d", appearedPokemonMessage->position.posx);
+            log_info(optional_logger, "This is the position y: %d", appearedPokemonMessage->position.posy);
+            log_info(optional_logger, "This is the id correlational: %d", appearedPokemonMessage->id_correlational);
+            log_info(optional_logger, "This is the id message: %d", appearedPokemonMessage->id_message);
             break;
         case CATCH_POKEMON:;
 
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
 
             log_info(optional_logger, "Catch pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", catchPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the position x: ", catchPokemonMessage->position.posx);
-            log_info(optional_logger, "This is the position y: ", catchPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the id message: ", catchPokemonMessage->id_message);
+            log_info(optional_logger, "This is the pokemon: %s", catchPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the position x: %d", catchPokemonMessage->position.posx);
+            log_info(optional_logger, "This is the position y: %d", catchPokemonMessage->position.posy);
+            log_info(optional_logger, "This is the id message: %d", catchPokemonMessage->id_message);
             break;
         case CAUGHT_POKEMON:;
 
@@ -214,34 +214,34 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             }
 
             log_info(optional_logger, "Caught pokemon!");
-            log_info(optional_logger, "Was the pokemon catch?: ", wasCaught); 
-            log_info(optional_logger, "This is the id correlational: ", caughtPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: ", caughtPokemonMessage->id_message);
+            log_info(optional_logger, "Was the pokemon catch?: %d", wasCaught); 
+            log_info(optional_logger, "This is the id correlational: %d", caughtPokemonMessage->id_correlational);
+            log_info(optional_logger, "This is the id message: %d", caughtPokemonMessage->id_message);
             break;
         case GET_POKEMON:;
 
             get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream); 
 
             log_info(optional_logger, "Get pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", getPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the id message: ", getPokemonMessage->id_message);
+            log_info(optional_logger, "This is the pokemon: %s", getPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the id message: %d", getPokemonMessage->id_message);
             break;
         case LOCALIZED_POKEMON:;
 
             localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream);
 
             log_info(optional_logger, "Localized pokemon!");
-            log_info(optional_logger, "This is the pokemon: ", localizedPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the size of the list of positions: ", (*localizedPokemonMessage->positions).elements_count);
-            log_info(optional_logger, "This is the id correlational: ", localizedPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: ", localizedPokemonMessage->id_message);
+            log_info(optional_logger, "This is the pokemon: %s", localizedPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the size of the list of positions: %d", (*localizedPokemonMessage->positions).elements_count);
+            log_info(optional_logger, "This is the id correlational: %d", localizedPokemonMessage->id_correlational);
+            log_info(optional_logger, "This is the id message: %d", localizedPokemonMessage->id_message);
             break;
         case SUSCRIPTOR:; 
 
             subscribe* subscribeMessage = stream_to_subscribe(stream);
 
             log_info(optional_logger, "Subscribe!");
-            log_info(optional_logger, "This is the queue: ", subscribeMessage->colaMensajes);            
+            log_info(optional_logger, "This is the queue: %d", subscribeMessage->colaMensajes);            
             break;
         case NEW_CONNECTION:; 
 
@@ -254,21 +254,21 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             connection* connectionMessage = stream_to_connection(stream);
 
             log_info(optional_logger, "Connection!"); 
-            log_info(optional_logger, "This is the id connection: ", connectionMessage->id_connection);
+            log_info(optional_logger, "This is the id connection: %d", connectionMessage->id_connection);
             break;
         case RECONNECT:;
 
             reconnect* reconnectMessage = stream_to_reconnect(stream);
 
             log_info(optional_logger, "Reconnect!");
-            log_info(optional_logger, "This is the id connection: ",reconnectMessage->id_connection);
+            log_info(optional_logger, "This is the id connection: %d",reconnectMessage->id_connection);
             break; 
         case ACK:;
 
             ack* acknowledgementMessage = stream_to_ack(stream);
 
             log_info(optional_logger, "Acknowledgement!");
-            log_info(optional_logger, "This is the id message: ", acknowledgementMessage->id_message);
+            log_info(optional_logger, "This is the id message: %d", acknowledgementMessage->id_message);
             break;
         case -1:;
             break;
