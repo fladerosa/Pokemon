@@ -7,8 +7,8 @@
 
 typedef struct position_coach{
     uint32_t id_entrenador;
-    uint32_t posix;
-    uint32_t posiy;
+    char* posix;
+    char* posiy;
 }position_coach;
 
 typedef struct pokemon_coach{
@@ -42,8 +42,8 @@ configuration values;
 uint32_t socket_team;
 uint32_t socketServer;
 on_request request;
-t_log* obligatory_logger, *optional_logger;
-t_config* config;
+//t_log* obligatory_logger, *optional_logger;
+//t_config* config;
 
 void read_config();
 

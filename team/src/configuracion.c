@@ -36,7 +36,7 @@ void load_positions_config_team()
 }
 void add_position_to_list(char *position) {
     if (position != NULL) {
-      list_add(values.posicion_entrenador, _POSIX_CLOCK_SELECTION);
+      list_add(values.posicion_entrenador, position);
     }
   }
 void print_position(char *value) {
@@ -99,19 +99,19 @@ void print_objective(char *value) {
   }
 
 void destroy_position(position_coach* position){
-		free(position->id_entrenador);
+		
         free(position->posix);
         free(position->posiy);
 		free(position);
 	}
 
 void destroy_pokemon(pokemon_coach* pokemon){
-		free(pokemon->id_entrenador);
+	
         free(pokemon->pokemon);
 		free(pokemon);
 	}
 void destroy_objective(objective_coach* objective){
-		free(objective->id_entrenador);
+	
         free(objective->pokemon);
 		free(objective);
 	}
