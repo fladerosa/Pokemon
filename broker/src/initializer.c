@@ -16,6 +16,7 @@ void initialize(){
     );
     log_info(optional_logger, "Initializing Application...");
     fill_config_values();
+    set_sig_handler();
     p_on_request = &process_request;
     log_info(optional_logger, "Configuration and loggers loaded successfully.");
 }
@@ -40,10 +41,34 @@ void fill_config_values(){
     cfg_values.ip_broker = config_get_string_value(config, "IP_BROKER");
     cfg_values.puerto_broker = config_get_string_value(config, "PUERTO_BROKER");
     cfg_values.frecuencia_compactacion = config_get_int_value(config, "FRECUENCIA_COMPACTACION");
+    cfg_values.dump_file = config_get_string_value(config, "DUMP_FILE");
     log_info(optional_logger, 
-        "Configuration values: \n\n\tTAMANO_MEMORIA=%d\n\tTAMANO_MINIMO_PARTICION=%d\n\tALGORITMO_MEMORIA=%s\n\tALGORITMO_REEMPLAZO=%s\n\tALGORITMO_PARTICION_LIBRE=%s\n\tIP_BROKER=%s\n\tPUERTO_BROKER=%s\n\tFRECUENCIA_COMPACTACION=%d\n",
+        "Configuration values: \n\n\tTAMANO_MEMORIA=%d\n\tTAMANO_MINIMO_PARTICION=%d\n\tALGORITMO_MEMORIA=%s\n\tALGORITMO_REEMPLAZO=%s\n\tALGORITMO_PARTICION_LIBRE=%s\n\tIP_BROKER=%s\n\tPUERTO_BROKER=%s\n\tFRECUENCIA_COMPACTACION=%d\n\tDUMP_FILE=%s\n\n",
         cfg_values.tamano_memoria, cfg_values.tamano_minimo_particion, cfg_values.algoritmo_memoria,
         cfg_values.algoritmo_reemplazo, cfg_values.algoritmo_particion_libre, cfg_values.ip_broker,
-        cfg_values.puerto_broker, cfg_values.frecuencia_compactacion
+        cfg_values.puerto_broker, cfg_values.frecuencia_compactacion, cfg_values.dump_file
     );
+}
+
+void mask_sig(void)
+{
+	sigset_t mask;
+	sigemptyset(&mask); 
+    sigaddset(&mask, SIGUSR1);         
+    pthread_sigmask(SIG_BLOCK, &mask, NULL);
+}
+
+void set_sig_handler(void)
+{
+    struct sigaction* action = malloc(sizeof(sigaction));
+
+
+    (*action).sa_flags = SA_SIGINFO; 
+    (*action).sa_sigaction = dump;
+
+    if (sigaction(SIGUSR1, action, NULL) == -1) { 
+        perror("sigusr: sigaction");
+        _exit(1);
+    }
+
 }

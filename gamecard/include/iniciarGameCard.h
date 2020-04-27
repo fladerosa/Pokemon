@@ -3,4 +3,8 @@
 
 #include "common_utils.h"
 
+typedef struct{
+    int x,y;
+}coordenadaPokemon;
+
 #endif

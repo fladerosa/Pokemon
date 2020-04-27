@@ -2,6 +2,7 @@
 #define GAMEBOY_H
 
 #include "common_utils.h"
+#include <time.h>
 
 const static struct{
     op_code operation;
@@ -12,6 +13,8 @@ const static struct{
     {CATCH_POKEMON, "CATCH_POKEMON"},
     {CAUGHT_POKEMON, "CAUGHT_POKEMON"},
     {GET_POKEMON, "GET_POKEMON"},
+    {SUSCRIPTOR, "SUSCRIPTOR"},
+    {LOCALIZED_POKEMON, "LOCALIZED_POKEMON"},
     {ERROR, "ERROR"}
 };
 
