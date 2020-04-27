@@ -3,6 +3,6 @@ FILE=gameboy
 echo "Compiling & Executing Normally:"
 make $FILE
 if test -f "./$FILE"; then
-    ./$FILE BROKER NEW_POKEMON 3 5 4
+    ./$FILE BROKER NEW_POKEMON Pikachu 3 5 4
 fi
 echo "Finished executing normally."

@@ -19,59 +19,55 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
     //Filtro por codigo de operacion segun el enum y creo el mensaje al servidor
 
     switch(operation_code){
-        case NEW_POKEMON:
+        case NEW_POKEMON:;
+             new_pokemon* newPokemonMessage = malloc(sizeof(new_pokemon)); 
+             newPokemonMessage->pokemon = message[3];
+             newPokemonMessage->sizePokemon = strlen(newPokemonMessage->pokemon) + 1;
+             newPokemonMessage->position.posx = atoi(message[4]);
+             newPokemonMessage->position.posy = atoi(message[5]);
+             newPokemonMessage->quantity = atoi(message[6]);
+             newPokemonMessage->id_message = -1; 
              paquete->codigo_operacion = NEW_POKEMON;
-             paquete->buffer->size = sizeof(new_pokemon);
-             new_pokemon newPokemonMessage; 
-             newPokemonMessage.pokemon = message[3];
-             newPokemonMessage.sizePokemon = strlen(newPokemonMessage.pokemon) + 1;
-             newPokemonMessage.position.posx = atoi(message[4]);
-             newPokemonMessage.position.posy = atoi(message[5]);
-             newPokemonMessage.quantity = atoi(message[6]);
-             newPokemonMessage.id_message = -1; 
-             paquete->buffer->stream = malloc(paquete->buffer->size);
-	         memcpy(paquete->buffer->stream, &newPokemonMessage, paquete->buffer->size);
+             paquete->buffer->size = sizeof(uint32_t) * 5 + strlen(newPokemonMessage->pokemon) + 1;
+             paquete->buffer->stream = new_pokemon_to_stream(newPokemonMessage);
              break;
-        case APPEARED_POKEMON: 
+        case APPEARED_POKEMON:; 
+            appeared_pokemon* appearedPokemonMessage = malloc(sizeof(appeared_pokemon));
+            appearedPokemonMessage->pokemon = message[3];
+            appearedPokemonMessage->sizePokemon = strlen(appearedPokemonMessage->pokemon) + 1;
+            appearedPokemonMessage->position.posx = atoi(message[4]);
+            appearedPokemonMessage->position.posy = atoi(message[5]);
+            appearedPokemonMessage->id_correlational = atoi(message[6]);
+            appearedPokemonMessage->id_message = -1;
             paquete->codigo_operacion = APPEARED_POKEMON;
-            paquete->buffer->size = sizeof(appeared_pokemon);
-            appeared_pokemon appearedPokemonMessage; 
-            appearedPokemonMessage.pokemon = message[3];
-            appearedPokemonMessage.sizePokemon = strlen(appearedPokemonMessage.pokemon) + 1;
-            appearedPokemonMessage.position.posx = atoi(message[4]);
-            appearedPokemonMessage.position.posy = atoi(message[5]);
-            appearedPokemonMessage.id_correlational = atoi(message[6]);
-            appearedPokemonMessage.id_message = -1;
-            paquete->buffer->stream = malloc(paquete->buffer->size);
-	        memcpy(paquete->buffer->stream, &appearedPokemonMessage, paquete->buffer->size);
+            paquete->buffer->size =  sizeof(uint32_t ) * 5 + strlen(appearedPokemonMessage->pokemon) + 1;
+            paquete->buffer->stream = appeared_pokemon_to_stream(appearedPokemonMessage);
             break;
-        case CATCH_POKEMON: 
+        case CATCH_POKEMON:;
+            catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon)); 
+            catchPokemonMessage->pokemon = message[3];
+            catchPokemonMessage->sizePokemon = strlen(catchPokemonMessage->pokemon) + 1;
+            catchPokemonMessage->position.posx = atoi(message[4]);
+            catchPokemonMessage->position.posy = atoi(message[5]);
+            catchPokemonMessage->id_message = -1; 
             paquete->codigo_operacion = CATCH_POKEMON;
-            paquete->buffer->size = sizeof(catch_pokemon);
-            catch_pokemon catchPokemonMessage; 
-            catchPokemonMessage.pokemon = message[3];
-            catchPokemonMessage.sizePokemon = strlen(catchPokemonMessage.pokemon) + 1;
-            catchPokemonMessage.position.posx = atoi(message[4]);
-            catchPokemonMessage.position.posy = atoi(message[5]);
-            catchPokemonMessage.id_message = -1; 
-            paquete->buffer->stream = malloc(paquete->buffer->size);
-	        memcpy(paquete->buffer->stream, &catchPokemonMessage, paquete->buffer->size);
+            paquete->buffer->size = sizeof(uint32_t ) * 4 + strlen(catchPokemonMessage->pokemon) + 1;
+            paquete->buffer->stream = catch_pokemon_to_stream(catchPokemonMessage);
             break;
-        case CAUGHT_POKEMON: 
-            paquete->codigo_operacion = CAUGHT_POKEMON;
-            paquete->buffer->size = sizeof(caught_pokemon);
-            caught_pokemon caughtPokemonMessage; 
-            caughtPokemonMessage.id_correlational = atoi(message[3]);
+        case CAUGHT_POKEMON:; 
+            caught_pokemon* caughtPokemonMessage = malloc(sizeof(caught_pokemon)); 
+            caughtPokemonMessage->id_correlational = atoi(message[3]);
             if(strcmp(message[4],"OK") == 0){
-                caughtPokemonMessage.success = 1;
+                caughtPokemonMessage->success = 1;
             }else{
-                caughtPokemonMessage.success = 0;
+                caughtPokemonMessage->success = 0;
             }
-            caughtPokemonMessage.id_message = -1;
-            paquete->buffer->stream = malloc(paquete->buffer->size);
-	        memcpy(paquete->buffer->stream, &caughtPokemonMessage, paquete->buffer->size);
+            caughtPokemonMessage->id_message = -1;
+            paquete->codigo_operacion = CAUGHT_POKEMON;
+            paquete->buffer->size = sizeof(uint32_t) * 3;
+            paquete->buffer->stream = caught_pokemon_to_stream(caughtPokemonMessage);
             break;
-        case GET_POKEMON: 
+        case GET_POKEMON:;
             paquete->codigo_operacion = GET_POKEMON;
             paquete->buffer->size = sizeof(get_pokemon);
             get_pokemon getPokemonMessage; 
@@ -81,17 +77,19 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
             paquete->buffer->stream = malloc(paquete->buffer->size);
 	        memcpy(paquete->buffer->stream, &getPokemonMessage, paquete->buffer->size);
             break;
-        case SUSCRIPTOR:
+        case SUSCRIPTOR:;
             paquete->codigo_operacion = SUSCRIPTOR; 
-            paquete->buffer->size = sizeof(subscriptor);
-            subscriptor suscriptor;
-            suscriptor.colaMensajes = stringToEnum(message[2]);
+            paquete->buffer->size = sizeof(subscribe);
+            subscribe subscriber;
+            subscriber.colaMensajes = stringToEnum(message[2]);
             paquete->buffer->stream = malloc(paquete->buffer->size);
-            memcpy(paquete->buffer->stream, &suscriptor, paquete->buffer->size);
+            memcpy(paquete->buffer->stream, &subscriber, paquete->buffer->size);
             break; 
-        case ERROR:
+        case ERROR:;
             paquete->codigo_operacion = ERROR;
             break;
+        default:;
+            log_info(optional_logger, "Incorrect format");
     }
 
 	int bytes = paquete->buffer->size + 2*sizeof(int);

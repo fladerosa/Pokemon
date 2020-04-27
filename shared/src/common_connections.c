@@ -88,11 +88,11 @@ void* serializar_paquete(t_paquete* paquete, uint32_t bytes){
 	return magic;
 }
 
-void devolver_mensaje(void* payload, uint32_t size, uint32_t socket_cliente){
+void devolver_mensaje(void* payload, uint32_t socket_cliente){
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	paquete->codigo_operacion = MENSAJE;
 	paquete->buffer = malloc(sizeof(t_buffer));
-	paquete->buffer->size = size;
+	paquete->buffer->size = sizeof(payload);
 	paquete->buffer->stream = malloc(paquete->buffer->size);
 	memcpy(paquete->buffer->stream, payload, paquete->buffer->size);
 
@@ -151,17 +151,11 @@ void enviar_mensaje(char* mensaje, uint32_t socketfd){
 }
 
 
-char* recibir_mensaje(uint32_t socketfd, uint32_t buffer_size){
-	void* stream = malloc(buffer_size);
-	recv(socketfd, stream, buffer_size, 0);
-	return (char*) stream;
-}
-
-void process_message(uint32_t client_fd, uint32_t size){
+void process_message(uint32_t client_fd, void* stream){
 	void* msg;
-	msg = recibir_mensaje(client_fd, size);
+	msg = (char*) stream;
 	log_info(optional_logger, "The message received is: %s", (char*)msg);
-	devolver_mensaje(msg, size, client_fd);
+	devolver_mensaje(msg, client_fd);
 	free(msg);
 }
 
@@ -252,7 +246,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case NEW_CONNECTION:; 
 
             new_connection* newConnectionMessage = stream_to_new_connection(stream);
-
+            free(newConnectionMessage);
             log_info(optional_logger, "New connection!");
             break;
         case CONNECTION:;
@@ -276,7 +270,9 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             log_info(optional_logger, "Acknowledgement!");
             log_info(optional_logger, "This is the id message: ", acknowledgementMessage->id_message);
             break;
-        case -1:
+        case -1:;
             break;
+        default:;
+            log_info(optional_logger, "Cannot understand op_code received.");
     }
 }
