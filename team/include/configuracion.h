@@ -5,22 +5,24 @@
 #include<commons/string.h>
 #include "common_utils.h"
 
-typedef struct posicion_entrenador{
+typedef struct position_coach{
+    uint32_t id_entrenador;
     uint32_t posix;
     uint32_t posiy;
-}posicion_entrenador;
+}position_coach;
 
-typedef struct pokemon_entrenador{
+typedef struct pokemon_coach{
     uint32_t id_entrenador;
     char * pokemon;   
-}pokemon_entrenador;
+}pokemon_coach;
 
-typedef struct objetivo_entrenador{
+typedef struct objective_coach{
     uint32_t id_entrenador;
     char* pokemon;   
-}objetivo_entrenador;
+}objective_coach;
 
-typedef struct configuracion{
+typedef struct configuration{
+       uint32_t nro_team;
        char *ip_team;
        char *puerto_team;
        t_list *posicion_entrenador;
@@ -34,32 +36,42 @@ typedef struct configuracion{
        char *ip_broker;
        char *puerto_broker;       
 
-}configuracion;
+}configuration;
 
-configuracion valores;
+configuration values;
 uint32_t socket_team;
-on_request respuesta;
+uint32_t socketServer;
+on_request request;
+t_log* obligatory_logger, *optional_logger;
+t_config* config;
 
-void leer_config();
-void crear_logger_obligatorio();
-void crear_logger_opcional();
-void cargar_posiciones_config_team();
-void agregar_posicion_a_la_lista(char *);
-void imprimir_posicion(char *);
-void mostrar(void*);
-void cargar_pokemones_config_team();
-void agregar_pokemon_a_la_lista(char *);
-void imprimir_pokemon(char *);
-void cargar_objetivos_config_team();
-void agregar_objetivo_a_la_lista(char *);
-void imprimir_objetivo(char *);
-void cargar_valores_config(t_config*);
-void inicializar();
-void liberar_recursos();   
+void read_config();
 
-void escuchar_gameboy();
-void cerrar_servidor();
-void establecer_conexion_broker();
+void create_obligatory_logger();
+void create_optional_logger();
+
+void load_positions_config_team();
+void add_position_to_list(char *);
+void print_position(char *);
+void show(void*);
+void load_pokemons_config_team();
+void add_pokemon_to_list(char *);
+void print_pokemon(char *);
+void load_objectives_config_team();
+void add_objective_to_list(char *);
+void print_objective(char *);
+void load_values_config(t_config*);
+void destroy_position(position_coach*);
+void destroy_pokemon(pokemon_coach*);
+void destroy_objective(objective_coach*);
+void destroy_lists_and_loaded_elements();
+
+void initialize_team();
+void release_resources();   
+
+void listen_to_gameboy();
+void establish_broker_connection();
+
 enum t_algoritmo {fifo, rr, sjf_sd, sjf_cd};
 
 
