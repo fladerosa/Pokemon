@@ -114,4 +114,18 @@ connection* stream_to_connection(void* stream);
 void* connection_to_stream(connection* connectionMessage);
 ack* stream_to_ack(void* stream);
 void* ack_to_stream(ack* acknowledgementMessage);
+new_pokemon* init_new_pokemon(char* nombre, uint32_t posx, uint32_t posy, uint32_t quantity, uint32_t id_message);
+appeared_pokemon* init_appeared_pokemon(char* nombre, uint32_t posx, uint32_t posy, uint32_t id_message, uint32_t id_correlational);
+catch_pokemon* init_catch_pokemon(char* nombre, uint32_t posx, uint32_t posy, uint32_t id_message);
+caught_pokemon* init_caught_pokemon(uint32_t id_message, uint32_t id_correlational, bool success);
+get_pokemon* init_get_pokemon(char* nombre, uint32_t id_message);
+localized_pokemon* init_localized_pokemon(char* nombre, uint32_t id_message, uint32_t id_correlational, t_list* positions);
+new_connection* init_new_connection();
+reconnect* init_reconnect(uint32_t id_connection);
+connection* init_connection(uint32_t id_connection);
+ack* init_ack(uint32_t id_message);
+subscribe* init_subscribe(uint32_t id_queue);
+
+
+
 #endif
