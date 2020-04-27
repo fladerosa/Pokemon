@@ -4,6 +4,9 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
 {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 
+    //A quien se lo mando
+    char* receiver = message[1];
+
     //El nombre de la funcion esta en el parametro 2 del argv que le paso como parametro
     char* message_function = message[2]; 
 
@@ -26,7 +29,13 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
              newPokemonMessage->position.posx = atoi(message[4]);
              newPokemonMessage->position.posy = atoi(message[5]);
              newPokemonMessage->quantity = atoi(message[6]);
-             newPokemonMessage->id_message = -1; 
+
+             if(strcmp(receiver, "GAMECARD") == 0){
+                newPokemonMessage->id_message = atoi(message[7]); 
+             }else{
+                newPokemonMessage->id_message = -1; 
+             }
+        
              paquete->codigo_operacion = NEW_POKEMON;
              paquete->buffer->size = sizeof(uint32_t) * 5 + strlen(newPokemonMessage->pokemon) + 1;
              paquete->buffer->stream = new_pokemon_to_stream(newPokemonMessage);
@@ -37,7 +46,11 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
             appearedPokemonMessage->sizePokemon = strlen(appearedPokemonMessage->pokemon) + 1;
             appearedPokemonMessage->position.posx = atoi(message[4]);
             appearedPokemonMessage->position.posy = atoi(message[5]);
-            appearedPokemonMessage->id_correlational = atoi(message[6]);
+            if(strcmp(receiver, "BROKER") == 0){
+                appearedPokemonMessage->id_correlational = atoi(message[6]);
+            }else{
+                appearedPokemonMessage->id_correlational = -1;
+            }
             appearedPokemonMessage->id_message = -1;
             paquete->codigo_operacion = APPEARED_POKEMON;
             paquete->buffer->size =  sizeof(uint32_t ) * 5 + strlen(appearedPokemonMessage->pokemon) + 1;
@@ -49,7 +62,11 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger)
             catchPokemonMessage->sizePokemon = strlen(catchPokemonMessage->pokemon) + 1;
             catchPokemonMessage->position.posx = atoi(message[4]);
             catchPokemonMessage->position.posy = atoi(message[5]);
-            catchPokemonMessage->id_message = -1; 
+            if(strcmp(receiver, "GAMECARD") == 0){
+                catchPokemonMessage->id_message = atoi(message[6]); 
+            }else{
+                catchPokemonMessage->id_message = -1; 
+            }
             paquete->codigo_operacion = CATCH_POKEMON;
             paquete->buffer->size = sizeof(uint32_t ) * 4 + strlen(catchPokemonMessage->pokemon) + 1;
             paquete->buffer->stream = catch_pokemon_to_stream(catchPokemonMessage);
