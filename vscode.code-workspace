@@ -18,7 +18,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"dump.h": "c"
+			"dump.h": "c",
+			"common_tests.h": "c"
 		}
 	},
 	"launch": {

@@ -6,7 +6,7 @@
 #include "initializer.h"
 #include "finalizer.h"
 #include "handler.h"
+#include "common_tests.h"
 #include "tests.h"
-
 
 #endif
