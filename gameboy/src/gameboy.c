@@ -17,7 +17,7 @@ void countTime(void* timePassed){
 int main(int argc, char ** argv){
 
     if(strcmp(argv[1],"-test")==0){
-        //run_tests();
+        run_tests_gameboy();
     }else{
     //Inicializando la config
     config = config_create("./cfg/gameboy.config");
