@@ -36,60 +36,57 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
              break;
         case APPEARED_POKEMON:; 
             appeared_pokemon* appearedPokemonMessage = malloc(sizeof(appeared_pokemon));
-            appearedPokemonMessage->pokemon = message[3];
-            appearedPokemonMessage->sizePokemon = strlen(appearedPokemonMessage->pokemon) + 1;
-            appearedPokemonMessage->position.posx = atoi(message[4]);
-            appearedPokemonMessage->position.posy = atoi(message[5]);
+
             if(strcmp(receiver, "BROKER") == 0){
-                appearedPokemonMessage->id_correlational = atoi(message[6]);
+                appearedPokemonMessage = init_appeared_pokemon(message[3], atoi(message[4]), atoi(message[5]), -1, atoi(message[6]));
             }else{
-                appearedPokemonMessage->id_correlational = -1;
+                appearedPokemonMessage = init_appeared_pokemon(message[3], atoi(message[4]), atoi(message[5]), -1, -1);
             }
-            appearedPokemonMessage->id_message = -1;
+
             paquete->codigo_operacion = APPEARED_POKEMON;
             paquete->buffer->size =  sizeof(uint32_t ) * 5 + strlen(appearedPokemonMessage->pokemon) + 1;
             paquete->buffer->stream = appeared_pokemon_to_stream(appearedPokemonMessage);
             break;
         case CATCH_POKEMON:;
             catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon)); 
-            catchPokemonMessage->pokemon = message[3];
-            catchPokemonMessage->sizePokemon = strlen(catchPokemonMessage->pokemon) + 1;
-            catchPokemonMessage->position.posx = atoi(message[4]);
-            catchPokemonMessage->position.posy = atoi(message[5]);
+
             if(strcmp(receiver, "GAMECARD") == 0){
-                catchPokemonMessage->id_message = atoi(message[6]); 
+                catchPokemonMessage = init_catch_pokemon(message[3], atoi(message[4]), atoi(message[5]), atoi(message[6]));
             }else{
-                catchPokemonMessage->id_message = -1; 
+                catchPokemonMessage = init_catch_pokemon(message[3], atoi(message[4]), atoi(message[5]), -1); 
             }
+
             paquete->codigo_operacion = CATCH_POKEMON;
             paquete->buffer->size = sizeof(uint32_t ) * 4 + strlen(catchPokemonMessage->pokemon) + 1;
             paquete->buffer->stream = catch_pokemon_to_stream(catchPokemonMessage);
             break;
         case CAUGHT_POKEMON:; 
             caught_pokemon* caughtPokemonMessage = malloc(sizeof(caught_pokemon)); 
-            caughtPokemonMessage->id_correlational = atoi(message[3]);
+
             if(strcmp(message[4],"OK") == 0){
-                caughtPokemonMessage->success = 1;
+                caughtPokemonMessage = init_caught_pokemon(-1, atoi(message[3]), 1);
             }else{
-                caughtPokemonMessage->success = 0;
+                caughtPokemonMessage = init_caught_pokemon(-1, atoi(message[3]), 0);
             }
-            caughtPokemonMessage->id_message = -1;
+
             paquete->codigo_operacion = CAUGHT_POKEMON;
             paquete->buffer->size = sizeof(uint32_t) * 3;
             paquete->buffer->stream = caught_pokemon_to_stream(caughtPokemonMessage);
             break;
         case GET_POKEMON:;
             get_pokemon* getPokemonMessage = malloc(sizeof(get_pokemon)); 
-            getPokemonMessage->pokemon = message[3];
-            getPokemonMessage->sizePokemon = strlen(getPokemonMessage->pokemon) + 1;
-            getPokemonMessage->id_message = -1; 
+
+            getPokemonMessage = init_get_pokemon(message[3], -1);
+
             paquete->codigo_operacion = GET_POKEMON;
             paquete->buffer->size = sizeof(uint32_t ) * 2 + strlen(getPokemonMessage->pokemon) + 1;
             paquete->buffer->stream = get_pokemon_to_stream(getPokemonMessage);
             break;
         case SUSCRIPTOR:;
-            subscribe *subscriber = malloc(sizeof(subscribe));
-            subscriber->colaMensajes = stringToEnum(message[2]);
+            subscribe* subscriber = malloc(sizeof(subscribe));
+
+            subscriber = init_subscribe(stringToEnum(message[2]));
+
             paquete->codigo_operacion = SUSCRIPTOR; 
             paquete->buffer->size = sizeof(uint32_t);
             paquete->buffer->stream = subscribe_to_stream(subscriber);
