@@ -39,11 +39,10 @@ typedef struct configuration{
 }configuration;
 
 configuration values;
+op_code code;
 uint32_t socket_team;
 uint32_t socketServer;
 on_request request;
-//t_log* obligatory_logger, *optional_logger;
-//t_config* config;
 
 void read_config();
 
@@ -70,7 +69,14 @@ void initialize_team();
 void release_resources();   
 
 void listen_to_gameboy();
-void establish_broker_connection();
+void establish_broker_connection();void send_subscription_queue_message_appeared_pokemon(char*, uint32_t, t_log*);
+
+void send_subscription_queue_message_appeared_pokemon(char*, uint32_t, t_log*);
+void send_subscription_queue_message_catch_pokemon(char*, uint32_t, t_log*);
+void send_subscription_queue_message_caught_pokemon(char*, uint32_t, t_log*);
+void send_subscription_queue_message_get_pokemon(char*, uint32_t, t_log*);
+void send_subscription_queue_message_localized_pokemon(char*, uint32_t, t_log*);
+
 
 enum t_algoritmo {fifo, rr, sjf_sd, sjf_cd};
 
