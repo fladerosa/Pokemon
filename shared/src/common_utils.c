@@ -434,6 +434,62 @@ subscribe* init_subscribe(uint32_t id_queue){
     return subs;
 }
 
+void free_new_pokemon(new_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_appeared_pokemon(appeared_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_catch_pokemon(catch_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_caught_pokemon(caught_pokemon* pokemon){
+    free(pokemon);
+}
+
+void free_get_pokemon(get_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_localized_pokemon(localized_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    if(pokemon->positions) list_destroy_and_destroy_elements(pokemon->positions, free);
+    free(pokemon);
+}
+
+void free_subscribe(subscribe* subscriber){
+    free(subscriber);
+}
+
+void free_new_connection(new_connection* conn){
+    free(conn);
+}
+
+void free_reconnect(reconnect* reconn){
+    free(reconn);
+}
+
+void free_connection(connection* conn){
+    free(conn);
+}
+
+void free_ack(ack* acknowledgement){
+    free(acknowledgement);
+}
+
+
+
+
+
+
+
 
 
 

@@ -26,7 +26,7 @@ void start_server(char* ip, char* port, on_request request_receiver){
         break;
     }
 	listen(socket_servidor, SOMAXCONN);
-    log_info(optional_logger, "Started listening on %s:%s", ip, port);
+    log_info(optional_logger, "Starting new listening thread on %s:%s", ip, port);
 
     freeaddrinfo(servinfo);
 	t_process_request* server_processor = malloc(sizeof(t_process_request));
@@ -66,13 +66,16 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
 void serve_client(t_process_request* processor){
     uint32_t socket = (*processor).socket;
     uint32_t size = -1;
-    on_request request_receiver = (*processor).request_receiver;
 	uint32_t cod_op=-1;
-	recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL);
-	log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
-    recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL);
-	log_info(optional_logger, "Size of stream: %d", size);
-    request_receiver(cod_op, size, socket);
+    on_request request_receiver = (*processor).request_receiver;
+	while(1){
+        if (recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)==-1) break;
+        log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
+        if (recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL)==-1) break;
+        log_info(optional_logger, "Size of stream: %d", size);
+        request_receiver(cod_op, size, socket);
+    }
+    log_info(optional_logger, "Socket %d has disconnected", socket);
 }
 
 void* serializar_paquete(t_paquete* paquete, uint32_t bytes){
