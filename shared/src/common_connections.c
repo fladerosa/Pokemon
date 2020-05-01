@@ -25,8 +25,7 @@ void start_server(char* ip, char* port, on_request request_receiver){
         }
         break;
     }
-	listen(socket_servidor, SOMAXCONN);
-    log_info(optional_logger, "Started listening on %s:%s", ip, port);
+    log_info(optional_logger, "Starting new listening thread on %s:%s", ip, port);
 
     freeaddrinfo(servinfo);
 	t_process_request* server_processor = malloc(sizeof(t_process_request));
@@ -36,7 +35,9 @@ void start_server(char* ip, char* port, on_request request_receiver){
 }
 
 void run_server(void * server_processor){
+    mask_sig();
 	uint32_t socket = (*(t_process_request*)server_processor).socket;
+	listen(socket, SOMAXCONN);
 	on_request request_receiver = (*(t_process_request*)server_processor).request_receiver;
 	while(true){
 		receive_new_connections(socket,request_receiver);
@@ -52,7 +53,7 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
     if (connfd < 0) { 
         log_info(optional_logger, "Server accept failed..."); 
     } else {
-        log_info(optional_logger, "Server accepted a new client...");
+        log_info(optional_logger, "Server accepted a new client on socket: %d", connfd);
         t_process_request processor;
         processor.socket = connfd;
         processor.request_receiver = request_receiver;
@@ -63,15 +64,18 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
 }
 
 void serve_client(t_process_request* processor){
-    uint32_t socket = (*processor).socket;
-    uint32_t size = -1;
+    mask_sig();
+    uint32_t socket = processor->socket, size = -1, cod_op=-1;
     on_request request_receiver = (*processor).request_receiver;
-	uint32_t cod_op=-1;
-	recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL);
-	log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
-    recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL);
-	log_info(optional_logger, "Size of stream: %d", size);
-    request_receiver(cod_op, size, socket);
+	while(1){
+        if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;
+        log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
+        if(recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL)<=0) break;
+        log_info(optional_logger, "Size of stream: %d", size);
+        request_receiver(cod_op, size, socket);
+    }
+    log_info(optional_logger, "Socket %d has disconnected", socket);
+    close(socket);
 }
 
 void* serializar_paquete(t_paquete* paquete, uint32_t bytes){
@@ -275,4 +279,29 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         default:;
             log_info(optional_logger, "Cannot understand op_code received.");
     }
+}
+
+void mask_sig(void)
+{
+	sigset_t mask;
+	sigemptyset(&mask); 
+    sigaddset(&mask, SIGUSR1);         
+    pthread_sigmask(SIG_BLOCK, &mask, NULL);
+}
+
+void* suscribirseA(op_code codigoOp,uint32_t socket_broker){
+    subscribe* suscripcion = init_subscribe(codigoOp);
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = malloc(sizeof(t_buffer));
+    paquete->codigo_operacion = SUSCRIPTOR;
+    paquete->buffer->size = sizeof(uint32_t);
+    paquete->buffer->stream = subscribe_to_stream(suscripcion);
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
+    void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+	send(socket_broker, a_enviar, bytes, 0);
+    free(a_enviar);
+	free(paquete->buffer->stream);
+	free(paquete->buffer);
+	free(paquete);
+    return NULL;
 }
