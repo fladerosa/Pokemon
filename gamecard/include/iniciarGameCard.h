@@ -3,8 +3,8 @@
 
 #include "common_utils.h"
 
-typedef struct{
-    int x,y;
-}coordenadaPokemon;
-
+uint32_t socket_broker;
+void iniciarGameCard();
+void suscribirseATodo();
+void finalizarGameCard();
 #endif

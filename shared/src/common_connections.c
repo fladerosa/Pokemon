@@ -289,3 +289,18 @@ void mask_sig(void)
     sigaddset(&mask, SIGUSR1);         
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
 }
+void* suscribirseA(op_code codigoOp,uint32_t socket_broker){
+    subscribe* suscripcion = init_subscribe(codigoOp);
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = malloc(sizeof(t_buffer));
+    paquete->codigo_operacion = SUSCRIPTOR;
+    paquete->buffer->size = sizeof(uint32_t);
+    paquete->buffer->stream = subscribe_to_stream(suscripcion);
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
+    void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+	send(socket_broker, a_enviar, bytes, 0);
+    free(a_enviar);
+	free(paquete->buffer->stream);
+	free(paquete->buffer);
+	free(paquete);
+}
