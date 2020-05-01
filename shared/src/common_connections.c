@@ -64,7 +64,8 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
 }
 
 void serve_client(t_process_request* processor){
-    uint32_t socket = (*processor).socket, size = -1, cod_op=-1;
+    mask_sig();
+    uint32_t socket = processor->socket, size = -1, cod_op=-1;
     on_request request_receiver = (*processor).request_receiver;
 	while(1){
         if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;

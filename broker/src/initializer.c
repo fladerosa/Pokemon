@@ -63,4 +63,5 @@ void set_sig_handler(void)
         _exit(1);
     }
 
+    free(action);
 }
