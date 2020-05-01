@@ -2,7 +2,7 @@
 
 void process_request(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) {
 	void* stream = malloc(sizeofstruct);
-    recv(client_fd, stream, sizeofstruct, MSG_WAITALL);
+    if (recv(client_fd, stream, sizeofstruct, MSG_WAITALL)<=0){free(stream); return;}
     
     switch(cod_op){
         case NEW_POKEMON:;
