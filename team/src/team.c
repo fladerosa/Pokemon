@@ -7,6 +7,7 @@ int main(int argc, char ** argv){
     //establecer conexion con broker como cliente
     establish_broker_connection();
     
+    
     //establecer puerto escucha con gameboy como servidor
     listen_to_gameboy();
     

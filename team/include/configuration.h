@@ -1,9 +1,10 @@
-#ifndef CONFIGURACION_H
-#define CONFIGURACION_H
+#ifndef CONFIGURATION_H
+#define CONFIGURATION_H
 
 #include<commons/collections/list.h>
 #include<commons/string.h>
 #include "common_utils.h"
+
 
 typedef struct position_coach{
     uint32_t id_entrenador;
@@ -66,17 +67,7 @@ void destroy_objective(objective_coach*);
 void destroy_lists_and_loaded_elements();
 
 void initialize_team();
-void release_resources();   
-
-void listen_to_gameboy();
-void establish_broker_connection();void send_subscription_queue_message_appeared_pokemon(char*, uint32_t, t_log*);
-
-void send_subscription_queue_message_appeared_pokemon(char*, uint32_t, t_log*);
-void send_subscription_queue_message_catch_pokemon(char*, uint32_t, t_log*);
-void send_subscription_queue_message_caught_pokemon(char*, uint32_t, t_log*);
-void send_subscription_queue_message_get_pokemon(char*, uint32_t, t_log*);
-void send_subscription_queue_message_localized_pokemon(char*, uint32_t, t_log*);
-
+void release_resources(); 
 
 enum t_algoritmo {fifo, rr, sjf_sd, sjf_cd};
 

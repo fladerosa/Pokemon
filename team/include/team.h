@@ -2,6 +2,7 @@
 #define TEAM_H
 
 #include "common_utils.h"
-#include "configuracion.h"
+#include "configuration.h"
+#include "subscription.h"
 
 #endif
