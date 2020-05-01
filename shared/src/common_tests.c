@@ -24,7 +24,8 @@ int run_tests(){
 }
 
 void test_new_pokemon(){
-    new_pokemon* pokemon = init_new_pokemon("Pikachu",2,3,4,5);
+    char* name = strdup("Pikachu");
+    new_pokemon* pokemon = init_new_pokemon(name,2,3,4,5);
     void* stream = new_pokemon_to_stream(pokemon);
     new_pokemon* copy = stream_to_new_pokemon(stream);
 
@@ -34,10 +35,15 @@ void test_new_pokemon(){
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
     CU_ASSERT_EQUAL(copy->position.posy, pokemon->position.posy);
     CU_ASSERT_EQUAL(copy->quantity, pokemon->quantity);
+
+    free_new_pokemon(pokemon);
+    free(stream);
+    free_new_pokemon(copy);
 }
 
 void test_appeared_pokemon(){
-    appeared_pokemon* pokemon = init_appeared_pokemon("Bulbasaur", 6,7,8,9);
+    char* name = strdup("Bulbasaur");
+    appeared_pokemon* pokemon = init_appeared_pokemon(name, 6,7,8,9);
     void* stream = appeared_pokemon_to_stream(pokemon);
     appeared_pokemon* copy = stream_to_appeared_pokemon(stream);
 
@@ -47,10 +53,16 @@ void test_appeared_pokemon(){
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
     CU_ASSERT_EQUAL(copy->position.posy, pokemon->position.posy);
     CU_ASSERT_EQUAL(copy->id_correlational, pokemon->id_correlational);
+
+    free_appeared_pokemon(pokemon);
+    free(stream);
+    free_appeared_pokemon(copy);
+    
 }
 
-void test_catch_pokemon(){
-    catch_pokemon* pokemon = init_catch_pokemon("Charmander", 10, 11, 12);
+void test_catch_pokemon(){    
+    char* name = strdup("Charmander");
+    catch_pokemon* pokemon = init_catch_pokemon(name, 10, 11, 12);
     void* stream = catch_pokemon_to_stream(pokemon);
     catch_pokemon* copy = stream_to_catch_pokemon(stream);
 
@@ -59,6 +71,10 @@ void test_catch_pokemon(){
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
     CU_ASSERT_EQUAL(copy->position.posy, pokemon->position.posy);
+
+    free_catch_pokemon(pokemon);
+    free(stream);
+    free_catch_pokemon(copy);
 }
 
 void test_caught_pokemon(){
@@ -69,31 +85,41 @@ void test_caught_pokemon(){
     CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
     CU_ASSERT_EQUAL(copy->id_correlational, pokemon->id_correlational);
     CU_ASSERT_EQUAL(copy->success, pokemon->success);
+
+    free_caught_pokemon(pokemon);
+    free(stream);
+    free_caught_pokemon(copy);
 }
 
 void test_get_pokemon(){
-    get_pokemon* pokemon = init_get_pokemon("Squirtle", 4);
+    char* name = strdup("Squirtle");
+    get_pokemon* pokemon = init_get_pokemon(name, 4);
     void* stream = get_pokemon_to_stream(pokemon);
     get_pokemon* copy = stream_to_get_pokemon(stream);
 
     CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
+
+    free_get_pokemon(pokemon);
+    free(stream);
+    free_get_pokemon(copy);
 }
 
 void test_localized_pokemon(){
     t_list* list_positions = list_create();
-    t_position p1, p2, p3;
-    p1.posx = 1;
-    p1.posy = 2;
-    p2.posx = 3;
-    p2.posy = 4;
-    p3.posx = 5;
-    p3.posy = 6;
-    list_add(list_positions, &p1);
-    list_add(list_positions, &p2);
-    list_add(list_positions, &p3);
-    localized_pokemon* pokemon = init_localized_pokemon("Metapod", 4, 5, list_positions);
+    t_position* p1 = malloc(sizeof(t_position)),* p2 = malloc(sizeof(t_position)),* p3 = malloc(sizeof(t_position));
+    p1->posx = 1;
+    p1->posy = 2;
+    p2->posx = 3;
+    p2->posy = 4;
+    p3->posx = 5;
+    p3->posy = 6;
+    list_add(list_positions, p1);
+    list_add(list_positions, p2);
+    list_add(list_positions, p3);
+    char* name = strdup("Metapod");   
+    localized_pokemon* pokemon = init_localized_pokemon(name, 4, 5, list_positions);
     void* stream = localized_pokemon_to_stream(pokemon);
     localized_pokemon* copy = stream_to_localized_pokemon(stream);
 
@@ -107,14 +133,21 @@ void test_localized_pokemon(){
         CU_ASSERT_EQUAL(pos_pokemon->posx, pos_copy->posx);
         CU_ASSERT_EQUAL(pos_pokemon->posy, pos_copy->posy);
     }
+
+    free_localized_pokemon(pokemon);
+    free_localized_pokemon(copy);
+    free(stream);
 }
 
 void test_new_connection(){
     new_connection* connection = init_new_connection();
     void* stream = new_connection_to_stream(connection);
     new_connection* copy = stream_to_new_connection(stream);
-    free(copy);
     CU_ASSERT_TRUE(true);
+
+    free_new_connection(connection);
+    free(stream);
+    free_new_connection(copy);
 }
 
 void test_reconnect(){
@@ -123,14 +156,22 @@ void test_reconnect(){
     reconnect* copy = stream_to_reconnect(stream);
 
     CU_ASSERT_EQUAL(copy->id_connection, recon->id_connection);
+
+    free_reconnect(recon);
+    free(stream);
+    free_reconnect(copy);
 }
 
 void test_connection(){
-    connection* recon = init_connection(5);
-    void* stream = connection_to_stream(recon);
+    connection* con = init_connection(5);
+    void* stream = connection_to_stream(con);
     connection* copy = stream_to_connection(stream);
 
-    CU_ASSERT_EQUAL(copy->id_connection, recon->id_connection);
+    CU_ASSERT_EQUAL(copy->id_connection, con->id_connection);
+
+    free_connection(con);
+    free(stream);
+    free_connection(copy);
 }
 
 void test_ack(){
@@ -139,6 +180,10 @@ void test_ack(){
     ack* copy = stream_to_ack(stream);
 
     CU_ASSERT_EQUAL(copy->id_message, acknowledgment->id_message);
+
+    free_ack(acknowledgment);
+    free(stream);
+    free_ack(copy);
 }
 
 void test_subscribe(){
@@ -147,5 +192,9 @@ void test_subscribe(){
     subscribe* copy = stream_to_subscribe(stream);
 
     CU_ASSERT_EQUAL(copy->colaMensajes, copy->colaMensajes);
+
+    free_subscribe(subs);
+    free(stream);
+    free_subscribe(copy);
 }
 

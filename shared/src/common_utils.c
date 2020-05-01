@@ -267,16 +267,12 @@ void* subscribe_to_stream(subscribe* subscribeMessage){
 
 new_connection* stream_to_new_connection(void* stream){
 
-    new_connection* newConnectionMessage = malloc(sizeof(new_connection)); 
-
+    new_connection* newConnectionMessage = malloc(sizeof(new_connection));
     return newConnectionMessage;
 }
 
 void* new_connection_to_stream(new_connection* newConnectionMessage){
-
-    uint32_t size = 0;
-    void* stream = malloc(size); 
-
+    void* stream = malloc(sizeof(new_connection)); 
     return stream;
 }
 
@@ -292,7 +288,7 @@ reconnect* stream_to_reconnect(void* stream){
 
 void* reconnect_to_stream(reconnect* reconnectMessage){
 
-    uint32_t size = 0;
+    uint32_t size = sizeof(uint32_t);
     void* stream = malloc(size);
     uint32_t forward = 0;
 
@@ -314,7 +310,7 @@ connection* stream_to_connection(void* stream){
 
 void* connection_to_stream(connection* connectionMessage){
 
-    uint32_t size = 0;
+    uint32_t size = sizeof(uint32_t);
     void* stream = malloc(size);
     uint32_t forward = 0;
 
@@ -326,7 +322,7 @@ void* connection_to_stream(connection* connectionMessage){
 
 ack* stream_to_ack(void* stream){
 
-    ack* acknowledgementMessage = malloc(sizeof(ack)); 
+    ack* acknowledgementMessage = malloc(sizeof(ack));
 
     memcpy(&(acknowledgementMessage->id_message), stream, sizeof(uint32_t));
     stream += sizeof(uint32_t);
@@ -336,7 +332,7 @@ ack* stream_to_ack(void* stream){
 
 void* ack_to_stream(ack* acknowledgementMessage){
 
-    uint32_t size = 0;
+    uint32_t size = sizeof(uint32_t);
     void* stream = malloc(size);
     uint32_t forward = 0;
 

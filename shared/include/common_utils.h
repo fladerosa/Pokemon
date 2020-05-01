@@ -72,7 +72,6 @@ typedef struct{
 }localized_pokemon;
 
 typedef struct{
-
 }new_connection;
 
 typedef struct{
