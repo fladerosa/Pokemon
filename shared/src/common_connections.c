@@ -281,7 +281,6 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
     }
 }
 
-
 void mask_sig(void)
 {
 	sigset_t mask;
@@ -289,6 +288,7 @@ void mask_sig(void)
     sigaddset(&mask, SIGUSR1);         
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
 }
+
 void* suscribirseA(op_code codigoOp,uint32_t socket_broker){
     subscribe* suscripcion = init_subscribe(codigoOp);
     t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -303,4 +303,5 @@ void* suscribirseA(op_code codigoOp,uint32_t socket_broker){
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
 	free(paquete);
+    return NULL;
 }
