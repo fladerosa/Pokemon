@@ -50,14 +50,6 @@ void fill_config_values(){
     );
 }
 
-void mask_sig(void)
-{
-	sigset_t mask;
-	sigemptyset(&mask); 
-    sigaddset(&mask, SIGUSR1);         
-    pthread_sigmask(SIG_BLOCK, &mask, NULL);
-}
-
 void set_sig_handler(void)
 {
     struct sigaction* action = malloc(sizeof(sigaction));

@@ -52,4 +52,6 @@ char* recibir_mensaje(uint32_t socket_cliente, uint32_t buffer_size);
 void process_message(uint32_t client_fd, void* stream);
 void pthread_create_and_detach(void* function, void* args);
 void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd);
+void mask_sig(void);
+
 #endif

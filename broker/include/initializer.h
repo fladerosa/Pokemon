@@ -23,8 +23,7 @@ uint32_t listening_socket;
 on_request p_on_request;
 void initialize();
 void fill_config_values();
-void mask_sig(void);
-void set_sig_handler(void);
 t_log* create_log_from_config(char* path_key, char* name, char* show_key);
+void set_sig_handler(void);
 
 #endif

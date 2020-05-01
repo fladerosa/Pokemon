@@ -36,6 +36,7 @@ void start_server(char* ip, char* port, on_request request_receiver){
 }
 
 void run_server(void * server_processor){
+    mask_sig();
 	uint32_t socket = (*(t_process_request*)server_processor).socket;
 	on_request request_receiver = (*(t_process_request*)server_processor).request_receiver;
 	while(true){
@@ -275,4 +276,13 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         default:;
             log_info(optional_logger, "Cannot understand op_code received.");
     }
+}
+
+
+void mask_sig(void)
+{
+	sigset_t mask;
+	sigemptyset(&mask); 
+    sigaddset(&mask, SIGUSR1);         
+    pthread_sigmask(SIG_BLOCK, &mask, NULL);
 }
