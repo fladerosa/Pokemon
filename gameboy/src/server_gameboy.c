@@ -98,7 +98,7 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
             log_info(optional_logger, "Incorrect format");
     }
 
-	int bytes = paquete->buffer->size + 2*sizeof(int);
+	int bytes = paquete->buffer->size + 2*sizeof(uint32_t);
 
     //Creo el paquete y serializo 
 	void* a_enviar = (void *) serializar_paquete(paquete, bytes);
