@@ -16,6 +16,9 @@ void initialize(){
     );
     log_info(optional_logger, "Initializing Application...");
     fill_config_values();
+    connections = list_create();
+    pthread_mutex_init(&m_id_connection, NULL);
+    pthread_mutex_init(&m_id_message, NULL);
     set_sig_handler();
     p_on_request = &process_request;
     log_info(optional_logger, "Configuration and loggers loaded successfully.");

@@ -31,16 +31,15 @@ void process_request(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd)
             break;
         case SUSCRIPTOR:; 
             subscribe* subscribeMessage = stream_to_subscribe(stream);
+            
             free_subscribe(subscribeMessage);
             break;
-        case NEW_CONNECTION:; 
-            break;
-        case CONNECTION:;
-            connection* connectionMessage = stream_to_connection(stream);
-            free_connection(connectionMessage);
+        case NEW_CONNECTION:;
+            handle_new_connection(client_fd); 
             break;
         case RECONNECT:;
             reconnect* reconnectMessage = stream_to_reconnect(stream);
+            handle_reconnect(client_fd,reconnectMessage);
             free_reconnect(reconnectMessage);
             break; 
         case ACK:;
@@ -51,6 +50,8 @@ void process_request(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd)
 			process_message(client_fd, stream);
         case -1:
             break;
+        default:;
+            log_info(optional_logger,"Received invalid operation code.");
     }
 
     free(stream);

@@ -78,6 +78,14 @@ void serve_client(t_process_request* processor){
     close(socket);
 }
 
+t_paquete* stream_to_package(op_code code,void* payload){
+    t_paquete* package = malloc(sizeof(t_paquete));
+    package->codigo_operacion = code;
+    package->buffer->size = sizeof(payload);
+    package->buffer->stream = payload;
+    return package;
+}
+
 void* serializar_paquete(t_paquete* paquete, uint32_t bytes){
 	void * magic = malloc(bytes);
 	uint32_t desplazamiento = 0;
