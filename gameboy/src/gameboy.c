@@ -63,7 +63,14 @@ int main(int argc, char ** argv){
         pthread_t threadConnection; //Creo un hilo asi cuenta el tiempo de conexion
         pthread_create(&threadConnection, NULL, (void*) countTime, (void*) atoi(argv[3]));
 
+        send_new_connection(connection);
+        uint32_t cod_op = -1;   
+        void* stream = malloc(sizeof(uint32_t)); 
+
         while(1){
+            while(recv(stream, (void*) &cod_op,sizeof(uint32_t), MSG_WAITALL) == 0){
+                send_reconnect(connection);
+            }
             serve_client(process_request);
         }     
     }
