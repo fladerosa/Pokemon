@@ -48,7 +48,7 @@ int main(int argc, char ** argv){
     }
 
     //Creo la conexion
-    int connection = crear_conexion(ip, port);
+    int conexion = crear_conexion(ip, port);
 
     //Mando el mensaje
     
@@ -57,30 +57,25 @@ int main(int argc, char ** argv){
     if(strcmp(server, "SUSCRIPTOR") == 0){
        
         t_process_request* process_request = malloc(sizeof(t_process_request)); 
-        (*process_request).socket = connection; 
+        (*process_request).socket = conexion; 
         (*process_request).request_receiver = receiveMessageSubscriptor;
     
         pthread_t threadConnection; //Creo un hilo asi cuenta el tiempo de conexion
         pthread_create(&threadConnection, NULL, (void*) countTime, (void*) atoi(argv[3]));
 
-        send_new_connection(connection);
-        uint32_t cod_op = -1;   
-        void* stream = malloc(sizeof(uint32_t)); 
-
-        send_message(argv, connection, optional_logger);
+        uint32_t id_connection = send_new_connection(conexion);
+        send_message(argv, conexion, optional_logger);
         while(1){
-            while(recv(stream, (void*) &cod_op,sizeof(uint32_t), MSG_WAITALL) == 0){
-                send_reconnect(connection);
-                sleep(10);
-            }
             serve_client(process_request);
+            conexion = crear_conexion(ip, port);
+            send_reconnect(id_connection);
         }     
     }else{
-        send_message(argv, connection, optional_logger);
+        send_message(argv, conexion, optional_logger);
     }
 
     //Cierro y elimino todo
-    closeAll(optional_logger, obligatory_logger,config,connection);
+    closeAll(optional_logger, obligatory_logger,config,conexion);
     
     return 0;
     }
