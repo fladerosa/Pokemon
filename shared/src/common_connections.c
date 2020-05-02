@@ -80,6 +80,7 @@ void serve_client(t_process_request* processor){
 
 t_paquete* stream_to_package(op_code code,void* payload){
     t_paquete* package = malloc(sizeof(t_paquete));
+    package->buffer = malloc(sizeof(t_buffer));
     package->codigo_operacion = code;
     package->buffer->size = sizeof(payload);
     package->buffer->stream = payload;

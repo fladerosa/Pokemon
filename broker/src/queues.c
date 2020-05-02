@@ -47,6 +47,10 @@ bool has_connection_id(void* data, void* id){
     return ((t_connection*) data)->id_connection == (uint32_t) id;
 }
 
+bool has_socket_fd(void* data, void* socket){
+    return ((t_connection*) data)->socket == (uint32_t) socket;
+}
+
 bool has_queue_id(void* data, void* id){
     return ((t_message_queue*) data)->id_queue == (uint32_t) id;
 }
@@ -68,7 +72,7 @@ void handle_reconnect(uint32_t client_fd, reconnect* reconn){
 
 void handle_subscribe(uint32_t client_fd, subscribe* subs){
     t_message_queue* queue = list_find_with_args(list_queues, has_queue_id, (void*) subs->colaMensajes);
-    t_connection* conn = list_find_with_args(connections, has_connection_id,(void*)client_fd);
+    t_connection* conn = list_find_with_args(connections, has_socket_fd,(void*)client_fd);
     if (queue && conn){
         list_add(queue->subscribers, conn);
     }

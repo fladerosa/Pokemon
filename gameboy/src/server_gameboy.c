@@ -154,7 +154,7 @@ void send_reconnect(uint32_t socket_broker){
 
     paquete->codigo_operacion = RECONNECT;
     paquete->buffer->size = sizeof(u_int32_t); // revisar
-    paquete->buffer->stream = new_connection_to_stream(reconnectToBroker);
+    paquete->buffer->stream = reconnect_to_stream(reconnectToBroker);
 
     uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
 
@@ -167,4 +167,13 @@ void send_reconnect(uint32_t socket_broker){
 	free(paquete->buffer);
 	free(paquete);
     free_reconnect(reconnectToBroker);
+}
+
+uint32_t receive_connection_id(uint32_t socket_broker){
+    uint32_t codop, size, id_connection;
+    recv(socket_broker, &codop, sizeof(uint32_t), MSG_WAITALL);
+    recv(socket_broker, &size, sizeof(uint32_t), MSG_WAITALL);
+    recv(socket_broker, &id_connection, sizeof(uint32_t), MSG_WAITALL);
+
+    return id_connection;
 }
