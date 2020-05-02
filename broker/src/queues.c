@@ -16,7 +16,7 @@ uint32_t get_id_connection(){
     return id_connection;
 }
 
-t_link_element* list_find_element_with_args(t_list *self, bool(*condition)(void*, void*), void* args) {
+void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* args) {
 	t_link_element *element = self->head;
 	int position = 0;
 
@@ -25,19 +25,14 @@ t_link_element* list_find_element_with_args(t_list *self, bool(*condition)(void*
 		position++;
 	}
 
-	return element;
-}
-
-void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* args) {
-	t_link_element *element = list_find_element_with_args(self, condition, args);
 	return element != NULL ? element->data : NULL;
 }
-
 
 void handle_new_connection(uint32_t client_fd){
     t_connection *conn = malloc(sizeof(t_connection));
     conn->socket = client_fd;
     conn->id_connection = get_id_connection();
+    conn->is_connected = true;
     list_add(connections, conn);
 
     connection* response_conn = init_connection(conn->id_connection);
@@ -52,6 +47,10 @@ bool has_connection_id(void* data, void* id){
     return ((t_connection*) data)->id_connection == (uint32_t) id;
 }
 
+bool has_queue_id(void* data, void* id){
+    return ((t_message_queue*) data)->id_queue == (uint32_t) id;
+}
+
 void handle_reconnect(uint32_t client_fd, reconnect* reconn){
     t_connection* conn = (t_connection*) 
         list_find_with_args(
@@ -61,5 +60,49 @@ void handle_reconnect(uint32_t client_fd, reconnect* reconn){
         );
     if (conn){
         conn->socket = client_fd;
+        conn->is_connected = true;
+    } else {
+        handle_new_connection(client_fd);
     }
+}
+
+void handle_subscribe(uint32_t client_fd, subscribe* subs){
+    t_message_queue* queue = list_find_with_args(list_queues, has_queue_id, (void*) subs->colaMensajes);
+    t_connection* conn = list_find_with_args(connections, has_connection_id,(void*)client_fd);
+    if (queue && conn){
+        list_add(queue->subscribers, conn);
+    }
+}
+
+void* connection_to_receiver(void* connection){
+    t_receiver* receiver = malloc(sizeof(t_receiver));
+    receiver->conn = (t_connection*) connection;
+    receiver->sent = false;
+    receiver->received = false;
+    return (void*) receiver;
+}
+
+void add_message_to_queue(void* data, op_code code){
+    t_message_queue* queue = list_find_with_args(list_queues, has_queue_id,(void*) code);
+    t_message* new_message = malloc(sizeof(t_message));
+    new_message->data = data;
+    new_message->receivers = list_map(queue->subscribers, connection_to_receiver);
+    //puede que necesitemos mutex aca
+    queue_push(queue->messages, new_message);
+}
+
+
+void queue_message_sender(void* args){
+    t_message_queue* queue = (t_message_queue*) args;
+    while(1){
+        //semaforos
+        t_message* message = queue_pop(queue->messages);
+        for(int i=0; i<list_size(message->receivers); i++){
+            
+        }
+    }
+}
+
+void handle_ack(uint32_t client_fd, ack* acknowledgement){
+    
 }

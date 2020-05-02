@@ -19,6 +19,7 @@ void initialize(){
     connections = list_create();
     pthread_mutex_init(&m_id_connection, NULL);
     pthread_mutex_init(&m_id_message, NULL);
+    init_queues();
     set_sig_handler();
     p_on_request = &process_request;
     log_info(optional_logger, "Configuration and loggers loaded successfully.");
@@ -67,4 +68,16 @@ void set_sig_handler(void)
     }
 
     free(action);
+}
+
+void init_queues(){
+    list_queues = list_create();
+    for(int i=1; i<=7;i++){ //asumo que del 1 al 7 esta cada id de cola/mensaje
+        t_message_queue* queue = malloc(sizeof(t_message_queue));
+        queue->id_queue = i;
+        queue->messages = queue_create();
+        queue->subscribers = list_create();
+        list_add(list_queues,queue);
+        //pthread_create_and_detach(queue_message_sender,(void*) queue);
+    }
 }
