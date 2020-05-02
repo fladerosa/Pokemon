@@ -51,7 +51,7 @@ int main(int argc, char ** argv){
     int connection = crear_conexion(ip, port);
 
     //Mando el mensaje
-    send_message(argv, connection, optional_logger);
+    
 
     //Me suscribo si el mensaje es SUSCRIPTOR
     if(strcmp(server, "SUSCRIPTOR") == 0){
@@ -67,13 +67,16 @@ int main(int argc, char ** argv){
         uint32_t cod_op = -1;   
         void* stream = malloc(sizeof(uint32_t)); 
 
+        send_message(argv, connection, optional_logger);
         while(1){
             while(recv(stream, (void*) &cod_op,sizeof(uint32_t), MSG_WAITALL) == 0){
                 send_reconnect(connection);
-                sleep(2);
+                sleep(10);
             }
             serve_client(process_request);
         }     
+    }else{
+        send_message(argv, connection, optional_logger);
     }
 
     //Cierro y elimino todo
