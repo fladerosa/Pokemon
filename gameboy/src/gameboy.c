@@ -70,6 +70,7 @@ int main(int argc, char ** argv){
         while(1){
             while(recv(stream, (void*) &cod_op,sizeof(uint32_t), MSG_WAITALL) == 0){
                 send_reconnect(connection);
+                sleep(2);
             }
             serve_client(process_request);
         }     
