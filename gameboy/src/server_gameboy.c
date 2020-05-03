@@ -279,6 +279,8 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         default:;
             log_info(optional_logger, "Cannot understand op_code received.");
     }
+}
+
 uint32_t receive_connection_id(uint32_t socket_broker){
     uint32_t codop, size, id_connection;
     recv(socket_broker, &codop, sizeof(uint32_t), MSG_WAITALL);
