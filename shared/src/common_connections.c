@@ -78,11 +78,11 @@ void serve_client(t_process_request* processor){
     close(socket);
 }
 
-t_paquete* stream_to_package(op_code code,void* payload){
+t_paquete* stream_to_package(op_code code,void* payload, uint32_t size_payload){
     t_paquete* package = malloc(sizeof(t_paquete));
     package->buffer = malloc(sizeof(t_buffer));
     package->codigo_operacion = code;
-    package->buffer->size = sizeof(payload);
+    package->buffer->size = size_payload;
     package->buffer->stream = payload;
     return package;
 }

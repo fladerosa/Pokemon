@@ -135,5 +135,12 @@ void free_caught_pokemon(caught_pokemon* pokemon);
 void free_catch_pokemon(catch_pokemon* pokemon);
 void free_appeared_pokemon(appeared_pokemon* pokemon);
 void free_new_pokemon(new_pokemon* pokemon);
+uint32_t size_of_localized_pokemon(localized_pokemon* localizedPokemonMessage);
+uint32_t size_of_get_pokemon(get_pokemon* getPokemonMessage);
+uint32_t size_of_caught_pokemon(caught_pokemon* caughtPokemonMessage);
+uint32_t size_of_catch_pokemon(catch_pokemon* catchPokemonMessage);
+uint32_t size_of_appeared_pokemon(appeared_pokemon* appearedPokemonMessage);
+uint32_t size_of_new_pokemon(new_pokemon* newPokemonMessage);
+
 
 #endif
