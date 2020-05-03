@@ -16,7 +16,15 @@ void test_agregar_a_queue(){
 void manejo_memoria(){
     CU_ASSERT_TRUE(true);
     /*
-    casos de prueba
+    casos de prueba particiones dinamicas
+        ubicar dato con memoria vacía
+        ubicar dato para verificar First Fit
+        ubicar dato para verificar Best Fit
+        ubicar dato con memoria llena para verificar compactacion
+        ubicar dato con memoria llena para verificar elección de victima FIFO
+        ubicar dato con memoria llena para verificar elección de victima LRU
+
+    casos de prueba Buddy System
         ubicar dato con memoria vacía
         ubicar dato para verificar First Fit
         ubicar dato para verificar Best Fit
