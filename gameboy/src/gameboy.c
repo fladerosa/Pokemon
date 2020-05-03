@@ -65,6 +65,7 @@ int main(int argc, char ** argv){
         send_message(argv, conexion, optional_logger);
         while(1){
             serve_client(process_request);
+            close(conexion);
             conexion = crear_conexion(ip, port);
             send_reconnect(id_connection);
         }     

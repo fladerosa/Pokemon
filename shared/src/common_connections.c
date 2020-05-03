@@ -71,7 +71,7 @@ void serve_client(t_process_request* processor){
         if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;
         log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
         if(recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL)<=0) break;
-        log_info(optional_logger, "Size of stream: %d", size);
+        //log_info(optional_logger, "Size of stream: %d", size);
         request_receiver(cod_op, size, socket);
     }
     log_info(optional_logger, "Socket %d has disconnected", socket);
