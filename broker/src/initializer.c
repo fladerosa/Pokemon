@@ -77,7 +77,11 @@ void init_queues(){
         queue->id_queue = i;
         queue->messages = queue_create();
         queue->subscribers = list_create();
+        queue->sem_all_ack = malloc(sizeof(sem_t));
+        queue->sem_message = malloc(sizeof(sem_t));
+        sem_init(queue->sem_message, 0, 0);
+        sem_init(queue->sem_all_ack, 0, 0); 
         list_add(list_queues,queue);
-        //pthread_create_and_detach(queue_message_sender,(void*) queue);
+        pthread_create_and_detach(queue_message_sender,queue);
     }
 }

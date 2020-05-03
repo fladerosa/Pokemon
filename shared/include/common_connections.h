@@ -55,5 +55,6 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
 void mask_sig(void);
 void* suscribirseA(op_code codigoOp,uint32_t socket_broker);
 t_paquete* stream_to_package(op_code code,void* payload);
+void free_package(t_paquete* package);
 
 #endif

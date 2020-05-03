@@ -178,6 +178,13 @@ void pthread_create_and_detach(void* function, void* args ){
 	pthread_detach(thread);
 }
 
+
+void free_package(t_paquete* package){
+    free(package->buffer->stream);
+    free(package->buffer);
+    free(package);
+}
+
 void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd){
 
     void* stream = malloc(sizeofstruct);
