@@ -63,7 +63,8 @@ int main(int argc, char ** argv){
         pthread_t threadConnection; //Creo un hilo asi cuenta el tiempo de conexion
         pthread_create(&threadConnection, NULL, (void*) countTime, (void*) atoi(argv[3]));
 
-        uint32_t id_connection = send_new_connection(conexion);
+        send_new_connection(conexion);
+        uint32_t id_connection = receive_connection_id(conexion);
         send_message(argv, conexion, optional_logger);
         while(1){
             serve_client(process_request);

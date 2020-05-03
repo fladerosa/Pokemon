@@ -38,13 +38,19 @@ void handle_new_connection(uint32_t client_fd){
     connection* response_conn = init_connection(conn->id_connection);
     void* stream = connection_to_stream(response_conn);
     uint32_t size = sizeof(uint32_t)*2 + sizeof(stream);
-    t_paquete* package = stream_to_package(CONNECTION, connection_to_stream(response_conn));
+    t_paquete* package = stream_to_package(CONNECTION, stream);
     void* response = serializar_paquete(package, size );
     send(client_fd, response, size, 0);
+    free_connection(response_conn);
+    free_package(package);
 }
 
 bool has_connection_id(void* data, void* id){
     return ((t_connection*) data)->id_connection == (uint32_t) id;
+}
+
+bool has_socket_fd(void* data, void* socket){
+    return ((t_connection*) data)->socket == (uint32_t) socket;
 }
 
 bool has_queue_id(void* data, void* id){
@@ -68,7 +74,7 @@ void handle_reconnect(uint32_t client_fd, reconnect* reconn){
 
 void handle_subscribe(uint32_t client_fd, subscribe* subs){
     t_message_queue* queue = list_find_with_args(list_queues, has_queue_id, (void*) subs->colaMensajes);
-    t_connection* conn = list_find_with_args(connections, has_connection_id,(void*)client_fd);
+    t_connection* conn = list_find_with_args(connections, has_socket_fd,(void*)client_fd);
     if (queue && conn){
         list_add(queue->subscribers, conn);
     }
@@ -89,17 +95,25 @@ void add_message_to_queue(void* data, op_code code){
     new_message->receivers = list_map(queue->subscribers, connection_to_receiver);
     //puede que necesitemos mutex aca
     queue_push(queue->messages, new_message);
+    sem_post(queue->sem_message);
 }
 
 
 void queue_message_sender(void* args){
     t_message_queue* queue = (t_message_queue*) args;
-    while(1){
-        //semaforos
+    //log_info(optional_logger, "Starting queue number %d", queue->id_queue);
+    while(1){   
+        sem_wait(queue->sem_message);
         t_message* message = queue_pop(queue->messages);
         for(int i=0; i<list_size(message->receivers); i++){
-            
+            t_receiver* receiver = list_get(message->receivers, i);
+            if(receiver->conn->is_connected){
+                t_paquete* package = stream_to_package(queue->id_queue, message->data);
+                void* a_enviar = serializar_paquete(package,sizeof(uint32_t)*2 + package->buffer->size);
+                send(receiver->conn->socket, a_enviar, sizeof(a_enviar), 0);
+            }
         }
+        sem_wait(queue->sem_all_ack);
     }
 }
 

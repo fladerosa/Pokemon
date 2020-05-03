@@ -3,7 +3,7 @@
 
 #include "broker.h"
 #include "initializer.h"
-
+#include <semaphore.h>
 
 typedef struct t_connection {
     uint32_t socket;
@@ -29,6 +29,8 @@ typedef struct t_message_queue {
     uint32_t id_queue;
     t_queue* messages;
     t_list* subscribers;
+    sem_t* sem_message;
+    sem_t* sem_all_ack;
 } t_message_queue;
 
 t_list* list_queues;

@@ -136,5 +136,4 @@ void free_catch_pokemon(catch_pokemon* pokemon);
 void free_appeared_pokemon(appeared_pokemon* pokemon);
 void free_new_pokemon(new_pokemon* pokemon);
 
-
 #endif

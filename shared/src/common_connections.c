@@ -80,6 +80,7 @@ void serve_client(t_process_request* processor){
 
 t_paquete* stream_to_package(op_code code,void* payload){
     t_paquete* package = malloc(sizeof(t_paquete));
+    package->buffer = malloc(sizeof(t_buffer));
     package->codigo_operacion = code;
     package->buffer->size = sizeof(payload);
     package->buffer->stream = payload;
@@ -175,6 +176,12 @@ void pthread_create_and_detach(void* function, void* args ){
 	pthread_t thread;
 	pthread_create(&thread, NULL, function, args);
 	pthread_detach(thread);
+}
+
+void free_package(t_paquete* package){
+    free(package->buffer->stream);
+    free(package->buffer);
+    free(package);
 }
 
 void mask_sig(void)
