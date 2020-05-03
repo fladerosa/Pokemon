@@ -48,10 +48,7 @@ int main(int argc, char ** argv){
     }
 
     //Creo la conexion
-    int conexion = crear_conexion(ip, port);
-
-    //Mando el mensaje
-    
+    int conexion = crear_conexion(ip, port);    
 
     //Me suscribo si el mensaje es SUSCRIPTOR
     if(strcmp(server, "SUSCRIPTOR") == 0){
@@ -63,7 +60,7 @@ int main(int argc, char ** argv){
         pthread_t threadConnection; //Creo un hilo asi cuenta el tiempo de conexion
         pthread_create(&threadConnection, NULL, (void*) countTime, (void*) atoi(argv[3]));
 
-        send_new_connection(conexion);
+        send_new_connection(conexion); //Mando el mensaje
         uint32_t id_connection = receive_connection_id(conexion);
         send_message(argv, conexion, optional_logger);
         while(1){
@@ -72,7 +69,7 @@ int main(int argc, char ** argv){
             send_reconnect(id_connection);
         }     
     }else{
-        send_message(argv, conexion, optional_logger);
+        send_message(argv, conexion, optional_logger); //Mando el mensaje
     }
 
     //Cierro y elimino todo

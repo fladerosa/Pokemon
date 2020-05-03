@@ -90,7 +90,7 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
             paquete->codigo_operacion = SUSCRIPTOR; 
             paquete->buffer->size = sizeof(uint32_t);
             paquete->buffer->stream = subscribe_to_stream(subscriber);
-            break; 
+            break;
         case ERROR:;
             paquete->codigo_operacion = ERROR;
             break;
@@ -106,9 +106,7 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
 	send(socket_cliente, a_enviar, bytes, 0);
 
 	free(a_enviar);
-	free(paquete->buffer->stream);
-	free(paquete->buffer);
-	free(paquete);
+	free_package(paquete);
 }
 
 op_code stringToEnum(char* message_function){
@@ -140,9 +138,7 @@ void send_new_connection(uint32_t socket_broker){
 	send(socket_broker, a_enviar, bytes, 0);
 
 	free(a_enviar);
-	free(paquete->buffer->stream);
-	free(paquete->buffer);
-	free(paquete);
+	free_package(paquete);
     free_new_connection(newConnection);
 }
 
@@ -163,10 +159,32 @@ void send_reconnect(uint32_t socket_broker){
 	send(socket_broker, a_enviar, bytes, 0);
 
 	free(a_enviar);
-	free(paquete->buffer->stream);
-	free(paquete->buffer);
-	free(paquete);
+	free_package(paquete);
     free_reconnect(reconnectToBroker);
+}
+
+void send_ack(uint32_t socket_broker, uint32_t id_message){
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = malloc(sizeof(t_buffer));
+
+    ack* ackBroker = malloc(sizeof(ack));
+
+    ackBroker = init_ack(id_message);
+
+    paquete->codigo_operacion = ACK; 
+    paquete->buffer->size = sizeof(u_int32_t); // revisar
+    paquete->buffer->stream = reconnect_to_stream(ackBroker);
+
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
+
+    void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+
+	send(socket_broker, a_enviar, bytes, 0);
+
+	free(a_enviar);
+    free_package(paquete);
+    free_ack(ackBroker);
+    
 }
 
 void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd){
@@ -184,6 +202,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             log_info(optional_logger, "This is the position y: %d", newPokemonMessage->position.posy);
             log_info(optional_logger, "This is the quantity: %d", newPokemonMessage->quantity);
             log_info(optional_logger, "This is the id message: %d", newPokemonMessage->id_message);
+            send_ack(socketfd, newPokemonMessage->id_message);
             break;
         case APPEARED_POKEMON:;
             appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream);
@@ -194,6 +213,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             log_info(optional_logger, "This is the position y: %d", appearedPokemonMessage->position.posy);
             log_info(optional_logger, "This is the id correlational: %d", appearedPokemonMessage->id_correlational);
             log_info(optional_logger, "This is the id message: %d", appearedPokemonMessage->id_message);
+            send_ack(socketfd, appearedPokemonMessage->id_message);
             break;
         case CATCH_POKEMON:;
 
@@ -204,6 +224,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             log_info(optional_logger, "This is the position x: %d", catchPokemonMessage->position.posx);
             log_info(optional_logger, "This is the position y: %d", catchPokemonMessage->position.posy);
             log_info(optional_logger, "This is the id message: %d", catchPokemonMessage->id_message);
+            send_ack(socketfd, catchPokemonMessage->id_message);
             break;
         case CAUGHT_POKEMON:;
 
@@ -221,6 +242,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             log_info(optional_logger, "Was the pokemon catch?: %d", wasCaught); 
             log_info(optional_logger, "This is the id correlational: %d", caughtPokemonMessage->id_correlational);
             log_info(optional_logger, "This is the id message: %d", caughtPokemonMessage->id_message);
+            send_ack(socketfd, caughtPokemonMessage->id_message);
             break;
         case GET_POKEMON:;
 
@@ -229,6 +251,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             log_info(optional_logger, "Get pokemon!");
             log_info(optional_logger, "This is the pokemon: %s", getPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the id message: %d", getPokemonMessage->id_message);
+            send_ack(socketfd, getPokemonMessage->id_message);
             break;
         case LOCALIZED_POKEMON:;
 
@@ -239,6 +262,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             log_info(optional_logger, "This is the size of the list of positions: %d", (*localizedPokemonMessage->positions).elements_count);
             log_info(optional_logger, "This is the id correlational: %d", localizedPokemonMessage->id_correlational);
             log_info(optional_logger, "This is the id message: %d", localizedPokemonMessage->id_message);
+            send_ack(socketfd, localizedPokemonMessage->id_message);
             break;
         case SUSCRIPTOR:; 
 
