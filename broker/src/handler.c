@@ -8,38 +8,56 @@ void process_request(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd)
         case NEW_POKEMON:;
             new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream);
             newPokemonMessage->id_message = get_id_message();
-            add_message_to_queue(new_pokemon_to_stream(newPokemonMessage), NEW_POKEMON);
-            free_new_pokemon(newPokemonMessage);
+            add_message_to_queue(
+                newPokemonMessage, 
+                NEW_POKEMON,
+                size_of_new_pokemon(newPokemonMessage),
+                newPokemonMessage->id_message);
             break;
         case APPEARED_POKEMON:;
             appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream);
             appearedPokemonMessage->id_message = get_id_message();
-            add_message_to_queue(appeared_pokemon_to_stream(appearedPokemonMessage), APPEARED_POKEMON);
-            free_appeared_pokemon(appearedPokemonMessage);
+            add_message_to_queue(
+                appearedPokemonMessage, 
+                APPEARED_POKEMON,
+                size_of_appeared_pokemon(appearedPokemonMessage),
+                appearedPokemonMessage->id_message);
             break;
         case CATCH_POKEMON:;
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
             catchPokemonMessage->id_message = get_id_message();
-            add_message_to_queue(catch_pokemon_to_stream(catchPokemonMessage), CATCH_POKEMON);
-            free_catch_pokemon(catchPokemonMessage);
+            add_message_to_queue(
+                catchPokemonMessage, 
+                CATCH_POKEMON,
+                size_of_catch_pokemon(catchPokemonMessage),
+                catchPokemonMessage->id_message);
             break;
         case CAUGHT_POKEMON:;
             caught_pokemon* caughtPokemonMessage = stream_to_caught_pokemon(stream);
             caughtPokemonMessage->id_message = get_id_message();
-            add_message_to_queue(caught_pokemon_to_stream(caughtPokemonMessage), CAUGHT_POKEMON);
-            free_caught_pokemon(caughtPokemonMessage);
+            add_message_to_queue(
+                caughtPokemonMessage, 
+                CAUGHT_POKEMON,
+                size_of_caught_pokemon(caughtPokemonMessage),
+                caughtPokemonMessage->id_message);
             break;
         case GET_POKEMON:;
             get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream); 
             getPokemonMessage->id_message = get_id_message();
-            add_message_to_queue(get_pokemon_to_stream(getPokemonMessage), GET_POKEMON);
-            free_get_pokemon(getPokemonMessage);
+            add_message_to_queue(
+                getPokemonMessage, 
+                GET_POKEMON,
+                size_of_get_pokemon(getPokemonMessage),
+                getPokemonMessage->id_message);
             break;
         case LOCALIZED_POKEMON:;
             localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream);
             localizedPokemonMessage->id_message = get_id_message();
-            add_message_to_queue(localized_pokemon_to_stream(localizedPokemonMessage), LOCALIZED_POKEMON);
-            free_localized_pokemon(localizedPokemonMessage);
+            add_message_to_queue(
+                localizedPokemonMessage, 
+                LOCALIZED_POKEMON,
+                size_of_localized_pokemon(localizedPokemonMessage),
+                localizedPokemonMessage->id_message);
             break;
         case SUSCRIPTOR:; 
             subscribe* subscribeMessage = stream_to_subscribe(stream);

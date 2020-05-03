@@ -18,8 +18,8 @@ typedef enum
 	CATCH_POKEMON = 3,
 	CAUGHT_POKEMON = 4,
 	GET_POKEMON = 5,
-	SUSCRIPTOR = 6,
-	LOCALIZED_POKEMON = 7, //no cambiar los items 1-7
+	LOCALIZED_POKEMON = 6, //no cambiar los items 1-6
+	SUSCRIPTOR = 7,
 	NEW_CONNECTION = 8,
 	CONNECTION = 9,
 	RECONNECT = 10,
@@ -53,7 +53,7 @@ void process_message(uint32_t client_fd, void* stream);
 void pthread_create_and_detach(void* function, void* args);
 void mask_sig(void);
 void* suscribirseA(op_code codigoOp,uint32_t socket_broker);
-t_paquete* stream_to_package(op_code code,void* payload);
+t_paquete* stream_to_package(op_code code,void* payload, uint32_t size_payload);
 void free_package(t_paquete* package);
 
 #endif

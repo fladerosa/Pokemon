@@ -72,7 +72,7 @@ void set_sig_handler(void)
 
 void init_queues(){
     list_queues = list_create();
-    for(int i=1; i<=7;i++){ //asumo que del 1 al 7 esta cada id de cola/mensaje
+    for(int i=1; i<=6;i++){ //asumo que del 1 al 6 esta cada id de cola/mensaje
         t_message_queue* queue = malloc(sizeof(t_message_queue));
         queue->id_queue = i;
         queue->messages = queue_create();

@@ -21,6 +21,9 @@ typedef struct t_receiver {
 
 typedef struct t_message {
     void* data;
+    uint32_t id_message;
+    uint32_t id_queue;
+    uint32_t size;
     t_list* receivers;
 } t_message;
 
@@ -43,7 +46,7 @@ void handle_new_connection(uint32_t client_fd);
 void handle_reconnect(uint32_t client_fd, reconnect* reconn);
 void handle_subscribe(uint32_t client_fd, subscribe* subs);
 void* list_find_with_args(t_list *self, bool(*condition)(void* elem, void* args), void* args);
-void add_message_to_queue(void* data, op_code code);
+void add_message_to_queue(void* data, op_code code, uint32_t size_of_data, uint32_t id_message);
 void queue_message_sender(void* queue);
 void handle_ack(uint32_t client_fd, ack* acknowledgement);
 
