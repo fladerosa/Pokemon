@@ -1,5 +1,25 @@
 #include "iniciarGameCard.h"
 
+void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) {
+	void* stream = malloc(sizeofstruct);
+    recv(client_fd, stream, sizeofstruct, MSG_WAITALL);
+
+    switch(cod_op){
+        case NEW_POKEMON:;
+            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream); 
+            log_info(optional_logger, "New pokemon!");
+            break;
+        case CATCH_POKEMON:;
+            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
+            log_info(optional_logger, "Catch pokemon!");
+            break;
+        case GET_POKEMON:;
+            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream);
+            log_info(optional_logger, "Get pokemon!"); 
+            break;
+    }
+}
+
 void iniciarGameCard(){
 
     config = config_create("./cfg/gamecard.config");
@@ -11,20 +31,18 @@ void iniciarGameCard(){
 
     //Se intentara suscribir globalmente al Broker a las siguientes colas de mensajes
     //TODO
-    
     pthread_t hiloClienteBroker;
-    pthread_create(&hiloClienteBroker,NULL,(void*)suscribirseATodo,NULL);
+    pthread_create(&hiloClienteBroker,NULL,(void*)suscribirseATodo,NULL); 
+
+    on_request request = &receiveMessage; 
+
+    start_server(IP_GAMECARD,PUERTO_GAMECARD,request);
+    pthread_join(server, NULL);
+
     pthread_join(hiloClienteBroker,NULL);
-    //receiveMessageSubscriptor();
-    //start_server(ipGameCard, puertoGameCard);
-
-    start_server(IP_GAMECARD,PUERTO_GAMECARD,p_on_request);
-
-
 
     finalizarGameCard();
 }
-
 
 void suscribirseATodo(){
     char* PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
@@ -40,18 +58,4 @@ void finalizarGameCard(){
     log_destroy(optional_logger);
     config_destroy(config);
     close(socket_broker);
-}
-
-void process_request(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) {
-	void* stream = malloc(sizeofstruct);
-    if (recv(client_fd, stream, sizeofstruct, MSG_WAITALL)<=0){free(stream); return;}
-
-    switch(cod_op){
-        case NEW_POKEMON: 
-            break;
-        case CATCH_POKEMON: 
-            break;
-        case GET_POKEMON:
-            break;
-    }
 }

@@ -4,7 +4,7 @@
 #include "common_utils.h"
 
 uint32_t socket_broker;
-on_request p_on_request;
+on_request request;
 void iniciarGameCard();
 void suscribirseATodo();
 void finalizarGameCard();
