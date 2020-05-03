@@ -1,7 +1,7 @@
 #include "common_connections.h"
 
 void start_server(char* ip, char* port, on_request request_receiver){
-    uint32_t socket_servidor;
+    uint32_t socket_servidor, isBinded=-1, sleep_time = 10;
     struct addrinfo hints, *servinfo, *p;
 
     memset(&hints, 0, sizeof(hints));
@@ -11,16 +11,18 @@ void start_server(char* ip, char* port, on_request request_receiver){
 
     getaddrinfo(ip, port, &hints, &servinfo);
 
-    for (p=servinfo; p != NULL; p = p->ai_next)
+    for (p=servinfo; isBinded==-1;)
     {
         if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1){
-            log_error(optional_logger, "Could not create socket.");
+            log_error(optional_logger, "Could not create socket. Trying again in %d seconds", sleep_time);
+            sleep(sleep_time);
             continue;
         }
 
-        if (bind(socket_servidor, p->ai_addr, p->ai_addrlen) == -1) {
+        if ((isBinded = bind(socket_servidor, p->ai_addr, p->ai_addrlen)) == -1) {
             close(socket_servidor);
-            log_error(optional_logger, "Could not bind socket.");
+            log_error(optional_logger, "Could not bind socket. Trying again in %d seconds", sleep_time);
+            sleep(sleep_time);
             continue;
         }
         break;

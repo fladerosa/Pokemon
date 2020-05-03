@@ -173,7 +173,7 @@ void send_ack(uint32_t socket_broker, uint32_t id_message){
 
     paquete->codigo_operacion = ACK; 
     paquete->buffer->size = sizeof(u_int32_t); // revisar
-    paquete->buffer->stream = reconnect_to_stream(ackBroker);
+    paquete->buffer->stream = ack_to_stream(ackBroker);
 
     uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
 
