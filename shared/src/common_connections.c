@@ -1,4 +1,21 @@
 #include "common_connections.h"
+#define SIZEOP 13
+
+char* operation_names[SIZEOP] = {
+	"NEW POKEMON",
+	"APPEARED POKEMON",
+	"CATCH POKEMON",
+	"CAUGHT POKEMON",
+	"GET POKEMON",
+	"LOCALIZED POKEMON",
+	"SUSCRIPTOR",
+	"NEW CONNECTION",
+	"CONNECTION",
+	"RECONNECT",
+	"ACKNOWLEDGEMENT",
+	"ERROR",
+	"MENSAJE"
+};
 
 void start_server(char* ip, char* port, on_request request_receiver){
     uint32_t socket_servidor, isBinded=-1, sleep_time = 10;
@@ -71,7 +88,11 @@ void serve_client(t_process_request* processor){
     on_request request_receiver = (*processor).request_receiver;
 	while(1){
         if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;
-        log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
+        if( cod_op >= 1 && cod_op <= SIZEOP ){
+            log_info(optional_logger, "Received %s by socket: %d", operation_names[cod_op-1], socket);
+        } else {
+            log_info(optional_logger, "Received %d by socket: %d", cod_op, socket);
+        }
         if(recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL)<=0) break;
         //log_info(optional_logger, "Size of stream: %d", size);
         request_receiver(cod_op, size, socket);

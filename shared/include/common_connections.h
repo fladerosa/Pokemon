@@ -28,6 +28,7 @@ typedef enum
 	MENSAJE = 13
 }op_code;
 
+
 typedef struct
 {
 	uint32_t size;
