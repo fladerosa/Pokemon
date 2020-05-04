@@ -52,7 +52,7 @@ int main(int argc, char ** argv){
 
     //Me suscribo si el mensaje es SUSCRIPTOR
     if(strcmp(server, "SUSCRIPTOR") == 0){
-       
+        id_queue_to_subscribe = stringToEnum(argv[2]);
         t_process_request* process_request = malloc(sizeof(t_process_request)); 
         (*process_request).socket = conexion; 
         (*process_request).request_receiver = receiveMessageSubscriptor;
@@ -61,13 +61,13 @@ int main(int argc, char ** argv){
         pthread_create(&threadConnection, NULL, (void*) countTime, (void*) atoi(argv[3]));
 
         send_new_connection(conexion); //Mando el mensaje
-        uint32_t id_connection = receive_connection_id(conexion);
+        id_connection = receive_connection_id(conexion);
         send_message(argv, conexion, optional_logger);
         while(1){
             serve_client(process_request);
             close(conexion);
             conexion = crear_conexion(ip, port);
-            send_reconnect(id_connection);
+            send_reconnect(conexion);
         }     
     }else{
         send_message(argv, conexion, optional_logger); //Mando el mensaje

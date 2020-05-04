@@ -6,6 +6,7 @@
 #include "tests.h"
 #include <time.h>
 
+
 void closeAll(t_log* optional_logger,t_log* obligatory_logger, t_config* config, int connection);
 void countTime(void* timePassed);
 

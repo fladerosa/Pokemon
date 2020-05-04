@@ -146,7 +146,7 @@ void send_reconnect(uint32_t socket_broker){
     t_paquete* paquete = malloc(sizeof(t_paquete));
     paquete->buffer = malloc(sizeof(t_buffer));
 
-    reconnect* reconnectToBroker = init_reconnect(socket_broker);
+    reconnect* reconnectToBroker = init_reconnect(id_connection);
 
     paquete->codigo_operacion = RECONNECT;
     paquete->buffer->size = sizeof(u_int32_t); // revisar
@@ -280,9 +280,11 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case CONNECTION:;
 
             connection* connectionMessage = stream_to_connection(stream);
-
+            id_connection = connectionMessage->id_connection;
+            suscribirseA(id_queue_to_subscribe, socketfd);
             log_info(optional_logger, "Connection!"); 
             log_info(optional_logger, "This is the id connection: %d", connectionMessage->id_connection);
+            log_info(optional_logger, "Subscribing to queue %d", id_queue_to_subscribe);
             break;
         case RECONNECT:;
 

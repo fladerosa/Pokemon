@@ -17,6 +17,9 @@ const static struct{
     {ERROR, "ERROR"}
 };
 
+uint32_t id_connection;
+uint32_t id_queue_to_subscribe;
+
 void send_message(char** message, int socket_cliente,t_log*  optional_logger);
 op_code stringToEnum(char* message);
 void send_new_connection(uint32_t socket_broker);
