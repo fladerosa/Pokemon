@@ -1,5 +1,6 @@
 
-#include "configuration.h"
+#include "configuracion.h"
+#include <string.h>
 
 void read_config()
 {   
@@ -11,38 +12,49 @@ void read_config()
         exit(CONFIG_FAIL);
     }           
 }
+
 void load_positions_config_team()
-{     
+{     //retorna un array con las posiciones delos entrenadores separadas por |
     char** position_config =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
-    values.posicion_entrenador = list_create();
-    string_iterate_lines(position_config, print_position);
-    list_iterate(values.posicion_entrenador, show);
+    values.posicion_entrenador = list_create(); //creo la lista donde agregare las posiciones
+    string_iterate_lines(position_config, fix_position);
+    list_iterate(values.posicion_entrenador, assembly_trainer);
+  //  assembly_trainer(values.posicion_entrenador);
 }
+
 void add_position_to_list(char *position) {
-    if (position != NULL) {
-      list_add(values.posicion_entrenador, position);
-    }
-  }
-void print_position(char *value) {
-    if(value != NULL) {
-      char **positions = string_split(value, "|");
-      string_iterate_lines(positions, add_position_to_list);
-      printf("Read: %s\n", value);
-    } else {
-      printf("Empty\n");
-    }
+    if (position != NULL) 
+      list_add(values.posicion_entrenador, atoi(position));
   }
 
-void show(void *element) {
-    printf("The element: %s\n", (char *)element);
+void fix_position(char *value) {
+    if(value != NULL) {
+      char **positions = string_split(value, "|"); //saca el |
+      string_iterate_lines(positions, add_position_to_list); //agrega a la lista
   }
+
+void assembly_position_trainer(t_list *posicion_entrenadores){
+
+   for(int j = 1; j <= (list_size(posicion_entrenadores))/; i++) 
+    init_position.id_trainer = i;
+
+   for(int i = 0; i<list_size(posicion_entrenadores); i++){
+       if(i%2 == 0)
+       {
+           init_position.posix = posicion_entrenadores[i];
+       }
+       else{
+            init_position.posiy = posicion_entrenadores[i];
+       }
+   }
+}
 
 void load_pokemons_config_team()
 {
     char** pokemon_config = config_get_array_value(config, "POKEMON_ENTRENADORES");
     values.pokemon_entrenador = list_create();
-    string_iterate_lines(pokemon_config, print_pokemon);
-    list_iterate(values.pokemon_entrenador, show);
+    string_iterate_lines(pokemon_config, fix_pokemon);
+    list_iterate(values.pokemon_entrenador, count_init_pokemon);
 
 }
 void add_pokemon_to_list(char *pokemon) {
@@ -50,21 +62,29 @@ void add_pokemon_to_list(char *pokemon) {
       list_add(values.pokemon_entrenador, pokemon);
     }
   }
-void print_pokemon(char *value) {
+void fix_pokemon(char *value) {
     if(value != NULL) {
       char **pokemons = string_split(value, "|");
       string_iterate_lines(pokemons, add_pokemon_to_list);
-      printf("Read: %s\n", value);
-    } else {
-      printf("Empty\n");
-    }
+      
   }
+
+void count_init_pokemon(t_list *pokemon_entrenadores){
+
+    int quantity = 0;
+    for(int i = 0; i<list_size(pokemon_entrenadores)){
+        if(pokemon_entrenadores[i] == pokemon_entrenadores[i+1])
+        init_pokemon.pokemon= init_pokemon[i];
+        init_pokemon.initial_quantity_pokemon = quantity ++;
+    }
+
+}
 void load_objectives_config_team()
 {
    char** objective_config = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
    values.objetivo_entrenador = list_create();
-   string_iterate_lines(objective_config, print_objective);
-   list_iterate(values.objetivo_entrenador, show);
+   string_iterate_lines(objective_config, fix_objective);
+   list_iterate(values.objetivo_entrenador, count_global_pokemon);
 }
 
 void add_objective_to_list(char *objective) {
@@ -72,15 +92,22 @@ void add_objective_to_list(char *objective) {
       list_add(values.objetivo_entrenador, objective);
     }
   }
-void print_objective(char *value) {
+void fix_objective(char *value) {
     if(value != NULL) {
       char **objectives = string_split(value, "|");
       string_iterate_lines(objectives, add_objective_to_list);
-      printf("Read: %s\n", value);
-    } else {
-      printf("Empty: \n");
-    }
   }
+
+void count_global_pokemon(t_list *objetivos_entrenadores){
+
+    int quantity = 0;
+    for(int i = 0; i<list_size(objetivos_entrenadores)){
+        if(objetivos_entrenadores[i] == objetivos_entrenadores[i+1])
+        global_pokemon.pokemon= global_pokemon[i];
+        global_pokemon.global_quantity_pokemon = quantity ++;
+    }
+
+}
 
 void destroy_position(position_coach* position){
 		
@@ -153,6 +180,13 @@ void initialize_team()
     create_optional_logger();
     load_values_config(config);
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);
+
+    pthread_t connection_broker;
+    pthread_create(&connection_broker,NULL,(void*)establish_broker_connection,NULL); 
+
+    request = &reception_message_queue_subscription; 
+
+    pthread_join(connection_broker,NULL);
 }
 
 void release_resources()
@@ -169,7 +203,7 @@ void release_resources()
 
     destroy_lists_and_loaded_elements();
     close(socket_team);  
-    close(socketServer);
+    close(socket_broker);
 }
 
 enum t_algoritmo obtenerAlgoritmo()
@@ -185,4 +219,61 @@ enum t_algoritmo obtenerAlgoritmo()
 	else if(string_equals_ignore_case(sAlgort, "SJF-SD"))
 		esAlgoritmo = sjf_cd;
 	return esAlgoritmo;
+}
+
+
+void listen_to_gameboy()
+{ 
+   start_server(values.ip_team, values.puerto_team, request);
+   pthread_join(server, NULL);
+   //mandar mensaje de confirmacion cuando el gameboy me mande appeared_pokemon()
+}
+
+void establish_broker_connection()
+{
+    uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
+	
+	suscribirseA(APPEARED_POKEMON, server_connection);
+		log_info(optional_logger, "Queue subscription request APPEARED_POKEMON\n");
+	suscribirseA(CATCH_POKEMON, server_connection);
+		log_info(optional_logger, "Queue subscription request CATCH_POKEMON\n");
+	suscribirseA(CAUGHT_POKEMON, server_connection);
+		log_info(optional_logger, "Queue subscription request CAUGHT_POKEMON\n");
+	suscribirseA(GET_POKEMON, server_connection);
+		log_info(optional_logger, "Queue subscription request GET_POKEMON,\n");
+	suscribirseA(LOCALIZED_POKEMON, server_connection);
+		log_info(optional_logger, "Queue subscription request LOCALIZED_POKEMON\n"); 
+    
+}
+
+void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, uint32_t client_fd)
+{
+	void* stream = malloc(sizeofstruct);
+    recv(client_fd, stream, sizeofstruct, MSG_WAITALL);
+
+    switch(code){
+        case APPEARED_POKEMON:;
+            appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream); 
+            log_info(optional_logger, "Appeared pokemon!");
+            break;
+        case CATCH_POKEMON:;
+            catch_pokemon* catch_Pokemon_Message = stream_to_catch_pokemon(stream);
+            log_info(optional_logger, "Catch pokemon!");
+            break;
+        case CAUGHT_POKEMON:;
+			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream);
+            log_info(optional_logger, "Caught pokemon!");
+            break;
+		case GET_POKEMON:;
+            get_pokemon* get_Pokemon_Message = stream_to_get_pokemon(stream);
+            log_info(optional_logger, "Get pokemon!"); 
+            break;
+        case LOCALIZED_POKEMON:;
+            localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream);
+            log_info(optional_logger, "Localized pokemon!"); 
+            break;
+    }
+
+
+
 }
