@@ -5,6 +5,7 @@
 #include "handler.h"
 #include "finalizer.h"
 #include "dump.h"
+#include "queues.h"
 
 typedef struct config_values{
     uint32_t tamano_memoria;
@@ -18,13 +19,16 @@ typedef struct config_values{
     char* dump_file;
 } config_values;
 
+
 config_values cfg_values;
 uint32_t listening_socket;
 on_request p_on_request;
+pthread_mutex_t m_id_message, m_id_connection;
+
 void initialize();
 void fill_config_values();
-void mask_sig(void);
-void set_sig_handler(void);
 t_log* create_log_from_config(char* path_key, char* name, char* show_key);
+void set_sig_handler(void);
+void init_queues();
 
 #endif

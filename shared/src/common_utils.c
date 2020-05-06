@@ -20,9 +20,13 @@ new_pokemon* stream_to_new_pokemon(void* stream){
     return newPokemonMessage;
 }
 
+uint32_t size_of_new_pokemon(new_pokemon* newPokemonMessage){
+    return sizeof(uint32_t) * 5 + strlen(newPokemonMessage->pokemon) + 1;
+}
+
 void* new_pokemon_to_stream(new_pokemon* newPokemonMessage){
 
-    uint32_t size = sizeof(uint32_t) * 5 + strlen(newPokemonMessage->pokemon) + 1;
+    uint32_t size = size_of_new_pokemon(newPokemonMessage);
     void* stream = malloc(size); 
     uint32_t forward = 0;
 
@@ -63,9 +67,13 @@ appeared_pokemon* stream_to_appeared_pokemon(void* stream){
     return appearedPokemonMessage;
 }
 
+uint32_t size_of_appeared_pokemon(appeared_pokemon* appearedPokemonMessage){
+    return sizeof(uint32_t ) * 5 + strlen(appearedPokemonMessage->pokemon) + 1;
+}
+
 void* appeared_pokemon_to_stream(appeared_pokemon* appearedPokemonMessage){
 
-    uint32_t size = sizeof(uint32_t ) * 5 + strlen(appearedPokemonMessage->pokemon) + 1;
+    uint32_t size = size_of_appeared_pokemon(appearedPokemonMessage);
     void* stream = malloc(size); 
     uint32_t forward = 0;
 
@@ -104,9 +112,13 @@ catch_pokemon* stream_to_catch_pokemon(void* stream){
     return catchPokemonMessage;
 }
 
+uint32_t size_of_catch_pokemon(catch_pokemon* catchPokemonMessage){
+    return sizeof(uint32_t ) * 4 + strlen(catchPokemonMessage->pokemon) + 1;
+}
+
 void* catch_pokemon_to_stream(catch_pokemon* catchPokemonMessage){
 
-    uint32_t size = sizeof(uint32_t ) * 4 + strlen(catchPokemonMessage->pokemon) + 1;
+    uint32_t size = size_of_catch_pokemon(catchPokemonMessage);
     void* stream = malloc(size); 
     uint32_t forward = 0;
 
@@ -138,9 +150,13 @@ caught_pokemon* stream_to_caught_pokemon(void* stream){
     return caughtPokemonMessage;
 }
 
+uint32_t size_of_caught_pokemon(caught_pokemon* caughtPokemonMessage){
+    return sizeof(uint32_t) * 3;
+}
+
 void* caught_pokemon_to_stream(caught_pokemon* caughtPokemonMessage){
 
-    uint32_t size = sizeof(uint32_t) * 3;
+    uint32_t size = size_of_caught_pokemon(caughtPokemonMessage);
     void* stream = malloc(size); 
     uint32_t forward = 0;
 
@@ -169,9 +185,13 @@ get_pokemon* stream_to_get_pokemon(void* stream){
     return getPokemonMessage;
 }
 
+uint32_t size_of_get_pokemon(get_pokemon* getPokemonMessage){
+    return sizeof(uint32_t ) * 2 + strlen(getPokemonMessage->pokemon) + 1;
+}
+
 void* get_pokemon_to_stream(get_pokemon* getPokemonMessage){
 
-    uint32_t size = sizeof(uint32_t ) * 2 + strlen(getPokemonMessage->pokemon) + 1;
+    uint32_t size = size_of_get_pokemon(getPokemonMessage);
     void* stream = malloc(size); 
     uint32_t forward = 0;
 
@@ -215,9 +235,13 @@ localized_pokemon* stream_to_localized_pokemon(void* stream){
     return localizedPokemonMessage;
 }
 
+uint32_t size_of_localized_pokemon(localized_pokemon* localizedPokemonMessage){
+    return sizeof(uint32_t) * 4 + strlen(localizedPokemonMessage->pokemon) + 1 + sizeof(uint32_t) * 2 * (*localizedPokemonMessage->positions).elements_count;
+}
+
 void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage){
 
-    uint32_t size = sizeof(uint32_t) * 4 + strlen(localizedPokemonMessage->pokemon) + 1 + sizeof(uint32_t) * 2 * (*localizedPokemonMessage->positions).elements_count;
+    uint32_t size = size_of_localized_pokemon(localizedPokemonMessage);
     void* stream = malloc(size); 
     uint32_t forward = 0;
 
@@ -267,16 +291,12 @@ void* subscribe_to_stream(subscribe* subscribeMessage){
 
 new_connection* stream_to_new_connection(void* stream){
 
-    new_connection* newConnectionMessage = malloc(sizeof(new_connection)); 
-
+    new_connection* newConnectionMessage = malloc(sizeof(new_connection));
     return newConnectionMessage;
 }
 
 void* new_connection_to_stream(new_connection* newConnectionMessage){
-
-    uint32_t size = 0;
-    void* stream = malloc(size); 
-
+    void* stream = malloc(sizeof(new_connection)); 
     return stream;
 }
 
@@ -292,7 +312,7 @@ reconnect* stream_to_reconnect(void* stream){
 
 void* reconnect_to_stream(reconnect* reconnectMessage){
 
-    uint32_t size = 0;
+    uint32_t size = sizeof(uint32_t);
     void* stream = malloc(size);
     uint32_t forward = 0;
 
@@ -314,7 +334,7 @@ connection* stream_to_connection(void* stream){
 
 void* connection_to_stream(connection* connectionMessage){
 
-    uint32_t size = 0;
+    uint32_t size = sizeof(uint32_t);
     void* stream = malloc(size);
     uint32_t forward = 0;
 
@@ -326,7 +346,7 @@ void* connection_to_stream(connection* connectionMessage){
 
 ack* stream_to_ack(void* stream){
 
-    ack* acknowledgementMessage = malloc(sizeof(ack)); 
+    ack* acknowledgementMessage = malloc(sizeof(ack));
 
     memcpy(&(acknowledgementMessage->id_message), stream, sizeof(uint32_t));
     stream += sizeof(uint32_t);
@@ -336,7 +356,7 @@ ack* stream_to_ack(void* stream){
 
 void* ack_to_stream(ack* acknowledgementMessage){
 
-    uint32_t size = 0;
+    uint32_t size = sizeof(uint32_t);
     void* stream = malloc(size);
     uint32_t forward = 0;
 
@@ -433,6 +453,62 @@ subscribe* init_subscribe(uint32_t id_queue){
     subs->colaMensajes = id_queue;
     return subs;
 }
+
+void free_new_pokemon(new_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_appeared_pokemon(appeared_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_catch_pokemon(catch_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_caught_pokemon(caught_pokemon* pokemon){
+    free(pokemon);
+}
+
+void free_get_pokemon(get_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon);
+}
+
+void free_localized_pokemon(localized_pokemon* pokemon){
+    if(pokemon->pokemon) free(pokemon->pokemon);
+    if(pokemon->positions) list_destroy_and_destroy_elements(pokemon->positions, free);
+    free(pokemon);
+}
+
+void free_subscribe(subscribe* subscriber){
+    free(subscriber);
+}
+
+void free_new_connection(new_connection* conn){
+    free(conn);
+}
+
+void free_reconnect(reconnect* reconn){
+    free(reconn);
+}
+
+void free_connection(connection* conn){
+    free(conn);
+}
+
+void free_ack(ack* acknowledgement){
+    free(acknowledgement);
+}
+
+
+
+
+
+
 
 
 

@@ -16,6 +16,10 @@ void initialize(){
     );
     log_info(optional_logger, "Initializing Application...");
     fill_config_values();
+    connections = list_create();
+    pthread_mutex_init(&m_id_connection, NULL);
+    pthread_mutex_init(&m_id_message, NULL);
+    init_queues();
     set_sig_handler();
     p_on_request = &process_request;
     log_info(optional_logger, "Configuration and loggers loaded successfully.");
@@ -50,14 +54,6 @@ void fill_config_values(){
     );
 }
 
-void mask_sig(void)
-{
-	sigset_t mask;
-	sigemptyset(&mask); 
-    sigaddset(&mask, SIGUSR1);         
-    pthread_sigmask(SIG_BLOCK, &mask, NULL);
-}
-
 void set_sig_handler(void)
 {
     struct sigaction* action = malloc(sizeof(sigaction));
@@ -71,4 +67,21 @@ void set_sig_handler(void)
         _exit(1);
     }
 
+    free(action);
+}
+
+void init_queues(){
+    list_queues = list_create();
+    for(int i=1; i<=6;i++){ //asumo que del 1 al 6 esta cada id de cola/mensaje
+        t_message_queue* queue = malloc(sizeof(t_message_queue));
+        queue->id_queue = i;
+        queue->messages = queue_create();
+        queue->subscribers = list_create();
+        queue->sem_all_ack = malloc(sizeof(sem_t));
+        queue->sem_message = malloc(sizeof(sem_t));
+        sem_init(queue->sem_message, 0, 0);
+        sem_init(queue->sem_all_ack, 0, 0); 
+        list_add(list_queues,queue);
+        pthread_create_and_detach(queue_message_sender,queue);
+    }
 }

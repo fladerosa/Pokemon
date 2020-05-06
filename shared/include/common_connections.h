@@ -18,8 +18,8 @@ typedef enum
 	CATCH_POKEMON = 3,
 	CAUGHT_POKEMON = 4,
 	GET_POKEMON = 5,
-	SUSCRIPTOR = 6,
-	LOCALIZED_POKEMON = 7,
+	LOCALIZED_POKEMON = 6,
+	SUSCRIPTOR = 7,
 	NEW_CONNECTION = 8,
 	CONNECTION = 9,
 	RECONNECT = 10,
@@ -27,6 +27,7 @@ typedef enum
 	ERROR = 12,
 	MENSAJE = 13
 }op_code;
+
 
 typedef struct
 {
@@ -51,5 +52,9 @@ void enviar_mensaje(char* mensaje, uint32_t socketfd);
 char* recibir_mensaje(uint32_t socket_cliente, uint32_t buffer_size);
 void process_message(uint32_t client_fd, void* stream);
 void pthread_create_and_detach(void* function, void* args);
-void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd);
+void mask_sig(void);
+void* suscribirseA(op_code codigoOp,uint32_t socket_broker);
+t_paquete* stream_to_package(op_code code,void* payload, uint32_t size_payload);
+void free_package(t_paquete* package);
+
 #endif

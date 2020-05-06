@@ -1,7 +1,24 @@
 #include "common_connections.h"
+#define SIZEOP 13
+
+char* operation_names[SIZEOP] = {
+	"NEW POKEMON",
+	"APPEARED POKEMON",
+	"CATCH POKEMON",
+	"CAUGHT POKEMON",
+	"GET POKEMON",
+	"LOCALIZED POKEMON",
+	"SUSCRIPTOR",
+	"NEW CONNECTION",
+	"CONNECTION",
+	"RECONNECT",
+	"ACKNOWLEDGEMENT",
+	"ERROR",
+	"MENSAJE"
+};
 
 void start_server(char* ip, char* port, on_request request_receiver){
-    uint32_t socket_servidor;
+    uint32_t socket_servidor, isBinded=-1, sleep_time = 10;
     struct addrinfo hints, *servinfo, *p;
 
     memset(&hints, 0, sizeof(hints));
@@ -11,22 +28,23 @@ void start_server(char* ip, char* port, on_request request_receiver){
 
     getaddrinfo(ip, port, &hints, &servinfo);
 
-    for (p=servinfo; p != NULL; p = p->ai_next)
+    for (p=servinfo; isBinded==-1;)
     {
         if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1){
-            log_error(optional_logger, "Could not create socket.");
+            log_error(optional_logger, "Could not create socket. Trying again in %d seconds", sleep_time);
+            sleep(sleep_time);
             continue;
         }
 
-        if (bind(socket_servidor, p->ai_addr, p->ai_addrlen) == -1) {
+        if ((isBinded = bind(socket_servidor, p->ai_addr, p->ai_addrlen)) == -1) {
             close(socket_servidor);
-            log_error(optional_logger, "Could not bind socket.");
+            log_error(optional_logger, "Could not bind socket. Trying again in %d seconds", sleep_time);
+            sleep(sleep_time);
             continue;
         }
         break;
     }
-	listen(socket_servidor, SOMAXCONN);
-    log_info(optional_logger, "Started listening on %s:%s", ip, port);
+    log_info(optional_logger, "Starting new listening thread on %s:%s", ip, port);
 
     freeaddrinfo(servinfo);
 	t_process_request* server_processor = malloc(sizeof(t_process_request));
@@ -36,7 +54,9 @@ void start_server(char* ip, char* port, on_request request_receiver){
 }
 
 void run_server(void * server_processor){
+    mask_sig();
 	uint32_t socket = (*(t_process_request*)server_processor).socket;
+	listen(socket, SOMAXCONN);
 	on_request request_receiver = (*(t_process_request*)server_processor).request_receiver;
 	while(true){
 		receive_new_connections(socket,request_receiver);
@@ -52,7 +72,7 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
     if (connfd < 0) { 
         log_info(optional_logger, "Server accept failed..."); 
     } else {
-        log_info(optional_logger, "Server accepted a new client...");
+        log_info(optional_logger, "Server accepted a new client on socket: %d", connfd);
         t_process_request processor;
         processor.socket = connfd;
         processor.request_receiver = request_receiver;
@@ -63,15 +83,31 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
 }
 
 void serve_client(t_process_request* processor){
-    uint32_t socket = (*processor).socket;
-    uint32_t size = -1;
+    mask_sig();
+    uint32_t socket = processor->socket, size = -1, cod_op=-1;
     on_request request_receiver = (*processor).request_receiver;
-	uint32_t cod_op=-1;
-	recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL);
-	log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
-    recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL);
-	log_info(optional_logger, "Size of stream: %d", size);
-    request_receiver(cod_op, size, socket);
+	while(1){
+        if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;
+        if( cod_op >= 1 && cod_op <= SIZEOP ){
+            log_info(optional_logger, "Received %s by socket: %d", operation_names[cod_op-1], socket);
+        } else {
+            log_info(optional_logger, "Received %d by socket: %d", cod_op, socket);
+        }
+        if(recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL)<=0) break;
+        //log_info(optional_logger, "Size of stream: %d", size);
+        request_receiver(cod_op, size, socket);
+    }
+    log_info(optional_logger, "Socket %d has disconnected", socket);
+    close(socket);
+}
+
+t_paquete* stream_to_package(op_code code,void* payload, uint32_t size_payload){
+    t_paquete* package = malloc(sizeof(t_paquete));
+    package->buffer = malloc(sizeof(t_buffer));
+    package->codigo_operacion = code;
+    package->buffer->size = size_payload;
+    package->buffer->stream = payload;
+    return package;
 }
 
 void* serializar_paquete(t_paquete* paquete, uint32_t bytes){
@@ -165,114 +201,33 @@ void pthread_create_and_detach(void* function, void* args ){
 	pthread_detach(thread);
 }
 
-void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd){
+void free_package(t_paquete* package){
+    free(package->buffer->stream);
+    free(package->buffer);
+    free(package);
+}
 
-    void* stream = malloc(sizeofstruct);
-    recv(socketfd, stream, sizeofstruct, MSG_WAITALL);
-    
-    switch(cod_op){
-        case NEW_POKEMON:;
-            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream);
-            
-            log_info(optional_logger, "New pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", newPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the position x: %d", newPokemonMessage->position.posx);
-            log_info(optional_logger, "This is the position y: %d", newPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the quantity: %d", newPokemonMessage->quantity);
-            log_info(optional_logger, "This is the id message: %d", newPokemonMessage->id_message);
-            break;
-        case APPEARED_POKEMON:;
-            appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream);
+void mask_sig(void)
+{
+	sigset_t mask;
+	sigemptyset(&mask); 
+    sigaddset(&mask, SIGUSR1);         
+    pthread_sigmask(SIG_BLOCK, &mask, NULL);
+}
 
-            log_info(optional_logger, "Appeared pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", appearedPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the position x: %d", appearedPokemonMessage->position.posx);
-            log_info(optional_logger, "This is the position y: %d", appearedPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the id correlational: %d", appearedPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: %d", appearedPokemonMessage->id_message);
-            break;
-        case CATCH_POKEMON:;
-
-            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
-
-            log_info(optional_logger, "Catch pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", catchPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the position x: %d", catchPokemonMessage->position.posx);
-            log_info(optional_logger, "This is the position y: %d", catchPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the id message: %d", catchPokemonMessage->id_message);
-            break;
-        case CAUGHT_POKEMON:;
-
-            caught_pokemon* caughtPokemonMessage = stream_to_caught_pokemon(stream);
-
-            char* wasCaught; 
-
-            if(caughtPokemonMessage->success){
-                wasCaught = "OK";
-            }else{
-                wasCaught = "FAIL";
-            }
-
-            log_info(optional_logger, "Caught pokemon!");
-            log_info(optional_logger, "Was the pokemon catch?: %d", wasCaught); 
-            log_info(optional_logger, "This is the id correlational: %d", caughtPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: %d", caughtPokemonMessage->id_message);
-            break;
-        case GET_POKEMON:;
-
-            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream); 
-
-            log_info(optional_logger, "Get pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", getPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the id message: %d", getPokemonMessage->id_message);
-            break;
-        case LOCALIZED_POKEMON:;
-
-            localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream);
-
-            log_info(optional_logger, "Localized pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", localizedPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the size of the list of positions: %d", (*localizedPokemonMessage->positions).elements_count);
-            log_info(optional_logger, "This is the id correlational: %d", localizedPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: %d", localizedPokemonMessage->id_message);
-            break;
-        case SUSCRIPTOR:; 
-
-            subscribe* subscribeMessage = stream_to_subscribe(stream);
-
-            log_info(optional_logger, "Subscribe!");
-            log_info(optional_logger, "This is the queue: %d", subscribeMessage->colaMensajes);            
-            break;
-        case NEW_CONNECTION:; 
-
-            new_connection* newConnectionMessage = stream_to_new_connection(stream);
-            free(newConnectionMessage);
-            log_info(optional_logger, "New connection!");
-            break;
-        case CONNECTION:;
-
-            connection* connectionMessage = stream_to_connection(stream);
-
-            log_info(optional_logger, "Connection!"); 
-            log_info(optional_logger, "This is the id connection: %d", connectionMessage->id_connection);
-            break;
-        case RECONNECT:;
-
-            reconnect* reconnectMessage = stream_to_reconnect(stream);
-
-            log_info(optional_logger, "Reconnect!");
-            log_info(optional_logger, "This is the id connection: %d",reconnectMessage->id_connection);
-            break; 
-        case ACK:;
-
-            ack* acknowledgementMessage = stream_to_ack(stream);
-
-            log_info(optional_logger, "Acknowledgement!");
-            log_info(optional_logger, "This is the id message: %d", acknowledgementMessage->id_message);
-            break;
-        case -1:;
-            break;
-        default:;
-            log_info(optional_logger, "Cannot understand op_code received.");
-    }
+void* suscribirseA(op_code codigoOp,uint32_t socket_broker){
+    subscribe* suscripcion = init_subscribe(codigoOp);
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = malloc(sizeof(t_buffer));
+    paquete->codigo_operacion = SUSCRIPTOR;
+    paquete->buffer->size = sizeof(uint32_t);
+    paquete->buffer->stream = subscribe_to_stream(suscripcion);
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
+    void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+	send(socket_broker, a_enviar, bytes, 0);
+    free(a_enviar);
+	free(paquete->buffer->stream);
+	free(paquete->buffer);
+	free(paquete);
+    return NULL;
 }

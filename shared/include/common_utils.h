@@ -72,7 +72,6 @@ typedef struct{
 }localized_pokemon;
 
 typedef struct{
-
 }new_connection;
 
 typedef struct{
@@ -125,7 +124,23 @@ reconnect* init_reconnect(uint32_t id_connection);
 connection* init_connection(uint32_t id_connection);
 ack* init_ack(uint32_t id_message);
 subscribe* init_subscribe(uint32_t id_queue);
-
+void free_ack(ack* acknowledgement);
+void free_connection(connection* conn);
+void free_reconnect(reconnect* reconn);
+void free_new_connection(new_connection* conn);
+void free_subscribe(subscribe* subscriber);
+void free_localized_pokemon(localized_pokemon* pokemon);
+void free_get_pokemon(get_pokemon* pokemon);
+void free_caught_pokemon(caught_pokemon* pokemon);
+void free_catch_pokemon(catch_pokemon* pokemon);
+void free_appeared_pokemon(appeared_pokemon* pokemon);
+void free_new_pokemon(new_pokemon* pokemon);
+uint32_t size_of_localized_pokemon(localized_pokemon* localizedPokemonMessage);
+uint32_t size_of_get_pokemon(get_pokemon* getPokemonMessage);
+uint32_t size_of_caught_pokemon(caught_pokemon* caughtPokemonMessage);
+uint32_t size_of_catch_pokemon(catch_pokemon* catchPokemonMessage);
+uint32_t size_of_appeared_pokemon(appeared_pokemon* appearedPokemonMessage);
+uint32_t size_of_new_pokemon(new_pokemon* newPokemonMessage);
 
 
 #endif

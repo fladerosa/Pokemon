@@ -9,7 +9,7 @@
             "args": [
                 "SUSCRIPTOR",
                 "NEW_POKEMON",
-                "100"
+                "500000000"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

@@ -19,6 +19,7 @@
 	"settings": {
 		"files.associations": {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			"configuracion.h": "c",
 			"pthread.h": "c",
 			"team.h": "c",
@@ -26,6 +27,10 @@
 			"string.h": "c"
 =======
 			"dump.h": "c"
+>>>>>>> master
+=======
+			"dump.h": "c",
+			"common_tests.h": "c"
 >>>>>>> master
 		}
 	},
