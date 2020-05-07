@@ -28,7 +28,7 @@ void test_new_pokemon(){
     new_pokemon* pokemon = init_new_pokemon(name,2,3,4);
     uint32_t id_message = 5, copy_id_message = -1;
     void* stream = new_pokemon_to_stream(pokemon, &id_message);
-    new_pokemon* copy = stream_to_new_pokemon(stream, &copy_id_message);
+    new_pokemon* copy = stream_to_new_pokemon(stream, &copy_id_message, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
@@ -48,7 +48,7 @@ void test_appeared_pokemon(){
     id_correlational = 9, copy_id_correlational = -1;
     appeared_pokemon* pokemon = init_appeared_pokemon(name, 6,7);
     void* stream = appeared_pokemon_to_stream(pokemon, &id_message, &id_correlational);
-    appeared_pokemon* copy = stream_to_appeared_pokemon(stream, &copy_id_message, &copy_id_correlational);
+    appeared_pokemon* copy = stream_to_appeared_pokemon(stream, &copy_id_message, &copy_id_correlational, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
@@ -68,7 +68,7 @@ void test_catch_pokemon(){
     uint32_t id_message = 12, copy_id_message = -1;
     catch_pokemon* pokemon = init_catch_pokemon(name, 10, 11);
     void* stream = catch_pokemon_to_stream(pokemon, &id_message);
-    catch_pokemon* copy = stream_to_catch_pokemon(stream, &copy_id_message);
+    catch_pokemon* copy = stream_to_catch_pokemon(stream, &copy_id_message, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
@@ -86,7 +86,7 @@ void test_caught_pokemon(){
     uint32_t id_message = 8, copy_id_message = -1,
         id_correlational = 9, copy_id_correlational = -1;
     void* stream = caught_pokemon_to_stream(pokemon, &id_message, &id_correlational);
-    caught_pokemon* copy = stream_to_caught_pokemon(stream, &copy_id_message, &copy_id_correlational);
+    caught_pokemon* copy = stream_to_caught_pokemon(stream, &copy_id_message, &copy_id_correlational, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_EQUAL(copy_id_correlational, id_correlational);
@@ -102,7 +102,7 @@ void test_get_pokemon(){
     uint32_t id_message = 8, copy_id_message = -1;
     get_pokemon* pokemon = init_get_pokemon(name);
     void* stream = get_pokemon_to_stream(pokemon, &id_message);
-    get_pokemon* copy = stream_to_get_pokemon(stream, &copy_id_message);
+    get_pokemon* copy = stream_to_get_pokemon(stream, &copy_id_message, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
@@ -130,7 +130,7 @@ void test_localized_pokemon(){
     char* name = strdup("Metapod");   
     localized_pokemon* pokemon = init_localized_pokemon(name, list_positions);
     void* stream = localized_pokemon_to_stream(pokemon, &id_message, &id_correlational);
-    localized_pokemon* copy = stream_to_localized_pokemon(stream, &copy_id_message, &copy_id_correlational);
+    localized_pokemon* copy = stream_to_localized_pokemon(stream, &copy_id_message, &copy_id_correlational, true);
 
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);

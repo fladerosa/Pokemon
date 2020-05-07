@@ -82,17 +82,17 @@ typedef struct{
 }subscribe;
 
 
-new_pokemon* stream_to_new_pokemon(void* stream, uint32_t* id_message);
+new_pokemon* stream_to_new_pokemon(void* stream, uint32_t* id_message, bool is_broker);
 void* new_pokemon_to_stream(new_pokemon* newPokemonMessage, uint32_t* id_message);
-appeared_pokemon* stream_to_appeared_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational);
+appeared_pokemon* stream_to_appeared_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational, bool is_broker);
 void* appeared_pokemon_to_stream(appeared_pokemon* appearedPokemonMessage, uint32_t* id_message, uint32_t* id_correlational);
-catch_pokemon* stream_to_catch_pokemon(void* stream, uint32_t* id_message);
+catch_pokemon* stream_to_catch_pokemon(void* stream, uint32_t* id_message, bool is_broker);
 void* catch_pokemon_to_stream(catch_pokemon* catchPokemonMessage, uint32_t* id_message);
-caught_pokemon* stream_to_caught_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational);
+caught_pokemon* stream_to_caught_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational, bool is_broker);
 void* caught_pokemon_to_stream(caught_pokemon* caughtPokemonMessage, uint32_t* id_message, uint32_t* id_correlational);
-get_pokemon* stream_to_get_pokemon(void* stream, uint32_t* id_message);
+get_pokemon* stream_to_get_pokemon(void* stream, uint32_t* id_message, bool is_broker);
 void* get_pokemon_to_stream(get_pokemon* getPokemonMessage, uint32_t* id_message);
-localized_pokemon* stream_to_localized_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational);
+localized_pokemon* stream_to_localized_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational, bool is_broker);
 void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage, uint32_t* id_message, uint32_t* id_correlational);
 subscribe* stream_to_subscribe(void* stream);
 void* subscribe_to_stream(subscribe* subscribeMessage);

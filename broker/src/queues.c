@@ -88,13 +88,14 @@ void* connection_to_receiver(void* connection){
     return (void*) receiver;
 }
 
-void add_message_to_queue(void* data, op_code code, uint32_t size_of_data, uint32_t id_message){
+void add_message_to_queue(void* data, op_code code, uint32_t size_of_data, uint32_t id_message, uint32_t id_correlational){
     t_message_queue* queue = list_find_with_args(list_queues, has_queue_id,(void*) code);
     t_message* new_message = malloc(sizeof(t_message));
     new_message->data = data;
     new_message->size = size_of_data;
     new_message->receivers = list_map(queue->subscribers, connection_to_receiver);
     new_message->id_message = id_message;
+    new_message->id_correlational = id_correlational;
     new_message->id_queue = code;
     //puede que necesitemos mutex aca
     queue_push(queue->messages, new_message);
@@ -206,3 +207,100 @@ void handle_ack(uint32_t client_fd, ack* acknowledgement){
         }
     }
 }
+
+void handle_new_pokemon(void* stream, uint32_t client_fd){
+    uint32_t id_message = -1, id_correlational = -1;
+    new_pokemon* newPokemonMessage 
+        = stream_to_new_pokemon(
+            stream, NULL, true);
+    id_message = get_id_message();
+    send_ack(id_message, client_fd);
+    add_message_to_queue(
+        newPokemonMessage, 
+        NEW_POKEMON,
+        size_of_new_pokemon(newPokemonMessage),
+        id_message,
+        id_correlational);
+}
+
+void handle_appeared_pokemon(void* stream, uint32_t client_fd){
+    uint32_t id_message = -1, id_correlational = -1;
+    appeared_pokemon* appearedPokemonMessage 
+        = stream_to_appeared_pokemon(
+            stream, NULL, &id_correlational, true);
+    id_message = get_id_message();
+    send_ack(id_message, client_fd);
+    add_message_to_queue(
+        appearedPokemonMessage, 
+        APPEARED_POKEMON,
+        size_of_appeared_pokemon(appearedPokemonMessage),
+        id_message,
+        id_correlational);
+}
+
+void handle_catch_pokemon(void* stream, uint32_t client_fd){
+    uint32_t id_message = -1, id_correlational = -1;
+    catch_pokemon* catchPokemonMessage = 
+        stream_to_catch_pokemon(stream, NULL, true);
+    id_message = get_id_message();
+    send_ack(id_message, client_fd);
+    add_message_to_queue(
+        catchPokemonMessage, 
+        CATCH_POKEMON,
+        size_of_catch_pokemon(catchPokemonMessage),
+        id_message,
+        id_correlational);
+}
+
+void handle_caught_pokemon(void* stream, uint32_t client_fd){
+    uint32_t id_message = -1, id_correlational = -1;
+    caught_pokemon* caughtPokemonMessage 
+        = stream_to_caught_pokemon(
+            stream, NULL, &id_correlational, true);
+    id_message = get_id_message();
+    send_ack(id_message, client_fd);
+    add_message_to_queue(
+        caughtPokemonMessage, 
+        CAUGHT_POKEMON,
+        size_of_caught_pokemon(caughtPokemonMessage),
+        id_message,
+        id_correlational);
+}
+
+void handle_get_pokemon(void* stream, uint32_t client_fd){
+    uint32_t id_message = -1, id_correlational = -1;
+    get_pokemon* getPokemonMessage 
+        = stream_to_get_pokemon(stream, NULL, true); 
+    id_message = get_id_message();
+    send_ack(id_message, client_fd);
+    add_message_to_queue(
+        getPokemonMessage, 
+        GET_POKEMON,
+        size_of_get_pokemon(getPokemonMessage),
+        id_message,
+        id_correlational);
+}
+
+void handle_localized_pokemon(void* stream, uint32_t client_fd){
+    uint32_t id_message = -1, id_correlational = -1;
+    localized_pokemon* localizedPokemonMessage 
+        = stream_to_localized_pokemon(
+            stream, NULL, &id_correlational, true);
+    id_message = get_id_message();
+    send_ack(id_message, client_fd);
+    add_message_to_queue(
+        localizedPokemonMessage, 
+        LOCALIZED_POKEMON,
+        size_of_localized_pokemon(localizedPokemonMessage),
+        id_message,
+        id_correlational);
+}
+
+void send_ack(uint32_t id_message, uint32_t client_fd){
+    ack* acknowledge = init_ack(id_message);
+    void* stream = ack_to_stream(acknowledge);
+    send(client_fd, stream, sizeof(uint32_t), 0);
+    free_ack(acknowledge);
+    free(stream);
+}
+
