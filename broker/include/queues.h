@@ -22,6 +22,7 @@ typedef struct t_receiver {
 typedef struct t_message {
     void* data;
     uint32_t id_message;
+    uint32_t id_correlational;
     uint32_t id_queue;
     uint32_t size;
     t_list* receivers;

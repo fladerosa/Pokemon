@@ -25,11 +25,12 @@ int run_tests(){
 
 void test_new_pokemon(){
     char* name = strdup("Pikachu");
-    new_pokemon* pokemon = init_new_pokemon(name,2,3,4,5);
-    void* stream = new_pokemon_to_stream(pokemon);
-    new_pokemon* copy = stream_to_new_pokemon(stream);
+    new_pokemon* pokemon = init_new_pokemon(name,2,3,4);
+    uint32_t id_message = 5, copy_id_message = -1;
+    void* stream = new_pokemon_to_stream(pokemon, &id_message);
+    new_pokemon* copy = stream_to_new_pokemon(stream, &copy_id_message);
 
-    CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
+    CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
@@ -43,16 +44,18 @@ void test_new_pokemon(){
 
 void test_appeared_pokemon(){
     char* name = strdup("Bulbasaur");
-    appeared_pokemon* pokemon = init_appeared_pokemon(name, 6,7,8,9);
-    void* stream = appeared_pokemon_to_stream(pokemon);
-    appeared_pokemon* copy = stream_to_appeared_pokemon(stream);
+    uint32_t id_message = 8, copy_id_message = -1,
+    id_correlational = 9, copy_id_correlational = -1;
+    appeared_pokemon* pokemon = init_appeared_pokemon(name, 6,7);
+    void* stream = appeared_pokemon_to_stream(pokemon, &id_message, &id_correlational);
+    appeared_pokemon* copy = stream_to_appeared_pokemon(stream, &copy_id_message, &copy_id_correlational);
 
-    CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
+    CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
     CU_ASSERT_EQUAL(copy->position.posy, pokemon->position.posy);
-    CU_ASSERT_EQUAL(copy->id_correlational, pokemon->id_correlational);
+    CU_ASSERT_EQUAL(copy_id_correlational, id_correlational);
 
     free_appeared_pokemon(pokemon);
     free(stream);
@@ -62,11 +65,12 @@ void test_appeared_pokemon(){
 
 void test_catch_pokemon(){    
     char* name = strdup("Charmander");
-    catch_pokemon* pokemon = init_catch_pokemon(name, 10, 11, 12);
-    void* stream = catch_pokemon_to_stream(pokemon);
-    catch_pokemon* copy = stream_to_catch_pokemon(stream);
+    uint32_t id_message = 12, copy_id_message = -1;
+    catch_pokemon* pokemon = init_catch_pokemon(name, 10, 11);
+    void* stream = catch_pokemon_to_stream(pokemon, &id_message);
+    catch_pokemon* copy = stream_to_catch_pokemon(stream, &copy_id_message);
 
-    CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
+    CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
@@ -78,12 +82,14 @@ void test_catch_pokemon(){
 }
 
 void test_caught_pokemon(){
-    caught_pokemon* pokemon = init_caught_pokemon(3,4,true);
-    void* stream = caught_pokemon_to_stream(pokemon);
-    caught_pokemon* copy = stream_to_caught_pokemon(stream);
+    caught_pokemon* pokemon = init_caught_pokemon(true);
+    uint32_t id_message = 8, copy_id_message = -1,
+        id_correlational = 9, copy_id_correlational = -1;
+    void* stream = caught_pokemon_to_stream(pokemon, &id_message, &id_correlational);
+    caught_pokemon* copy = stream_to_caught_pokemon(stream, &copy_id_message, &copy_id_correlational);
 
-    CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
-    CU_ASSERT_EQUAL(copy->id_correlational, pokemon->id_correlational);
+    CU_ASSERT_EQUAL(copy_id_message, id_message);
+    CU_ASSERT_EQUAL(copy_id_correlational, id_correlational);
     CU_ASSERT_EQUAL(copy->success, pokemon->success);
 
     free_caught_pokemon(pokemon);
@@ -93,11 +99,12 @@ void test_caught_pokemon(){
 
 void test_get_pokemon(){
     char* name = strdup("Squirtle");
-    get_pokemon* pokemon = init_get_pokemon(name, 4);
-    void* stream = get_pokemon_to_stream(pokemon);
-    get_pokemon* copy = stream_to_get_pokemon(stream);
+    uint32_t id_message = 8, copy_id_message = -1;
+    get_pokemon* pokemon = init_get_pokemon(name);
+    void* stream = get_pokemon_to_stream(pokemon, &id_message);
+    get_pokemon* copy = stream_to_get_pokemon(stream, &copy_id_message);
 
-    CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
+    CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
 
@@ -108,6 +115,8 @@ void test_get_pokemon(){
 
 void test_localized_pokemon(){
     t_list* list_positions = list_create();
+    uint32_t id_message = 8, copy_id_message = -1,
+        id_correlational = 9, copy_id_correlational = -1;
     t_position* p1 = malloc(sizeof(t_position)),* p2 = malloc(sizeof(t_position)),* p3 = malloc(sizeof(t_position));
     p1->posx = 1;
     p1->posy = 2;
@@ -119,14 +128,14 @@ void test_localized_pokemon(){
     list_add(list_positions, p2);
     list_add(list_positions, p3);
     char* name = strdup("Metapod");   
-    localized_pokemon* pokemon = init_localized_pokemon(name, 4, 5, list_positions);
-    void* stream = localized_pokemon_to_stream(pokemon);
-    localized_pokemon* copy = stream_to_localized_pokemon(stream);
+    localized_pokemon* pokemon = init_localized_pokemon(name, list_positions);
+    void* stream = localized_pokemon_to_stream(pokemon, &id_message, &id_correlational);
+    localized_pokemon* copy = stream_to_localized_pokemon(stream, &copy_id_message, &copy_id_correlational);
 
     CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
-    CU_ASSERT_EQUAL(copy->id_message, pokemon->id_message);
-    CU_ASSERT_EQUAL(copy->id_correlational, pokemon->id_correlational);
+    CU_ASSERT_EQUAL(copy_id_message, id_message);
+    CU_ASSERT_EQUAL(copy_id_correlational, id_correlational);
     for (int i = 0; i <(*pokemon->positions).elements_count; i++ ){
         t_position* pos_copy = list_get(copy->positions,i),
         *pos_pokemon = list_get(pokemon->positions, i);

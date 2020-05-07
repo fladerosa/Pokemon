@@ -105,22 +105,43 @@ void* get_stream_by_queue_id(t_message* message,uint32_t queue_id){
     void* stream = NULL;
     switch(queue_id){
         case NEW_POKEMON:;
-            stream = new_pokemon_to_stream(message->data);
+            stream = new_pokemon_to_stream(
+                message->data, 
+                &(message->id_message)
+            );
             break;
         case APPEARED_POKEMON:;
-            stream = appeared_pokemon_to_stream(message->data);
+            stream = appeared_pokemon_to_stream(
+                message->data, 
+                &(message->id_message), 
+                &(message->id_correlational)
+            );
             break;
         case CATCH_POKEMON:;
-            stream = catch_pokemon_to_stream(message->data);
+            stream = catch_pokemon_to_stream(
+                message->data,
+                &(message->id_message)
+            );
             break;
         case CAUGHT_POKEMON:;
-            stream = caught_pokemon_to_stream(message->data);
+            stream = caught_pokemon_to_stream(
+                message->data,
+                &(message->id_message),
+                &(message->id_correlational)
+            );
             break;
         case GET_POKEMON:;
-            stream = get_pokemon_to_stream(message->data);
+            stream = get_pokemon_to_stream(
+                message->data,
+                &(message->id_message)
+            );
             break;
         case LOCALIZED_POKEMON:;
-            stream = localized_pokemon_to_stream(message->data);
+            stream = localized_pokemon_to_stream(
+                message->data,
+                &(message->id_message),
+                &(message->id_correlational)
+            );
             break;
         default:;
             log_info(optional_logger, "Error: Queue has wrong id");

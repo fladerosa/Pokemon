@@ -33,41 +33,32 @@ typedef struct{
 	char* pokemon;
 	t_position position; 
 	uint32_t quantity;
-	uint32_t id_message; 
 }new_pokemon;
 
 typedef struct{
 	uint32_t sizePokemon;
 	char* pokemon;
 	t_position position; 
-	uint32_t id_message;
-	uint32_t id_correlational;
 }appeared_pokemon;
 
 typedef struct{
 	uint32_t sizePokemon;
 	char* pokemon;
 	t_position position; 
-	uint32_t id_message; 
 }catch_pokemon;
 
 typedef struct{
-	uint32_t id_message;
-	uint32_t id_correlational;
 	uint32_t success;
 }caught_pokemon;
 
 typedef struct{
 	uint32_t sizePokemon;
 	char* pokemon;
-	uint32_t id_message;
 }get_pokemon;
 
 typedef struct{
 	uint32_t sizePokemon; 
 	char* pokemon; 
-	uint32_t id_message; 
-	uint32_t id_correlational; 
 	t_list* positions; //al serializar se tiene que agregar la cantidad de posiciones
 }localized_pokemon;
 
@@ -91,18 +82,18 @@ typedef struct{
 }subscribe;
 
 
-new_pokemon* stream_to_new_pokemon(void* stream);
-void* new_pokemon_to_stream(new_pokemon* newPokemonMessage);
-appeared_pokemon* stream_to_appeared_pokemon(void* stream);
-void* appeared_pokemon_to_stream(appeared_pokemon* appearedPokemonMessage);
-catch_pokemon* stream_to_catch_pokemon(void* stream);
-void* catch_pokemon_to_stream(catch_pokemon* catchPokemonMessage);
-caught_pokemon* stream_to_caught_pokemon(void* stream);
-void* caught_pokemon_to_stream(caught_pokemon* caughtPokemonMessage);
-get_pokemon* stream_to_get_pokemon(void* stream);
-void* get_pokemon_to_stream(get_pokemon* getPokemonMessage);
-localized_pokemon* stream_to_localized_pokemon(void* stream);
-void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage);
+new_pokemon* stream_to_new_pokemon(void* stream, uint32_t* id_message);
+void* new_pokemon_to_stream(new_pokemon* newPokemonMessage, uint32_t* id_message);
+appeared_pokemon* stream_to_appeared_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational);
+void* appeared_pokemon_to_stream(appeared_pokemon* appearedPokemonMessage, uint32_t* id_message, uint32_t* id_correlational);
+catch_pokemon* stream_to_catch_pokemon(void* stream, uint32_t* id_message);
+void* catch_pokemon_to_stream(catch_pokemon* catchPokemonMessage, uint32_t* id_message);
+caught_pokemon* stream_to_caught_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational);
+void* caught_pokemon_to_stream(caught_pokemon* caughtPokemonMessage, uint32_t* id_message, uint32_t* id_correlational);
+get_pokemon* stream_to_get_pokemon(void* stream, uint32_t* id_message);
+void* get_pokemon_to_stream(get_pokemon* getPokemonMessage, uint32_t* id_message);
+localized_pokemon* stream_to_localized_pokemon(void* stream, uint32_t* id_message, uint32_t* id_correlational);
+void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage, uint32_t* id_message, uint32_t* id_correlational);
 subscribe* stream_to_subscribe(void* stream);
 void* subscribe_to_stream(subscribe* subscribeMessage);
 new_connection* stream_to_new_connection(void* stream);
@@ -113,12 +104,12 @@ connection* stream_to_connection(void* stream);
 void* connection_to_stream(connection* connectionMessage);
 ack* stream_to_ack(void* stream);
 void* ack_to_stream(ack* acknowledgementMessage);
-new_pokemon* init_new_pokemon(char* nombre, uint32_t posx, uint32_t posy, uint32_t quantity, uint32_t id_message);
-appeared_pokemon* init_appeared_pokemon(char* nombre, uint32_t posx, uint32_t posy, uint32_t id_message, uint32_t id_correlational);
-catch_pokemon* init_catch_pokemon(char* nombre, uint32_t posx, uint32_t posy, uint32_t id_message);
-caught_pokemon* init_caught_pokemon(uint32_t id_message, uint32_t id_correlational, bool success);
-get_pokemon* init_get_pokemon(char* nombre, uint32_t id_message);
-localized_pokemon* init_localized_pokemon(char* nombre, uint32_t id_message, uint32_t id_correlational, t_list* positions);
+new_pokemon* init_new_pokemon(char* nombre, uint32_t posx, uint32_t posy, uint32_t quantity);
+appeared_pokemon* init_appeared_pokemon(char* nombre, uint32_t posx, uint32_t posy);
+catch_pokemon* init_catch_pokemon(char* nombre, uint32_t posx, uint32_t posy);
+caught_pokemon* init_caught_pokemon(bool success);
+get_pokemon* init_get_pokemon(char* nombre);
+localized_pokemon* init_localized_pokemon(char* nombre, t_list* positions);
 new_connection* init_new_connection();
 reconnect* init_reconnect(uint32_t id_connection);
 connection* init_connection(uint32_t id_connection);
