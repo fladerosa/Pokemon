@@ -1,7 +1,24 @@
 #include "common_connections.h"
+#define SIZEOP 13
+
+char* operation_names[SIZEOP] = {
+	"NEW POKEMON",
+	"APPEARED POKEMON",
+	"CATCH POKEMON",
+	"CAUGHT POKEMON",
+	"GET POKEMON",
+	"LOCALIZED POKEMON",
+	"SUSCRIPTOR",
+	"NEW CONNECTION",
+	"CONNECTION",
+	"RECONNECT",
+	"ACKNOWLEDGEMENT",
+	"ERROR",
+	"MENSAJE"
+};
 
 void start_server(char* ip, char* port, on_request request_receiver){
-    uint32_t socket_servidor;
+    uint32_t socket_servidor, isBinded=-1, sleep_time = 10;
     struct addrinfo hints, *servinfo, *p;
 
     memset(&hints, 0, sizeof(hints));
@@ -11,16 +28,18 @@ void start_server(char* ip, char* port, on_request request_receiver){
 
     getaddrinfo(ip, port, &hints, &servinfo);
 
-    for (p=servinfo; p != NULL; p = p->ai_next)
+    for (p=servinfo; isBinded==-1;)
     {
         if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1){
-            log_error(optional_logger, "Could not create socket.");
+            log_error(optional_logger, "Could not create socket. Trying again in %d seconds", sleep_time);
+            sleep(sleep_time);
             continue;
         }
 
-        if (bind(socket_servidor, p->ai_addr, p->ai_addrlen) == -1) {
+        if ((isBinded = bind(socket_servidor, p->ai_addr, p->ai_addrlen)) == -1) {
             close(socket_servidor);
-            log_error(optional_logger, "Could not bind socket.");
+            log_error(optional_logger, "Could not bind socket. Trying again in %d seconds", sleep_time);
+            sleep(sleep_time);
             continue;
         }
         break;
@@ -69,9 +88,13 @@ void serve_client(t_process_request* processor){
     on_request request_receiver = (*processor).request_receiver;
 	while(1){
         if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;
-        log_info(optional_logger, "Received op_code: %d by socket: %d", cod_op, socket);
+        if( cod_op >= 1 && cod_op <= SIZEOP ){
+            log_info(optional_logger, "Received %s by socket: %d", operation_names[cod_op-1], socket);
+        } else {
+            log_info(optional_logger, "Received %d by socket: %d", cod_op, socket);
+        }
         if(recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL)<=0) break;
-        log_info(optional_logger, "Size of stream: %d", size);
+        //log_info(optional_logger, "Size of stream: %d", size);
         request_receiver(cod_op, size, socket);
     }
     log_info(optional_logger, "Socket %d has disconnected", socket);

@@ -12,10 +12,13 @@ const static struct{
     {CATCH_POKEMON, "CATCH_POKEMON"},
     {CAUGHT_POKEMON, "CAUGHT_POKEMON"},
     {GET_POKEMON, "GET_POKEMON"},
-    {SUSCRIPTOR, "SUSCRIPTOR"},
     {LOCALIZED_POKEMON, "LOCALIZED_POKEMON"},
+    {SUSCRIPTOR, "SUSCRIPTOR"},
     {ERROR, "ERROR"}
 };
+
+uint32_t id_connection;
+uint32_t id_queue_to_subscribe;
 
 void send_message(char** message, int socket_cliente,t_log*  optional_logger);
 op_code stringToEnum(char* message);

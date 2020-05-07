@@ -214,9 +214,11 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case CONNECTION:;
 
             connection* connectionMessage = stream_to_connection(stream);
-
+            id_connection = connectionMessage->id_connection;
+            suscribirseA(id_queue_to_subscribe, socketfd);
             log_info(optional_logger, "Connection!"); 
             log_info(optional_logger, "This is the id connection: %d", connectionMessage->id_connection);
+            log_info(optional_logger, "Subscribing to queue %d", id_queue_to_subscribe);
             break;
         case RECONNECT:;
 

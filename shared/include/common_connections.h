@@ -18,7 +18,7 @@ typedef enum
 	CATCH_POKEMON = 3,
 	CAUGHT_POKEMON = 4,
 	GET_POKEMON = 5,
-	LOCALIZED_POKEMON = 6, //no cambiar los items 1-6
+	LOCALIZED_POKEMON = 6,
 	SUSCRIPTOR = 7,
 	NEW_CONNECTION = 8,
 	CONNECTION = 9,
@@ -27,6 +27,7 @@ typedef enum
 	ERROR = 12,
 	MENSAJE = 13
 }op_code;
+
 
 typedef struct
 {
