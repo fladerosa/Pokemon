@@ -6,15 +6,15 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
 
     switch(cod_op){
         case NEW_POKEMON:;
-            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream); 
+            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream,NULL,false); 
             log_info(optional_logger, "New pokemon!");
             break;
         case CATCH_POKEMON:;
-            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
+            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream,NULL,false);
             log_info(optional_logger, "Catch pokemon!");
             break;
         case GET_POKEMON:;
-            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream);
+            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream,NULL,false);
             log_info(optional_logger, "Get pokemon!"); 
             break;
     }
