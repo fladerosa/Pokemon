@@ -3,6 +3,8 @@
 
 #include "broker.h"
 #include "initializer.h"
+#include "common_utils.h"
+#include "common_connections.h"
 #include <semaphore.h>
 
 typedef struct t_connection {
@@ -56,7 +58,6 @@ void handle_catch_pokemon(void* stream, uint32_t client_fd);
 void handle_caught_pokemon(void* stream, uint32_t client_fd);
 void handle_get_pokemon(void* stream, uint32_t client_fd);
 void handle_localized_pokemon(void* stream, uint32_t client_fd);
-void send_ack(uint32_t id_message, uint32_t client_fd);
 
 
 

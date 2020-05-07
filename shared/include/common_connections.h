@@ -56,5 +56,7 @@ void mask_sig(void);
 void* suscribirseA(op_code codigoOp,uint32_t socket_broker);
 t_paquete* stream_to_package(op_code code,void* payload, uint32_t size_payload);
 void free_package(t_paquete* package);
+void send_ack(uint32_t socket_broker, uint32_t id_message);
+
 
 #endif

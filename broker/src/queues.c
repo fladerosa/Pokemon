@@ -214,7 +214,7 @@ void handle_new_pokemon(void* stream, uint32_t client_fd){
         = stream_to_new_pokemon(
             stream, NULL, true);
     id_message = get_id_message();
-    send_ack(id_message, client_fd);
+    send_ack(client_fd, id_message);
     add_message_to_queue(
         newPokemonMessage, 
         NEW_POKEMON,
@@ -229,7 +229,7 @@ void handle_appeared_pokemon(void* stream, uint32_t client_fd){
         = stream_to_appeared_pokemon(
             stream, NULL, &id_correlational, true);
     id_message = get_id_message();
-    send_ack(id_message, client_fd);
+    send_ack(client_fd, id_message);
     add_message_to_queue(
         appearedPokemonMessage, 
         APPEARED_POKEMON,
@@ -243,7 +243,7 @@ void handle_catch_pokemon(void* stream, uint32_t client_fd){
     catch_pokemon* catchPokemonMessage = 
         stream_to_catch_pokemon(stream, NULL, true);
     id_message = get_id_message();
-    send_ack(id_message, client_fd);
+    send_ack(client_fd, id_message);
     add_message_to_queue(
         catchPokemonMessage, 
         CATCH_POKEMON,
@@ -258,7 +258,7 @@ void handle_caught_pokemon(void* stream, uint32_t client_fd){
         = stream_to_caught_pokemon(
             stream, NULL, &id_correlational, true);
     id_message = get_id_message();
-    send_ack(id_message, client_fd);
+    send_ack(client_fd, id_message);
     add_message_to_queue(
         caughtPokemonMessage, 
         CAUGHT_POKEMON,
@@ -272,7 +272,7 @@ void handle_get_pokemon(void* stream, uint32_t client_fd){
     get_pokemon* getPokemonMessage 
         = stream_to_get_pokemon(stream, NULL, true); 
     id_message = get_id_message();
-    send_ack(id_message, client_fd);
+    send_ack(client_fd, id_message);
     add_message_to_queue(
         getPokemonMessage, 
         GET_POKEMON,
@@ -287,7 +287,7 @@ void handle_localized_pokemon(void* stream, uint32_t client_fd){
         = stream_to_localized_pokemon(
             stream, NULL, &id_correlational, true);
     id_message = get_id_message();
-    send_ack(id_message, client_fd);
+    send_ack(client_fd, id_message);
     add_message_to_queue(
         localizedPokemonMessage, 
         LOCALIZED_POKEMON,
@@ -295,12 +295,3 @@ void handle_localized_pokemon(void* stream, uint32_t client_fd){
         id_message,
         id_correlational);
 }
-
-void send_ack(uint32_t id_message, uint32_t client_fd){
-    ack* acknowledge = init_ack(id_message);
-    void* stream = ack_to_stream(acknowledge);
-    send(client_fd, stream, sizeof(uint32_t), 0);
-    free_ack(acknowledge);
-    free(stream);
-}
-
