@@ -37,17 +37,25 @@ void iniciarGameCard(){
     on_request request = &receiveMessage; 
 
     start_server(IP_GAMECARD,PUERTO_GAMECARD,request);
-    pthread_join(server, NULL);
+    
+    uint32_t id_connection = receive_connection_id(socket_broker);
+    while(1){
+        serve_client(request);
+        /*socket_broker = crear_conexion(IP_BROKER, PUERTO_BROKER);
+        send_reconnect(id_connection);*/
+    }  
 
+    pthread_join(server, NULL);
     pthread_join(hiloClienteBroker,NULL);
 
     finalizarGameCard();
 }
 
 void suscribirseATodo(){
-    char* PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
-    char* IP_BROKER = config_get_string_value(config,"IP_BROKER");
+    PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
+    IP_BROKER = config_get_string_value(config,"IP_BROKER");
     socket_broker = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    send_new_connection(socket_broker);
     suscribirseA(NEW_POKEMON,socket_broker);
     suscribirseA(CATCH_POKEMON,socket_broker);
     suscribirseA(GET_POKEMON,socket_broker);
