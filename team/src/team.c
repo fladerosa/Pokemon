@@ -1,6 +1,7 @@
 #include "team.h"
 
 int main(int argc, char ** argv){
+<<<<<<< HEAD
 
     initialize_team();
     establish_broker_connection(); 
@@ -13,3 +14,7 @@ int main(int argc, char ** argv){
     return EXIT_SUCCESS;
 }
 
+=======
+    return 0;
+}
+>>>>>>> master

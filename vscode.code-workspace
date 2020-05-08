@@ -30,7 +30,12 @@
 >>>>>>> master
 =======
 			"dump.h": "c",
+<<<<<<< HEAD
 			"common_tests.h": "c"
+>>>>>>> master
+=======
+			"common_tests.h": "c",
+			"team.h": "c"
 >>>>>>> master
 		}
 	},

@@ -6,15 +6,15 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
 
     switch(cod_op){
         case NEW_POKEMON:;
-            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream); 
+            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream,NULL,false); 
             log_info(optional_logger, "New pokemon!");
             break;
         case CATCH_POKEMON:;
-            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
+            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream,NULL,false);
             log_info(optional_logger, "Catch pokemon!");
             break;
         case GET_POKEMON:;
-            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream);
+            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream,NULL,false);
             log_info(optional_logger, "Get pokemon!"); 
             break;
     }
@@ -35,19 +35,31 @@ void iniciarGameCard(){
     pthread_create(&hiloClienteBroker,NULL,(void*)suscribirseATodo,NULL); 
 
     on_request request = &receiveMessage; 
+    
+    t_process_request* process_request = malloc(sizeof(t_process_request)); 
+    (*process_request).socket = socket_broker; 
+    (*process_request).request_receiver = request;
 
     start_server(IP_GAMECARD,PUERTO_GAMECARD,request);
-    pthread_join(server, NULL);
+    
+    uint32_t id_connection = receive_connection_id(socket_broker);
+    while(1){
+        serve_client(process_request);
+        socket_broker = crear_conexion(IP_BROKER, PUERTO_BROKER);
+        send_reconnect(id_connection);
+    }  
 
+    pthread_join(server, NULL);
     pthread_join(hiloClienteBroker,NULL);
 
     finalizarGameCard();
 }
 
 void suscribirseATodo(){
-    char* PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
-    char* IP_BROKER = config_get_string_value(config,"IP_BROKER");
+    PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
+    IP_BROKER = config_get_string_value(config,"IP_BROKER");
     socket_broker = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    send_new_connection(socket_broker);
     suscribirseA(NEW_POKEMON,socket_broker);
     suscribirseA(CATCH_POKEMON,socket_broker);
     suscribirseA(GET_POKEMON,socket_broker);
