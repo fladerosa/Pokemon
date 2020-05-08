@@ -44,8 +44,8 @@ void fix_position(char *value)
       char **positions = string_split(value, "|");
       uint32_t value_x = (uint32_t *)atoi(positions[0]);
       uint32_t value_y = (uint32_t *)atoi(positions[1]);
-      init_position.posx = value_x;
-      init_position.posy = value_y;
+      init_position->position.posix = value_x;
+      init_position->position.posiy = value_y;
 
       add_position_to_list(values.posicion_entrenador, value_x);
       add_position_to_list(values.posicion_entrenador, value_y);
@@ -193,7 +193,7 @@ void initialize_team()
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);
 
     pthread_t connection_broker;
-    pthread_create(&connection_broker,NULL,(void*)establish_broker_connection,NULL); 
+    pthread_create(&connection_broker,NULL,(void*)connection_broker_global_suscribe,NULL); 
 
     request = &reception_message_queue_subscription; 
 
@@ -239,19 +239,83 @@ void listen_to_gameboy()
    pthread_join(server, NULL);
    //mandar mensaje de confirmacion cuando el gameboy me mande appeared_pokemon()
 }
-
-void establish_broker_connection()
+void connection_broker_global_suscribe()
 {
+    connection_broker_suscribe_to_appeared_pokemon();
+    connection_broker_suscribe_to_caught_pokemon();
+    connection_broker_suscribe_to_localized_pokemon();
+ }
+
+void connection_broker_suscribe_to_appeared_pokemon()
+{   //se envia un connect por cada cola de mensajes a suscribirse
+    connection *connection_server= malloc(sizeof(connection));
+
     uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
-	
+    //si la conexion falla(, debe haber un reintento de conexion por el .cfg por medio de un hilo.
+    if(server_connection == -1)
+    {
+    pthread_t re_connection_broker_appeared_pokemon;
+    pthread_create(&re_connection_broker_appeared_pokemon, NULL, NULL, NULL);
+
+    send_reconnect(server_connection);
+    log_info(obligatory_logger, "Sending reconnect to broker\n");
+
+    }
+    else{
+    pthread_t connection_broker_appeared_pokemon;
+    pthread_create(&connection_broker_appeared_pokemon, NULL, NULL, NULL);
+    log_info(obligatory_logger, "Connection to broker succesfully\n");
+
+    }  
+    connection_server->id_connection = receive_connection_id(server_connection); 
 	suscribirseA(APPEARED_POKEMON, server_connection);
 		log_info(optional_logger, "Queue subscription request APPEARED_POKEMON\n");
-	suscribirseA(CATCH_POKEMON, server_connection);
-		log_info(optional_logger, "Queue subscription request CATCH_POKEMON\n");
-	suscribirseA(CAUGHT_POKEMON, server_connection);
+
+}	
+void connection_broker_suscribe_to_caught_pokemon()
+{	
+    connection *connection_server= malloc(sizeof(connection));
+    uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
+    if(server_connection == -1)
+    {
+    pthread_t re_connection_broker_caught_pokemon;
+    pthread_create(&re_connection_broker_caught_pokemon, NULL, NULL, NULL);
+
+    send_reconnect(server_connection);
+    log_info(obligatory_logger, "Sending reconnect to broker\n");
+
+    }
+    else{
+    pthread_t connection_broker_caught_pokemon;
+    pthread_create(&connection_broker_caught_pokemon, NULL, NULL, NULL );
+    log_info(obligatory_logger, "Connection to broker succesfully\n");
+
+   }
+    connection_server->id_connection = receive_connection_id(server_connection);
+    suscribirseA(CAUGHT_POKEMON, server_connection);
 		log_info(optional_logger, "Queue subscription request CAUGHT_POKEMON\n");
-	suscribirseA(GET_POKEMON, server_connection);
-		log_info(optional_logger, "Queue subscription request GET_POKEMON,\n");
+}
+
+void connection_broker_suscribe_to_localized_pokemon()
+{
+    connection *connection_server= malloc(sizeof(connection));
+    uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
+    if(server_connection == -1)
+    {
+    pthread_t re_connection_broker_localized_pokemon;
+    pthread_create(&re_connection_broker_localized_pokemon, NULL, NULL, NULL);
+
+    send_reconnect(server_connection);
+    log_info(obligatory_logger, "Sending reconnect to broker\n");
+
+    }
+    else{
+    pthread_t connection_broker_localized_pokemon;
+    pthread_create(&connection_broker_localized_pokemon, NULL, NULL, NULL);
+    log_info(obligatory_logger, "Connection to broker succesfully\n");
+
+    }	 
+    connection_server->id_connection = receive_connection_id(server_connection);
 	suscribirseA(LOCALIZED_POKEMON, server_connection);
 		log_info(optional_logger, "Queue subscription request LOCALIZED_POKEMON\n"); 
     
@@ -264,23 +328,23 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
 
     switch(code){
         case APPEARED_POKEMON:;
-            appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream); 
+            appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, NULL, NULL, false); 
             log_info(optional_logger, "Appeared pokemon!");
             break;
         case CATCH_POKEMON:;
-            catch_pokemon* catch_Pokemon_Message = stream_to_catch_pokemon(stream);
+            catch_pokemon* catch_Pokemon_Message = stream_to_catch_pokemon(stream, NULL, false);
             log_info(optional_logger, "Catch pokemon!");
             break;
         case CAUGHT_POKEMON:;
-			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream);
+			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, NULL, NULL, false);
             log_info(optional_logger, "Caught pokemon!");
             break;
 		case GET_POKEMON:;
-            get_pokemon* get_Pokemon_Message = stream_to_get_pokemon(stream);
+            get_pokemon* get_Pokemon_Message = stream_to_get_pokemon(stream, NULL, false);
             log_info(optional_logger, "Get pokemon!"); 
             break;
         case LOCALIZED_POKEMON:;
-            localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream);
+            localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, NULL, NULL, false);
             log_info(optional_logger, "Localized pokemon!"); 
             break;
     }

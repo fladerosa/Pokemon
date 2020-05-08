@@ -1,10 +1,9 @@
 #include "team.h"
 
 int main(int argc, char ** argv){
-<<<<<<< HEAD
 
     initialize_team();
-    establish_broker_connection(); 
+    connection_broker_global_suscribe(); 
     
     //establecer puerto escucha con gameboy como servidor
     listen_to_gameboy();
@@ -14,7 +13,3 @@ int main(int argc, char ** argv){
     return EXIT_SUCCESS;
 }
 
-=======
-    return 0;
-}
->>>>>>> master

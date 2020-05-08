@@ -44,9 +44,9 @@ typedef struct{
 
 typedef struct{
     char* pokemon;
-    unint32_t total_init_quantity_pokemon;
-    unint32_t total_global_quantity_pokemon;
-    unint32_t dif_init_team_quantity_pokemon;    
+    uint32_t total_init_quantity_pokemon;
+    uint32_t total_global_quantity_pokemon;
+    uint32_t dif_init_team_quantity_pokemon;    
 }pokemon_team;
 
 typedef struct{
@@ -68,7 +68,7 @@ typedef struct{
 
 thread_trainer init_position;
 pokemon_trainer init_pokemon;
-objetive_trainer global_pokemon;
+objective_trainer global_pokemon;
 pokemon_team pokemon_to_find;
 map map_team;
 configuration values;
@@ -87,7 +87,6 @@ void add_position_to_list(uint32_t*);
 uint32_t quantity_trainers(t_list*);
 void assign_trainer_id(t_list* );
 void fix_position(char *);
-
 
 void load_pokemons_config_team(t_config*);
 void add_pokemon_to_list(char *);
@@ -108,12 +107,12 @@ void initialize_team();
 void release_resources();
 
 void listen_to_gameboy();
-void establish_broker_connection();
+void connection_broker_global_suscribe();
+void connection_broker_suscribe_to_appeared_pokemon();
+void connection_broker_suscribe_to_caught_pokemon();
+void connection_broker_suscribe_to_localized_pokemon();
 
 void reception_message_queue_subscription(uint32_t, uint32_t, uint32_t);
-
-
-
 enum t_algoritmo {fifo, rr, sjf_sd, sjf_cd};
 
 
