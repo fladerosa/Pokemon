@@ -35,14 +35,18 @@ void iniciarGameCard(){
     pthread_create(&hiloClienteBroker,NULL,(void*)suscribirseATodo,NULL); 
 
     on_request request = &receiveMessage; 
+    
+    t_process_request* process_request = malloc(sizeof(t_process_request)); 
+    (*process_request).socket = socket_broker; 
+    (*process_request).request_receiver = request;
 
     start_server(IP_GAMECARD,PUERTO_GAMECARD,request);
     
     uint32_t id_connection = receive_connection_id(socket_broker);
     while(1){
-        serve_client(request);
-        /*socket_broker = crear_conexion(IP_BROKER, PUERTO_BROKER);
-        send_reconnect(id_connection);*/
+        serve_client(process_request);
+        socket_broker = crear_conexion(IP_BROKER, PUERTO_BROKER);
+        send_reconnect(id_connection);
     }  
 
     pthread_join(server, NULL);
