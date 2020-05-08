@@ -13,122 +13,133 @@ void read_config()
     }           
 }
 
-void load_positions_config_team()
-{     //retorna un array con las posiciones delos entrenadores separadas por |
+void load_positions_config_team(t_config *config)
+{      
     char** position_config =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
-    values.posicion_entrenador = list_create(); //creo la lista donde agregare las posiciones
+    values.posicion_entrenador = list_create(); 
     string_iterate_lines(position_config, fix_position);
-    list_iterate(values.posicion_entrenador, assembly_trainer);
-  //  assembly_trainer(values.posicion_entrenador);
+    assign_trainer_id(values.posicion_entrenador);
+    
 }
 
-void add_position_to_list(char *position) {
+void add_position_to_list(uint32_t *position) 
+{
     if (position != NULL) 
-      list_add(values.posicion_entrenador, atoi(position));
+    {
+        list_add(values.posicion_entrenador,position);
+    }   
   }
 
-void fix_position(char *value) {
-    if(value != NULL) {
-      char **positions = string_split(value, "|"); //saca el |
-      string_iterate_lines(positions, add_position_to_list); //agrega a la lista
-  }
-
-void assembly_position_trainer(t_list *posicion_entrenadores){
-
-   for(int j = 1; j <= (list_size(posicion_entrenadores))/; i++) 
-    init_position.id_trainer = i;
-
-   for(int i = 0; i<list_size(posicion_entrenadores); i++){
-       if(i%2 == 0)
-       {
-           init_position.posix = posicion_entrenadores[i];
-       }
-       else{
-            init_position.posiy = posicion_entrenadores[i];
-       }
-   }
+uint32_t quantity_trainers(t_list* position_trainers)
+{
+  return list_size(position_trainers)/2;
 }
 
-void load_pokemons_config_team()
+void fix_position(char *value) 
+{
+  thread_trainer *init_position = malloc(sizeof(thread_trainer));
+    
+    if(value != NULL) 
+    {
+      char **positions = string_split(value, "|");
+      uint32_t value_x = (uint32_t *)atoi(positions[0]);
+      uint32_t value_y = (uint32_t *)atoi(positions[1]);
+      init_position.posx = value_x;
+      init_position.posy = value_y;
+
+      add_position_to_list(values.posicion_entrenador, value_x);
+      add_position_to_list(values.posicion_entrenador, value_y);
+    }  
+}
+
+void assign_trainer_id(t_list* position_trainers)
+{
+    for(uint32_t i = 0; i <= quantity_trainers(position_trainers); i++)
+    {     
+         init_position.id_trainer = i+1;
+        // init_position.state = NEW;
+    }
+}
+
+void load_pokemons_config_team(t_config *config)
 {
     char** pokemon_config = config_get_array_value(config, "POKEMON_ENTRENADORES");
     values.pokemon_entrenador = list_create();
     string_iterate_lines(pokemon_config, fix_pokemon);
-    list_iterate(values.pokemon_entrenador, count_init_pokemon);
-
+    assign_trainer_id(values.pokemon_entrenador);
 }
-void add_pokemon_to_list(char *pokemon) {
-    if (pokemon != NULL) {
-      list_add(values.pokemon_entrenador, pokemon);
-    }
-  }
-void fix_pokemon(char *value) {
-    if(value != NULL) {
+
+void add_pokemon_to_list(char *pokemon) 
+{
+    if (pokemon != NULL) 
+      list_add(values.pokemon_entrenador, pokemon);    
+}
+
+void fix_pokemon(char *value) 
+{
+    if(value != NULL) 
+    {
       char **pokemons = string_split(value, "|");
       string_iterate_lines(pokemons, add_pokemon_to_list);
-      
-  }
-
-void count_init_pokemon(t_list *pokemon_entrenadores){
-
-    int quantity = 0;
-    for(int i = 0; i<list_size(pokemon_entrenadores)){
-        if(pokemon_entrenadores[i] == pokemon_entrenadores[i+1])
-        init_pokemon.pokemon= init_pokemon[i];
-        init_pokemon.initial_quantity_pokemon = quantity ++;
-    }
-
+    } 
 }
-void load_objectives_config_team()
+
+void load_objectives_config_team(t_config *config)
 {
    char** objective_config = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
    values.objetivo_entrenador = list_create();
    string_iterate_lines(objective_config, fix_objective);
-   list_iterate(values.objetivo_entrenador, count_global_pokemon);
+   assign_trainer_id(values.objective_entrenador);
+   
 }
 
-void add_objective_to_list(char *objective) {
-    if (objective != NULL) {
-      list_add(values.objetivo_entrenador, objective);
-    }
-  }
-void fix_objective(char *value) {
-    if(value != NULL) {
+void add_objective_to_list(char *objective) 
+{
+    if (objective != NULL)    
+      list_add(values.objetivo_entrenador, objective); 
+}
+
+void fix_objective(char *value) 
+{
+    if(value != NULL) 
+    {
       char **objectives = string_split(value, "|");
       string_iterate_lines(objectives, add_objective_to_list);
-  }
-
-void count_global_pokemon(t_list *objetivos_entrenadores){
-
-    int quantity = 0;
-    for(int i = 0; i<list_size(objetivos_entrenadores)){
-        if(objetivos_entrenadores[i] == objetivos_entrenadores[i+1])
-        global_pokemon.pokemon= global_pokemon[i];
-        global_pokemon.global_quantity_pokemon = quantity ++;
     }
-
 }
 
-void destroy_position(position_coach* position){
-		
-        free(position->posix);
-        free(position->posiy);
-		free(position);
-	}
 
-void destroy_pokemon(pokemon_coach* pokemon){
-	
-        free(pokemon->pokemon);
-		free(pokemon);
-	}
-void destroy_objective(objective_coach* objective){
-	
-        free(objective->pokemon);
-		free(objective);
-	}
+bool is_repeated_poke(void *pokemon)
+{
+    char pokemon_to_compare[5] = {"Bulbasaur", "Pikachu", "Squirtle", "Charmander"};
+    for(int i = 0 ; i < 5; i++)
+    {
+         if(strcmp(pokemon, pokemon_to_compare) == 0)   
+            return 0;
+        else
+        return 1;
+    }
+    return 1;
+}
 
-void destroy_lists_and_loaded_elements(){
+void destroy_position(position_trainer* init_position)
+{		
+		free(init_position);
+}
 
+void destroy_pokemon(pokemon_trainer* init_pokemon)
+{   
+        free(init_pokemon->pokemon);
+		free(init_pokemon);
+}
+void destroy_objective(objective_trainer* global_pokemon)
+{ 
+        free(global_pokemon->pokemon);
+		free(global_pokemon);
+}
+
+void destroy_lists_and_loaded_elements()
+{
      list_destroy_and_destroy_elements(values.posicion_entrenador,(void*)destroy_position);
      list_destroy_and_destroy_elements(values.pokemon_entrenador, (void*)destroy_pokemon);
      list_destroy_and_destroy_elements(values.objetivo_entrenador, (void*)destroy_objective);

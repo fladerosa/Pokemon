@@ -5,40 +5,52 @@
 #include<commons/string.h>
 #include "common_utils.h"
 
-#define POSIX 10
-#define POSIY 10
+typedef enum{
+	NEW = 0,
+	READY,
+	EXEC,
+	BLOCKED,
+	EXIT
+} enum_process_state;
 
-//estrucutra para ubicar posiciones de entrenadores y pokemon
 typedef struct{
-    uint32_t position_trainer_on_map[POSIX][POSIY];   
-    uint32_t position_pokemon_on_map[POSIX][POSIY];   
+    uint32_t position_x;   
+    uint32_t position_y;   
 }map;
 
-//estructura para manejar la lista de posiciones del entrenador
 typedef struct{
     uint32_t id_trainer;
     uint32_t posix;
     uint32_t posiy;
 }position_trainer;
 
-//estructura para manejar la lista de los pokemon que tiene en el inicio por entrenador
+typedef struct{
+    uint32_t id_trainer;
+    position_trainer position;
+    enum_process_state state; 
+}thread_trainer;
+
 typedef struct{
     uint32_t id_trainer;
     char * pokemon; 
     uint32_t initial_quantity_pokemon;     
 }pokemon_trainer;
 
-//estructura para manejar la lista de los objetivos pokemon por entrenador
 typedef struct{
     uint32_t id_trainer;
     char* pokemon; 
     uint32_t global_quantity_pokemon;   
 }objective_trainer;
 
-//estrucutura para el archivo de configuracion
-//campos que se agregaron ip y puerto team, logFileOptional y nro de team
 typedef struct{
-       uint32_t nro_team; //pensando en como identificar n teams
+    char* pokemon;
+    unint32_t total_init_quantity_pokemon;
+    unint32_t total_global_quantity_pokemon;
+    unint32_t dif_init_team_quantity_pokemon;    
+}pokemon_team;
+
+typedef struct{
+       uint32_t nro_team; 
        char *ip_team;
        char *puerto_team;
        t_list *posicion_entrenador;
@@ -54,10 +66,12 @@ typedef struct{
 
 }configuration;
 
-configuration values;
-position_trainer init_position;
+thread_trainer init_position;
 pokemon_trainer init_pokemon;
 objetive_trainer global_pokemon;
+pokemon_team pokemon_to_find;
+map map_team;
+configuration values;
 
 op_code code;
 uint32_t socket_team;
@@ -65,29 +79,29 @@ uint32_t socket_broker;
 on_request request;
 
 void read_config();
-
-void create_obligatory_logger();
 void create_optional_logger();
+void create_obligatory_logger();
 
-void load_positions_config_team();
-void add_position_to_list(char *);
+void load_positions_config_team(t_config*);
+void add_position_to_list(uint32_t*);
+uint32_t quantity_trainers(t_list*);
+void assign_trainer_id(t_list* );
 void fix_position(char *);
-void assembly_position_trainer(t_list*);
 
-void load_pokemons_config_team();
+
+void load_pokemons_config_team(t_config*);
 void add_pokemon_to_list(char *);
 void fix_pokemon(char *);
-void count_init_pokemon(t_list*);
 
-void load_objectives_config_team();
+void load_objectives_config_team(t_config*);;
 void add_objective_to_list(char *);
 void fix_objective(char *);
-void count_global_pokemon(t_list*);
+bool is_repeated_poke(void *);
 
-void load_values_config(t_config*);
-void destroy_position(position_coach*);
-void destroy_pokemon(pokemon_coach*);
-void destroy_objective(objective_coach*);
+void destroy_position(position_trainer*);
+void destroy_pokemon(pokemon_trainer*);
+void destroy_objective(objective_trainer*);
+
 void destroy_lists_and_loaded_elements();
 
 void initialize_team();
