@@ -15,6 +15,7 @@ void test_agregar_a_queue(){
 
 void manejo_memoria(){
     CU_ASSERT_TRUE(true);
+    initialize();
     /*
     casos de prueba particiones dinamicas
         ubicar dato con memoria vacía
