@@ -28,8 +28,7 @@ void add_position_to_list(position_trainer *position)
     {
         list_add(values.posicion_entrenador,position);
     }  
-
-  }
+}
 
 uint32_t quantity_trainers(t_list* position_trainers)
 {
@@ -39,7 +38,6 @@ uint32_t quantity_trainers(t_list* position_trainers)
 void fix_position(char *value) 
 {
   position_trainer *position = malloc(sizeof(position_trainer));
-    
     if(value != NULL) 
     {
       char **positions = string_split(value, "|");
@@ -48,8 +46,7 @@ void fix_position(char *value)
       position->posix = value_x;
       position->posiy = value_y;
 
-      add_position_to_list(position);
-     
+      add_position_to_list(position);     
     }  
 }
 //procesar estructura de hilo de entrenador
@@ -65,12 +62,11 @@ void assign_trainer_id(t_list* position_trainers_on_list)
 }
 
 void load_pokemons_config_team(t_config *config)
-{
-    
+{   
     char** pokemon_config = config_get_array_value(config, "POKEMON_ENTRENADORES");
     values.pokemon_entrenador = list_create();
     string_iterate_lines(pokemon_config, fix_pokemon);
-    //assign_trainer_id(values.pokemon_entrenador);
+    
 }
 
 void add_pokemon_to_list(char *pokemon) 
@@ -82,9 +78,27 @@ void add_pokemon_to_list(char *pokemon)
 void fix_pokemon(char *value) 
 {
     pokemon *init_pokemon = malloc(sizeof(init_pokemon));
+    int i = 0;
+    uint32_t quantity = 0;
+
     if(value != NULL) 
     {
       char **pokemons = string_split(value, "|");
+      while(pokemons[i] != NULL)
+      {
+          init_pokemon->pokemon = pokemons[i];
+          quantity++;
+          
+            if((strcmp(pokemons[i],  pokemons[i+1])==0))
+            {
+                quantity++;
+                init_pokemon->initial_quantity_pokemon = quantity;
+            }
+            else{
+                 init_pokemon->initial_quantity_pokemon = quantity;
+            }                
+        i++;
+      }
       string_iterate_lines(pokemons, add_pokemon_to_list);
     } 
 }
@@ -94,7 +108,6 @@ void load_objectives_config_team(t_config *config)
    char** objective_config = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
    values.objetivo_entrenador = list_create();
    string_iterate_lines(objective_config, fix_objective);
-  // assign_trainer_id(values.objective_entrenador);
    
 }
 
@@ -110,22 +123,27 @@ void fix_objective(char *value)
     if(value != NULL) 
     {
       char **objectives = string_split(value, "|");
+      int i = 0;
+      uint32_t quantity = 0;
+
+      while(objectives[i] != NULL)
+      {
+          global_pokemon->pokemon = objectives[i];
+          quantity++;
+          
+            if((strcmp(objectives[i],  objectives[i+1])==0))
+            {
+                quantity++;
+                global_pokemon->global_quantity_pokemon = quantity;
+            }
+            else{
+                 global_pokemon->global_quantity_pokemon = quantity;
+            }
+                
+        i++;
+      }
       string_iterate_lines(objectives, add_objective_to_list);
     }
-}
-
-
-bool is_repeated_poke(void *pokemon)
-{
-    char pokemon_to_compare[5] = {"Bulbasaur", "Pikachu", "Squirtle", "Charmander"};
-    for(int i = 0 ; i < 5; i++)
-    {
-         if(strcmp(pokemon, pokemon_to_compare) == 0)   
-            return 0;
-        else
-        return 1;
-    }
-    return 1;
 }
 
 void destroy_position(thread_trainer* init_position_trainer)
@@ -258,19 +276,15 @@ void connection_broker_suscribe_to_appeared_pokemon()
     //si la conexion falla(, debe haber un reintento de conexion por el .cfg por medio de un hilo.
     if(server_connection == -1)
     {
-    pthread_t re_connection_broker_appeared_pokemon;
-    pthread_create(&re_connection_broker_appeared_pokemon, NULL, NULL, NULL);
-
-    send_reconnect(server_connection);
-    log_info(obligatory_logger, "Sending reconnect to broker\n");
-
+        send_reconnect(server_connection); //cada x cantidad de segundos
+        log_info(obligatory_logger, "Sending reconnect to broker\n");
     }
     else{
-    pthread_t connection_broker_appeared_pokemon;
-    pthread_create(&connection_broker_appeared_pokemon, NULL, NULL, NULL);
-    log_info(obligatory_logger, "Connection to broker succesfully\n");
-
+        log_info(obligatory_logger, "Connection to broker succesfully\n");
     }  
+    pthread_t connection_broker_appeared_pokemon;
+    pthread_create(&connection_broker_appeared_pokemon, NULL, (void*) connection_broker_suscribe_to_appeared_pokemon, NULL);
+
     connection_server->id_connection = receive_connection_id(server_connection); 
 	suscribirseA(APPEARED_POKEMON, server_connection);
 		log_info(optional_logger, "Queue subscription request APPEARED_POKEMON\n");
@@ -282,19 +296,15 @@ void connection_broker_suscribe_to_caught_pokemon()
     uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
     if(server_connection == -1)
     {
-    pthread_t re_connection_broker_caught_pokemon;
-    pthread_create(&re_connection_broker_caught_pokemon, NULL, NULL, NULL);
-
     send_reconnect(server_connection);
     log_info(obligatory_logger, "Sending reconnect to broker\n");
-
     }
     else{
-    pthread_t connection_broker_caught_pokemon;
-    pthread_create(&connection_broker_caught_pokemon, NULL, NULL, NULL );
     log_info(obligatory_logger, "Connection to broker succesfully\n");
+    }
+    pthread_t connection_broker_caught_pokemon;
+    pthread_create(&connection_broker_caught_pokemon, NULL, (void*) connection_broker_suscribe_to_caught_pokemon, NULL);
 
-   }
     connection_server->id_connection = receive_connection_id(server_connection);
     suscribirseA(CAUGHT_POKEMON, server_connection);
 		log_info(optional_logger, "Queue subscription request CAUGHT_POKEMON\n");
@@ -306,19 +316,15 @@ void connection_broker_suscribe_to_localized_pokemon()
     uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
     if(server_connection == -1)
     {
-    pthread_t re_connection_broker_localized_pokemon;
-    pthread_create(&re_connection_broker_localized_pokemon, NULL, NULL, NULL);
-
     send_reconnect(server_connection);
     log_info(obligatory_logger, "Sending reconnect to broker\n");
-
     }
     else{
-    pthread_t connection_broker_localized_pokemon;
-    pthread_create(&connection_broker_localized_pokemon, NULL, NULL, NULL);
     log_info(obligatory_logger, "Connection to broker succesfully\n");
+    }	
+    pthread_t connection_broker_localized_pokemon;
+    pthread_create(&connection_broker_localized_pokemon, NULL, (void*) connection_broker_suscribe_to_localized_pokemon, NULL);
 
-    }	 
     connection_server->id_connection = receive_connection_id(server_connection);
 	suscribirseA(LOCALIZED_POKEMON, server_connection);
 		log_info(optional_logger, "Queue subscription request LOCALIZED_POKEMON\n"); 

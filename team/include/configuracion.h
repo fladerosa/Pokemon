@@ -108,7 +108,6 @@ void fix_pokemon(char *);
 void load_objectives_config_team(t_config*);;
 void add_objective_to_list(char *);
 void fix_objective(char *);
-bool is_repeated_poke(void *);
 
 void destroy_position(thread_trainer*);
 //void destroy_pokemon(pokemon_trainer*);
