@@ -465,17 +465,17 @@ subscribe* init_subscribe(uint32_t id_queue){
 }
 
 void free_new_pokemon(new_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
 void free_appeared_pokemon(appeared_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
 void free_catch_pokemon(catch_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
@@ -484,7 +484,7 @@ void free_caught_pokemon(caught_pokemon* pokemon){
 }
 
 void free_get_pokemon(get_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
