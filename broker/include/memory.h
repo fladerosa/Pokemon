@@ -3,11 +3,11 @@
 
 #include <commons/collections/list.h>
 #include "common_utils.h"
+#include "initializer.h"
 
 typedef enum {
-	FREE = 1, //Partición libre
-	OCCUPIED = 2, //Partición ocupada
-    UNUSED //Partición no usada, lista para dividirse
+	FREE = 1,
+	OCCUPIED = 2
 }e_dataState;
 
 typedef struct t_data{
@@ -25,7 +25,7 @@ typedef struct t_memory_configuration{
     char* freePartitionAlgorithm;
     int size;
     int minimunPartitionSize;
-    int compactationFrecuency;
+    int countFailedSearchForCompact;
 } t_memory_configuration;
 
 typedef struct t_memory{
@@ -38,5 +38,12 @@ t_memory memory;
 
 void initializeMemory();
 void addData(int sizeData, void* data);
+
+t_data* seekPartitionAvailable(int sizeData);
+t_data* getPartitionAvailable(int sizeData);
+bool verifMustCompact();
+void compact();
+void destroyPartition();
+void allocateData(int sizeData, void* data, t_data* freePartition);
 
 #endif
