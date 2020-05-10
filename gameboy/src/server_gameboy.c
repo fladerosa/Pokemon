@@ -2,7 +2,8 @@
 
 void send_message(char** message, int socket_cliente,t_log*  optional_logger){
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-
+    uint32_t* id_message = malloc(sizeof(uint32_t)); 
+    uint32_t* id_correlational = malloc(sizeof(uint32_t));
     //A quien se lo mando
     char* receiver = message[1];
 
@@ -22,74 +23,81 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
 
     switch(operation_code){
         case NEW_POKEMON:;
-             new_pokemon* newPokemonMessage = malloc(sizeof(new_pokemon)); 
-
-             if(strcmp(receiver, "GAMECARD") == 0){
-                 newPokemonMessage = init_new_pokemon(message[3], atoi(message[4]),atoi(message[5]), atoi(message[6]), atoi(message[7]));
-             }else{
-                 newPokemonMessage = init_new_pokemon(message[3], atoi(message[4]),atoi(message[5]), atoi(message[6]), -1);
-             }
+            new_pokemon* newPokemonMessage = init_new_pokemon(message[3], atoi(message[4]), atoi(message[5]), atoi(message[6]));
         
-             paquete->codigo_operacion = NEW_POKEMON;
-             paquete->buffer->size = sizeof(uint32_t) * 5 + strlen(newPokemonMessage->pokemon) + 1;
-             paquete->buffer->stream = new_pokemon_to_stream(newPokemonMessage);
-             break;
-        case APPEARED_POKEMON:; 
-            appeared_pokemon* appearedPokemonMessage = malloc(sizeof(appeared_pokemon));
-
-            if(strcmp(receiver, "BROKER") == 0){
-                appearedPokemonMessage = init_appeared_pokemon(message[3], atoi(message[4]), atoi(message[5]), -1, atoi(message[6]));
-            }else{
-                appearedPokemonMessage = init_appeared_pokemon(message[3], atoi(message[4]), atoi(message[5]), -1, -1);
-            }
-
-            paquete->codigo_operacion = APPEARED_POKEMON;
-            paquete->buffer->size =  sizeof(uint32_t ) * 5 + strlen(appearedPokemonMessage->pokemon) + 1;
-            paquete->buffer->stream = appeared_pokemon_to_stream(appearedPokemonMessage);
-            break;
-        case CATCH_POKEMON:;
-            catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon)); 
+            paquete->codigo_operacion = NEW_POKEMON;
+            paquete->buffer->size = size_of_new_pokemon(newPokemonMessage);
 
             if(strcmp(receiver, "GAMECARD") == 0){
-                catchPokemonMessage = init_catch_pokemon(message[3], atoi(message[4]), atoi(message[5]), atoi(message[6]));
+                *id_message = atoi(message[7]);
             }else{
-                catchPokemonMessage = init_catch_pokemon(message[3], atoi(message[4]), atoi(message[5]), -1); 
+                *id_message = -1;
             }
+            paquete->buffer->stream = new_pokemon_to_stream(newPokemonMessage, id_message);
+            free_new_pokemon(newPokemonMessage);
+            break;
+        case APPEARED_POKEMON:; 
+            appeared_pokemon* appearedPokemonMessage = init_appeared_pokemon(message[3], atoi(message[4]), atoi(message[5]));
+
+            paquete->codigo_operacion = APPEARED_POKEMON;
+            paquete->buffer->size =  size_of_appeared_pokemon(appearedPokemonMessage);
+            
+            *id_message = -1;
+            if(strcmp(receiver, "BROKER") == 0){
+                *id_correlational = atoi(message[6]);
+            }else{
+                *id_correlational = -1;
+            }
+            paquete->buffer->stream = appeared_pokemon_to_stream(appearedPokemonMessage, id_message, id_correlational);
+            free_appeared_pokemon(appearedPokemonMessage);
+            break;
+        case CATCH_POKEMON:;
+            catch_pokemon* catchPokemonMessage = init_catch_pokemon(message[3], atoi(message[4]), atoi(message[5]));
 
             paquete->codigo_operacion = CATCH_POKEMON;
-            paquete->buffer->size = sizeof(uint32_t ) * 4 + strlen(catchPokemonMessage->pokemon) + 1;
-            paquete->buffer->stream = catch_pokemon_to_stream(catchPokemonMessage);
+            paquete->buffer->size = size_of_catch_pokemon(catchPokemonMessage);
+            
+            if(strcmp(receiver, "GAMECARD") == 0){
+                *id_message = atoi(message[6]);
+            }else{
+                *id_message = -1;
+            }
+            paquete->buffer->stream = catch_pokemon_to_stream(catchPokemonMessage, id_message);
+            free_catch_pokemon(catchPokemonMessage);
             break;
         case CAUGHT_POKEMON:; 
-            caught_pokemon* caughtPokemonMessage = malloc(sizeof(caught_pokemon)); 
+            caught_pokemon* caughtPokemonMessage; 
 
             if(strcmp(message[4],"OK") == 0){
-                caughtPokemonMessage = init_caught_pokemon(-1, atoi(message[3]), 1);
+                caughtPokemonMessage = init_caught_pokemon(1);
             }else{
-                caughtPokemonMessage = init_caught_pokemon(-1, atoi(message[3]), 0);
+                caughtPokemonMessage = init_caught_pokemon(0);
             }
 
+            *id_message = -1; 
+            *id_correlational = atoi(message[3]);
+
             paquete->codigo_operacion = CAUGHT_POKEMON;
-            paquete->buffer->size = sizeof(uint32_t) * 3;
-            paquete->buffer->stream = caught_pokemon_to_stream(caughtPokemonMessage);
+            paquete->buffer->size = size_of_caught_pokemon(caughtPokemonMessage);
+            paquete->buffer->stream = caught_pokemon_to_stream(caughtPokemonMessage, id_message, id_correlational);
+            free_caught_pokemon(caughtPokemonMessage);
             break;
         case GET_POKEMON:;
-            get_pokemon* getPokemonMessage = malloc(sizeof(get_pokemon)); 
-
-            getPokemonMessage = init_get_pokemon(message[3], -1);
+            get_pokemon* getPokemonMessage = init_get_pokemon(message[3]);
+            *id_message = -1;
 
             paquete->codigo_operacion = GET_POKEMON;
-            paquete->buffer->size = sizeof(uint32_t ) * 2 + strlen(getPokemonMessage->pokemon) + 1;
-            paquete->buffer->stream = get_pokemon_to_stream(getPokemonMessage);
+            paquete->buffer->size = size_of_get_pokemon(getPokemonMessage);
+            paquete->buffer->stream = get_pokemon_to_stream(getPokemonMessage, id_message);
+            free_get_pokemon(getPokemonMessage);
             break;
         case SUSCRIPTOR:;
-            subscribe* subscriber = malloc(sizeof(subscribe));
-
-            subscriber = init_subscribe(stringToEnum(message[2]));
+            subscribe* subscriber = init_subscribe(stringToEnum(message[2]));
 
             paquete->codigo_operacion = SUSCRIPTOR; 
             paquete->buffer->size = sizeof(uint32_t);
             paquete->buffer->stream = subscribe_to_stream(subscriber);
+            free_subscribe(subscriber);
             break;
         case ERROR:;
             paquete->codigo_operacion = ERROR;
@@ -107,6 +115,8 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
 
 	free(a_enviar);
 	free_package(paquete);
+    free(id_correlational);
+    free(id_message);
 }
 
 op_code stringToEnum(char* message_function){
@@ -124,45 +134,43 @@ op_code stringToEnum(char* message_function){
 void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t socketfd){
 
     void* stream = malloc(sizeofstruct);
+    uint32_t* id_message = malloc(sizeof(uint32_t)); 
+    uint32_t* id_correlational = malloc(sizeof(uint32_t)); 
     recv(socketfd, stream, sizeofstruct, MSG_WAITALL);
     
     switch(cod_op){
         case NEW_POKEMON:;
-            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream);
+            new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream, id_message, false);
             
             log_info(optional_logger, "New pokemon!");
             log_info(optional_logger, "This is the pokemon: %s", newPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", newPokemonMessage->position.posx);
             log_info(optional_logger, "This is the position y: %d", newPokemonMessage->position.posy);
             log_info(optional_logger, "This is the quantity: %d", newPokemonMessage->quantity);
-            log_info(optional_logger, "This is the id message: %d", newPokemonMessage->id_message);
-            send_ack(socketfd, newPokemonMessage->id_message);
+            send_ack(socketfd, *id_message);
             break;
         case APPEARED_POKEMON:;
-            appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream);
+            appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream, id_message, id_correlational, false);
 
             log_info(optional_logger, "Appeared pokemon!");
             log_info(optional_logger, "This is the pokemon: %s", appearedPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", appearedPokemonMessage->position.posx);
             log_info(optional_logger, "This is the position y: %d", appearedPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the id correlational: %d", appearedPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: %d", appearedPokemonMessage->id_message);
-            send_ack(socketfd, appearedPokemonMessage->id_message);
+            send_ack(socketfd, *id_message);
             break;
         case CATCH_POKEMON:;
 
-            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream);
+            catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream, id_message, false);
 
             log_info(optional_logger, "Catch pokemon!");
             log_info(optional_logger, "This is the pokemon: %s", catchPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", catchPokemonMessage->position.posx);
             log_info(optional_logger, "This is the position y: %d", catchPokemonMessage->position.posy);
-            log_info(optional_logger, "This is the id message: %d", catchPokemonMessage->id_message);
-            send_ack(socketfd, catchPokemonMessage->id_message);
+            send_ack(socketfd, *id_message);
             break;
         case CAUGHT_POKEMON:;
 
-            caught_pokemon* caughtPokemonMessage = stream_to_caught_pokemon(stream);
+            caught_pokemon* caughtPokemonMessage = stream_to_caught_pokemon(stream, id_message, id_correlational, false);
 
             char* wasCaught; 
 
@@ -173,30 +181,25 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             }
 
             log_info(optional_logger, "Caught pokemon!");
-            log_info(optional_logger, "Was the pokemon catch?: %d", wasCaught); 
-            log_info(optional_logger, "This is the id correlational: %d", caughtPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: %d", caughtPokemonMessage->id_message);
-            send_ack(socketfd, caughtPokemonMessage->id_message);
+            log_info(optional_logger, "Was the pokemon catch?: %d", wasCaught);
+            send_ack(socketfd, *id_message);
             break;
         case GET_POKEMON:;
 
-            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream); 
+            get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream, id_message, false); 
 
             log_info(optional_logger, "Get pokemon!");
             log_info(optional_logger, "This is the pokemon: %s", getPokemonMessage->pokemon); 
-            log_info(optional_logger, "This is the id message: %d", getPokemonMessage->id_message);
-            send_ack(socketfd, getPokemonMessage->id_message);
+            send_ack(socketfd, *id_message);
             break;
         case LOCALIZED_POKEMON:;
 
-            localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream);
+            localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream, id_message, id_correlational, false);
 
             log_info(optional_logger, "Localized pokemon!");
             log_info(optional_logger, "This is the pokemon: %s", localizedPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the size of the list of positions: %d", (*localizedPokemonMessage->positions).elements_count);
-            log_info(optional_logger, "This is the id correlational: %d", localizedPokemonMessage->id_correlational);
-            log_info(optional_logger, "This is the id message: %d", localizedPokemonMessage->id_message);
-            send_ack(socketfd, localizedPokemonMessage->id_message);
+            send_ack(socketfd, *id_message);
             break;
         case SUSCRIPTOR:; 
 
@@ -239,4 +242,8 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         default:;
             log_info(optional_logger, "Cannot understand op_code received.");
     }
+
+    free(id_message);
+    free(id_correlational);
+    free(stream);
 }

@@ -278,9 +278,7 @@ void send_ack(uint32_t socket_broker, uint32_t id_message){
     t_paquete* paquete = malloc(sizeof(t_paquete));
     paquete->buffer = malloc(sizeof(t_buffer));
 
-    ack* ackBroker = malloc(sizeof(ack));
-
-    ackBroker = init_ack(id_message);
+    ack* ackBroker = init_ack(id_message);
 
     paquete->codigo_operacion = ACK; 
     paquete->buffer->size = sizeof(u_int32_t); // revisar
