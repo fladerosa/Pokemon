@@ -257,7 +257,9 @@ void send_reconnect(uint32_t socket_broker){
     t_paquete* paquete = malloc(sizeof(t_paquete));
     paquete->buffer = malloc(sizeof(t_buffer));
 
-    reconnect* reconnectToBroker = init_reconnect(socket_broker);
+    uint32_t id_connection = receive_connection_id(socket_broker);
+
+    reconnect* reconnectToBroker = init_reconnect(id_connection);
 
     paquete->codigo_operacion = RECONNECT;
     paquete->buffer->size = sizeof(u_int32_t); // revisar
