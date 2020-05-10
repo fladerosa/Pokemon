@@ -37,6 +37,7 @@ typedef struct t_message_queue {
     t_list* subscribers;
     sem_t* sem_message;
     sem_t* sem_all_ack;
+    pthread_mutex_t* m_queue_modify;
 } t_message_queue;
 
 t_list* list_queues;

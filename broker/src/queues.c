@@ -1,19 +1,13 @@
 #include "queues.h"
 
-uint32_t get_id_message(){
-    pthread_mutex_lock(&m_id_message);
-    static uint32_t id_message = 0;
-    id_message++;
-    pthread_mutex_unlock(&m_id_message);
-    return id_message;
+uint32_t get_id_message(){ //crear mutex al llamar a esto
+    static uint32_t id_message = 1;
+    return id_message++;
 }
 
-uint32_t get_id_connection(){
-    pthread_mutex_lock(&m_id_connection);
-    static uint32_t id_connection = 0;
-    id_connection++;
-    pthread_mutex_unlock(&m_id_connection);
-    return id_connection;
+uint32_t get_id_connection(){ // y esto
+    static uint32_t id_connection = 1;
+    return id_connection++;
 }
 
 void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* args) {
@@ -31,7 +25,9 @@ void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* ar
 void handle_new_connection(uint32_t client_fd){
     t_connection *conn = malloc(sizeof(t_connection));
     conn->socket = client_fd;
+    pthread_mutex_lock(&m_id_connection);
     conn->id_connection = get_id_connection();
+    pthread_mutex_unlock(&m_id_connection);
     conn->is_connected = true;
     list_add(connections, conn);
 
@@ -97,8 +93,9 @@ void add_message_to_queue(void* data, op_code code, uint32_t size_of_data, uint3
     new_message->id_message = id_message;
     new_message->id_correlational = id_correlational;
     new_message->id_queue = code;
-    //puede que necesitemos mutex aca
+    pthread_mutex_lock(queue->m_queue_modify);
     queue_push(queue->messages, new_message);
+    pthread_mutex_unlock(queue->m_queue_modify);
     sem_post(queue->sem_message);
 }
 
@@ -155,7 +152,9 @@ void queue_message_sender(void* args){
     //log_info(optional_logger, "Starting queue number %d", queue->id_queue);
     while(1){   
         sem_wait(queue->sem_message);
+        pthread_mutex_lock(queue->m_queue_modify);
         t_message* message = queue_peek(queue->messages);
+        pthread_mutex_unlock(queue->m_queue_modify);
         for(int i=0; i<list_size(message->receivers); i++){
             t_receiver* receiver = list_get(message->receivers, i);
             if(receiver->conn->is_connected){
@@ -167,7 +166,9 @@ void queue_message_sender(void* args){
             }
         }
         sem_wait(queue->sem_all_ack);
+        pthread_mutex_lock(queue->m_queue_modify);
         queue_pop(queue->messages);
+        pthread_mutex_unlock(queue->m_queue_modify);
     }
 }
 
@@ -213,7 +214,9 @@ void handle_new_pokemon(void* stream, uint32_t client_fd){
     new_pokemon* newPokemonMessage 
         = stream_to_new_pokemon(
             stream, NULL, true);
+    pthread_mutex_lock(&m_id_message);
     id_message = get_id_message();
+    pthread_mutex_unlock(&m_id_message);
     send_ack(client_fd, id_message);
     add_message_to_queue(
         newPokemonMessage, 
@@ -228,7 +231,9 @@ void handle_appeared_pokemon(void* stream, uint32_t client_fd){
     appeared_pokemon* appearedPokemonMessage 
         = stream_to_appeared_pokemon(
             stream, NULL, &id_correlational, true);
+    pthread_mutex_lock(&m_id_message);
     id_message = get_id_message();
+    pthread_mutex_unlock(&m_id_message);
     send_ack(client_fd, id_message);
     add_message_to_queue(
         appearedPokemonMessage, 
@@ -242,7 +247,9 @@ void handle_catch_pokemon(void* stream, uint32_t client_fd){
     uint32_t id_message = -1, id_correlational = -1;
     catch_pokemon* catchPokemonMessage = 
         stream_to_catch_pokemon(stream, NULL, true);
+    pthread_mutex_lock(&m_id_message);
     id_message = get_id_message();
+    pthread_mutex_unlock(&m_id_message);
     send_ack(client_fd, id_message);
     add_message_to_queue(
         catchPokemonMessage, 
@@ -257,7 +264,9 @@ void handle_caught_pokemon(void* stream, uint32_t client_fd){
     caught_pokemon* caughtPokemonMessage 
         = stream_to_caught_pokemon(
             stream, NULL, &id_correlational, true);
+    pthread_mutex_lock(&m_id_message);
     id_message = get_id_message();
+    pthread_mutex_unlock(&m_id_message);
     send_ack(client_fd, id_message);
     add_message_to_queue(
         caughtPokemonMessage, 
@@ -271,7 +280,9 @@ void handle_get_pokemon(void* stream, uint32_t client_fd){
     uint32_t id_message = -1, id_correlational = -1;
     get_pokemon* getPokemonMessage 
         = stream_to_get_pokemon(stream, NULL, true); 
+    pthread_mutex_lock(&m_id_message);
     id_message = get_id_message();
+    pthread_mutex_unlock(&m_id_message);
     send_ack(client_fd, id_message);
     add_message_to_queue(
         getPokemonMessage, 
@@ -286,7 +297,9 @@ void handle_localized_pokemon(void* stream, uint32_t client_fd){
     localized_pokemon* localizedPokemonMessage 
         = stream_to_localized_pokemon(
             stream, NULL, &id_correlational, true);
+    pthread_mutex_lock(&m_id_message);
     id_message = get_id_message();
+    pthread_mutex_unlock(&m_id_message);
     send_ack(client_fd, id_message);
     add_message_to_queue(
         localizedPokemonMessage, 
