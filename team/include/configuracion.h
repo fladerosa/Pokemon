@@ -16,31 +16,44 @@ typedef enum{
 typedef struct{
     uint32_t position_x;   
     uint32_t position_y;   
-}map;
+}position_map;
 
 typedef struct{
-    uint32_t id_trainer;
     uint32_t posix;
     uint32_t posiy;
 }position_trainer;
 
 typedef struct{
+    char * pokemon; 
+    uint32_t initial_quantity_pokemon;
+}pokemon;
+
+typedef struct{
+    char* pokemon; 
+    uint32_t global_quantity_pokemon;
+}g_pokemon;
+
+typedef struct{
     uint32_t id_trainer;
     position_trainer position;
+    pokemon init_pokemon;
+    g_pokemon global_pokemon; 
     enum_process_state state; 
 }thread_trainer;
 
+/*
 typedef struct{
     uint32_t id_trainer;
-    char * pokemon; 
-    uint32_t initial_quantity_pokemon;     
+    pokemon init_pokemon;    
 }pokemon_trainer;
+*/
 
+/*
 typedef struct{
     uint32_t id_trainer;
-    char* pokemon; 
-    uint32_t global_quantity_pokemon;   
+    g_pokemon global_pokemon; 
 }objective_trainer;
+*/
 
 typedef struct{
     char* pokemon;
@@ -66,11 +79,11 @@ typedef struct{
 
 }configuration;
 
-thread_trainer init_position;
-pokemon_trainer init_pokemon;
-objective_trainer global_pokemon;
+thread_trainer init_position_trainer;
+//pokemon_trainer init_pokemon_trainer;
+//objective_trainer global_pokemon_trainer;
 pokemon_team pokemon_to_find;
-map map_team;
+position_map map_team;
 configuration values;
 
 op_code code;
@@ -83,7 +96,7 @@ void create_optional_logger();
 void create_obligatory_logger();
 
 void load_positions_config_team(t_config*);
-void add_position_to_list(uint32_t*);
+void add_position_to_list(position_trainer*);
 uint32_t quantity_trainers(t_list*);
 void assign_trainer_id(t_list* );
 void fix_position(char *);
@@ -97,9 +110,9 @@ void add_objective_to_list(char *);
 void fix_objective(char *);
 bool is_repeated_poke(void *);
 
-void destroy_position(position_trainer*);
-void destroy_pokemon(pokemon_trainer*);
-void destroy_objective(objective_trainer*);
+void destroy_position(thread_trainer*);
+//void destroy_pokemon(pokemon_trainer*);
+//void destroy_objective(objective_trainer*);
 
 void destroy_lists_and_loaded_elements();
 

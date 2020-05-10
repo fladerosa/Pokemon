@@ -22,12 +22,13 @@ void load_positions_config_team(t_config *config)
     
 }
 
-void add_position_to_list(uint32_t *position) 
+void add_position_to_list(position_trainer *position) 
 {
     if (position != NULL) 
     {
         list_add(values.posicion_entrenador,position);
-    }   
+    }  
+
   }
 
 uint32_t quantity_trainers(t_list* position_trainers)
@@ -37,36 +38,39 @@ uint32_t quantity_trainers(t_list* position_trainers)
 
 void fix_position(char *value) 
 {
-  thread_trainer *init_position = malloc(sizeof(thread_trainer));
+  position_trainer *position = malloc(sizeof(position_trainer));
     
     if(value != NULL) 
     {
       char **positions = string_split(value, "|");
-      uint32_t value_x = (uint32_t *)atoi(positions[0]);
-      uint32_t value_y = (uint32_t *)atoi(positions[1]);
-      init_position->position.posix = value_x;
-      init_position->position.posiy = value_y;
+      uint32_t value_x = (uint32_t)atoi(positions[0]);
+      uint32_t value_y = (uint32_t)atoi(positions[1]);
+      position->posix = value_x;
+      position->posiy = value_y;
 
-      add_position_to_list(values.posicion_entrenador, value_x);
-      add_position_to_list(values.posicion_entrenador, value_y);
+      add_position_to_list(position);
+     
     }  
 }
-
-void assign_trainer_id(t_list* position_trainers)
+//procesar estructura de hilo de entrenador
+void assign_trainer_id(t_list* position_trainers_on_list)
 {
-    for(uint32_t i = 0; i <= quantity_trainers(position_trainers); i++)
+    thread_trainer *init_position_trainer = malloc(sizeof(init_position_trainer));
+
+    for(uint32_t i = 0; i <= quantity_trainers(position_trainers_on_list); i++)
     {     
-         init_position.id_trainer = i+1;
-        // init_position.state = NEW;
+         init_position_trainer->id_trainer = i+1; 
+         init_position_trainer->state = NEW;
     }
 }
 
 void load_pokemons_config_team(t_config *config)
 {
+    
     char** pokemon_config = config_get_array_value(config, "POKEMON_ENTRENADORES");
     values.pokemon_entrenador = list_create();
     string_iterate_lines(pokemon_config, fix_pokemon);
-    assign_trainer_id(values.pokemon_entrenador);
+    //assign_trainer_id(values.pokemon_entrenador);
 }
 
 void add_pokemon_to_list(char *pokemon) 
@@ -77,6 +81,7 @@ void add_pokemon_to_list(char *pokemon)
 
 void fix_pokemon(char *value) 
 {
+    pokemon *init_pokemon = malloc(sizeof(init_pokemon));
     if(value != NULL) 
     {
       char **pokemons = string_split(value, "|");
@@ -89,7 +94,7 @@ void load_objectives_config_team(t_config *config)
    char** objective_config = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
    values.objetivo_entrenador = list_create();
    string_iterate_lines(objective_config, fix_objective);
-   assign_trainer_id(values.objective_entrenador);
+  // assign_trainer_id(values.objective_entrenador);
    
 }
 
@@ -101,6 +106,7 @@ void add_objective_to_list(char *objective)
 
 void fix_objective(char *value) 
 {
+    g_pokemon *global_pokemon = malloc(sizeof(global_pokemon));
     if(value != NULL) 
     {
       char **objectives = string_split(value, "|");
@@ -122,33 +128,31 @@ bool is_repeated_poke(void *pokemon)
     return 1;
 }
 
-void destroy_position(position_trainer* init_position)
+void destroy_position(thread_trainer* init_position_trainer)
 {		
-		free(init_position);
+		free(init_position_trainer);
 }
-
-void destroy_pokemon(pokemon_trainer* init_pokemon)
+/*
+void destroy_pokemon(pokemon_trainer* init_pokemon_trainer)
 {   
-        free(init_pokemon->pokemon);
-		free(init_pokemon);
+		free(init_pokemon_trainer);
 }
-void destroy_objective(objective_trainer* global_pokemon)
+void destroy_objective(objective_trainer* global_pokemon_trainer)
 { 
-        free(global_pokemon->pokemon);
-		free(global_pokemon);
+		free(global_pokemon_trainer);
 }
-
+*/
 void destroy_lists_and_loaded_elements()
 {
      list_destroy_and_destroy_elements(values.posicion_entrenador,(void*)destroy_position);
-     list_destroy_and_destroy_elements(values.pokemon_entrenador, (void*)destroy_pokemon);
-     list_destroy_and_destroy_elements(values.objetivo_entrenador, (void*)destroy_objective);
+     //list_destroy_and_destroy_elements(values.pokemon_entrenador, (void*)destroy_pokemon);
+    // list_destroy_and_destroy_elements(values.objetivo_entrenador, (void*)destroy_objective);
 }
 void load_values_config(t_config * config)
 {
-    load_positions_config_team();
-    load_pokemons_config_team();
-    load_objectives_config_team();
+    load_positions_config_team(config);
+    load_pokemons_config_team(config);
+    load_objectives_config_team(config);
     values.nro_team = (uint32_t)config_get_int_value(config, "NRO_TEAM");
     values.tiempo_reconexion = (uint32_t)config_get_int_value(config, "TIEMPO_RECONEXION");
     values.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
