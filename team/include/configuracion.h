@@ -96,9 +96,7 @@ void create_optional_logger();
 void create_obligatory_logger();
 
 void load_positions_config_team(t_config*);
-void add_position_to_list(position_trainer*);
-uint32_t quantity_trainers(t_list*);
-void assign_trainer_id(t_list* );
+void add_position_to_list(char *);
 void fix_position(char *);
 
 void load_pokemons_config_team(t_config*);
@@ -108,6 +106,9 @@ void fix_pokemon(char *);
 void load_objectives_config_team(t_config*);;
 void add_objective_to_list(char *);
 void fix_objective(char *);
+
+uint32_t quantity_trainers(t_list*);
+void assign_data_trainer(t_list*, position_trainer*, pokemon*, g_pokemon*);
 
 void destroy_position(thread_trainer*);
 //void destroy_pokemon(pokemon_trainer*);

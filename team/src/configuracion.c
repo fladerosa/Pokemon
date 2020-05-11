@@ -18,15 +18,16 @@ void load_positions_config_team(t_config *config)
     char** position_config =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
     values.posicion_entrenador = list_create(); 
     string_iterate_lines(position_config, fix_position);
-    assign_trainer_id(values.posicion_entrenador);
+   // assign_trainer_id(values.posicion_entrenador,&position);
     
 }
 
-void add_position_to_list(position_trainer *position) 
+void add_position_to_list(char *position) 
 {
     if (position != NULL) 
     {
-        list_add(values.posicion_entrenador,position);
+        uint32_t value = (uint32_t)atoi(position);
+        list_add(values.posicion_entrenador,(void*)value);
     }  
 }
 
@@ -46,17 +47,25 @@ void fix_position(char *value)
       position->posix = value_x;
       position->posiy = value_y;
 
-      add_position_to_list(position);     
+      //add_position_to_list(position);  
+      string_iterate_lines(positions, add_position_to_list);   
     }  
 }
 //procesar estructura de hilo de entrenador
-void assign_trainer_id(t_list* position_trainers_on_list)
+    
+void assign_data_trainer(t_list* position_trainers_on_list, position_trainer *position, pokemon *init_pokemon, g_pokemon *global_pokemon)
 {
     thread_trainer *init_position_trainer = malloc(sizeof(init_position_trainer));
 
     for(uint32_t i = 0; i <= quantity_trainers(position_trainers_on_list); i++)
     {     
          init_position_trainer->id_trainer = i+1; 
+         init_position_trainer->position.posix = position->posix;
+         init_position_trainer->position.posiy = position->posiy;
+         init_position_trainer->init_pokemon.pokemon = init_pokemon->pokemon;
+         init_position_trainer->init_pokemon.initial_quantity_pokemon = init_pokemon->initial_quantity_pokemon;
+         init_position_trainer->global_pokemon.pokemon = global_pokemon->pokemon;
+         init_position_trainer->global_pokemon.global_quantity_pokemon = global_pokemon->global_quantity_pokemon;
          init_position_trainer->state = NEW;
     }
 }
@@ -72,7 +81,7 @@ void load_pokemons_config_team(t_config *config)
 void add_pokemon_to_list(char *pokemon) 
 {
     if (pokemon != NULL) 
-      list_add(values.pokemon_entrenador, pokemon);    
+      list_add(values.pokemon_entrenador, (void*)pokemon);    
 }
 
 void fix_pokemon(char *value) 
@@ -114,7 +123,7 @@ void load_objectives_config_team(t_config *config)
 void add_objective_to_list(char *objective) 
 {
     if (objective != NULL)    
-      list_add(values.objetivo_entrenador, objective); 
+      list_add(values.objetivo_entrenador,(void*)objective); 
 }
 
 void fix_objective(char *value) 
