@@ -266,7 +266,9 @@ enum t_algoritmo obtenerAlgoritmo()
 void listen_to_gameboy()
 { 
    start_server(values.ip_team, values.puerto_team, request);
-   pthread_join(server, NULL);
+   pthread_t listening_gameboy;
+   pthread_create(&listening_gameboy, NULL, (void*)listen_to_gameboy, NULL);
+   //pthread_join(server, NULL);
    //mandar mensaje de confirmacion cuando el gameboy me mande appeared_pokemon()
 }
 void connection_broker_global_suscribe()
@@ -278,12 +280,9 @@ void connection_broker_global_suscribe()
 
 void retry_on_x_time()
 {
-    uint32_t time_in = values.tiempo_reconexion;
-  
-        while(time_in != 0)
-        {
-            time_in--;
-        }
+    uint32_t time_in = values.tiempo_reconexion;  
+    while(time_in != 0)
+        time_in--;        
 }
 uint32_t caught_default(caught_pokemon* caughtPokemonMessage)
 { 
@@ -291,11 +290,19 @@ uint32_t caught_default(caught_pokemon* caughtPokemonMessage)
   caughtPokemonMessage->success =caught_ok;
     return caught_ok;
 }
+
+void localized_default(localized_pokemon* localizedPokemonMessage, pokemon_team *pokemon_to_find)
+{
+  localizedPokemonMessage->pokemon = pokemon_to_find->pokemon;
+  t_position* position = list_get(localizedPokemonMessage->positions, 0);
+
+}
 void connection_broker_suscribe_to_appeared_pokemon()
 {   //se envia un connect por cada cola de mensajes a suscribirse
     connection *connection_server= malloc(sizeof(connection));
 
     uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
+    listen_to_gameboy();
     //si la conexion falla(, debe haber un reintento de conexion por el .cfg por medio de un hilo.
     while(server_connection == -1)
     {
@@ -348,6 +355,11 @@ void connection_broker_suscribe_to_localized_pokemon()
     pthread_t reconnection_broker_localized_pokemon;
     pthread_create(&reconnection_broker_localized_pokemon, NULL, (void*)retry_on_x_time, NULL);
     log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", values.tiempo_reconexion,  reconnection_broker_localized_pokemon);
+    
+    localized_pokemon* localizedPokemonMessage =malloc(sizeof(localized_pokemon));
+    pokemon_team *pokemon_to_find = malloc(sizeof(pokemon_team));
+    pokemon_to_find->pokemon = "Bulbasaur";
+    localized_default(localizedPokemonMessage, pokemon_to_find); 
     }
     
     log_info(obligatory_logger, "Connection to broker succesfully\n");	
