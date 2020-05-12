@@ -120,6 +120,8 @@ void initialize_team();
 void release_resources();
 
 void listen_to_gameboy();
+void retry_on_x_time();
+uint32_t caught_default(caught_pokemon*);
 void connection_broker_global_suscribe();
 void connection_broker_suscribe_to_appeared_pokemon();
 void connection_broker_suscribe_to_caught_pokemon();
