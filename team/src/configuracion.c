@@ -31,42 +31,44 @@ void add_position_to_list(char *position)
     }  
 }
 
-uint32_t quantity_trainers(t_list* position_trainers)
-{
-  return list_size(position_trainers)/2;
-}
-
 void fix_position(char *value) 
 {
-  position_trainer *position = malloc(sizeof(position_trainer));
     if(value != NULL) 
     {
+      position_trainer *position = malloc(sizeof(position_trainer));
       char **positions = string_split(value, "|");
       uint32_t value_x = (uint32_t)atoi(positions[0]);
       uint32_t value_y = (uint32_t)atoi(positions[1]);
       position->posix = value_x;
       position->posiy = value_y;
-
-      //add_position_to_list(position);  
+ 
       string_iterate_lines(positions, add_position_to_list);   
     }  
 }
-//procesar estructura de hilo de entrenador
-    
-void assign_data_trainer(t_list* position_trainers_on_list, position_trainer *position, pokemon *init_pokemon, g_pokemon *global_pokemon)
-{
-    thread_trainer *init_position_trainer = malloc(sizeof(init_position_trainer));
 
-    for(uint32_t i = 0; i <= quantity_trainers(position_trainers_on_list); i++)
-    {     
-         init_position_trainer->id_trainer = i+1; 
-         init_position_trainer->position.posix = position->posix;
-         init_position_trainer->position.posiy = position->posiy;
-         init_position_trainer->init_pokemon.pokemon = init_pokemon->pokemon;
-         init_position_trainer->init_pokemon.initial_quantity_pokemon = init_pokemon->initial_quantity_pokemon;
-         init_position_trainer->global_pokemon.pokemon = global_pokemon->pokemon;
-         init_position_trainer->global_pokemon.global_quantity_pokemon = global_pokemon->global_quantity_pokemon;
-         init_position_trainer->state = NEW;
+uint32_t quantity_trainers(t_list* position_trainers)
+{
+  return list_size(position_trainers)/2;
+}
+//procesar estructura de cada hilo de entrenador
+    
+void assign_data_trainer(t_list* position_trainers_on_list, position_trainer *position, pokemon **init_pokemon, g_pokemon **global_pokemon)
+{
+    for(uint32_t i = 1; i <= quantity_trainers(position_trainers_on_list); i++)
+    {
+        thread_trainer **init_position_trainer = malloc(sizeof(init_position_trainer));
+        
+         (*init_position_trainer+i)->id_trainer = i; 
+         (*init_position_trainer+i)->position.posix = position[i].posix;
+         (*init_position_trainer+i)->position.posiy = position[i].posiy;
+
+         (*init_position_trainer+i)->init_pokemon->pokemon =(*init_pokemon[i]).pokemon;
+         (*init_position_trainer+i)->init_pokemon->initial_quantity_pokemon= (*init_pokemon[i]).initial_quantity_pokemon;  
+
+         (*init_position_trainer+i)->global_pokemon->pokemon = (*global_pokemon[i]).pokemon;
+         (*init_position_trainer+i)->global_pokemon->global_quantity_pokemon = (*global_pokemon[i]).global_quantity_pokemon;
+         
+         (*init_position_trainer+i)->state = NEW;
     }
 }
 
@@ -84,30 +86,34 @@ void add_pokemon_to_list(char *pokemon)
       list_add(values.pokemon_entrenador, (void*)pokemon);    
 }
 
-void fix_pokemon(char *value) 
+void read_pokemons_to_char(char **pokemons)
 {
-    pokemon *init_pokemon = malloc(sizeof(init_pokemon));
-    int i = 0;
-    uint32_t quantity = 0;
-
-    if(value != NULL) 
-    {
-      char **pokemons = string_split(value, "|");
-      while(pokemons[i] != NULL)
+  uint32_t i = 0;  
+    while(pokemons[i] != NULL)
       {
-          init_pokemon->pokemon = pokemons[i];
+          uint32_t quantity = 0;
+          pokemon **init_pokemon = malloc(sizeof(init_pokemon));
+          (*init_pokemon+i)->pokemon = pokemons[i];
           quantity++;
           
             if((strcmp(pokemons[i],  pokemons[i+1])==0))
             {
                 quantity++;
-                init_pokemon->initial_quantity_pokemon = quantity;
+                (*init_pokemon+i)->initial_quantity_pokemon = quantity;
             }
             else{
-                 init_pokemon->initial_quantity_pokemon = quantity;
+                 (*init_pokemon+i)->initial_quantity_pokemon = quantity;
             }                
         i++;
       }
+}
+
+void fix_pokemon(char *value) 
+{
+    if(value != NULL) 
+    {
+      char **pokemons = string_split(value, "|");
+      read_pokemons_to_char(pokemons);
       string_iterate_lines(pokemons, add_pokemon_to_list);
     } 
 }
@@ -125,32 +131,33 @@ void add_objective_to_list(char *objective)
     if (objective != NULL)    
       list_add(values.objetivo_entrenador,(void*)objective); 
 }
-
-void fix_objective(char *value) 
+void read_objectives_to_char(char **objectives)
 {
-    g_pokemon *global_pokemon = malloc(sizeof(global_pokemon));
-    if(value != NULL) 
-    {
-      char **objectives = string_split(value, "|");
-      int i = 0;
-      uint32_t quantity = 0;
-
-      while(objectives[i] != NULL)
+ uint32_t i = 0;
+    while(objectives[i] != NULL)
       {
-          global_pokemon->pokemon = objectives[i];
+          uint32_t quantity = 0;
+          g_pokemon **global_pokemon = malloc(sizeof(global_pokemon));
+          (*global_pokemon+i)->pokemon = objectives[i];
           quantity++;
           
             if((strcmp(objectives[i],  objectives[i+1])==0))
             {
                 quantity++;
-                global_pokemon->global_quantity_pokemon = quantity;
+                (*global_pokemon+i)->global_quantity_pokemon = quantity;
             }
             else{
-                 global_pokemon->global_quantity_pokemon = quantity;
-            }
-                
+                 (*global_pokemon+i)->global_quantity_pokemon = quantity;
+            }               
         i++;
       }
+}
+void fix_objective(char *value) 
+{
+    if(value != NULL) 
+    {
+      char **objectives = string_split(value, "|");
+      read_objectives_to_char(objectives);
       string_iterate_lines(objectives, add_objective_to_list);
     }
 }
@@ -159,21 +166,21 @@ void destroy_position(thread_trainer* init_position_trainer)
 {		
 		free(init_position_trainer);
 }
-/*
-void destroy_pokemon(pokemon_trainer* init_pokemon_trainer)
+
+void destroy_pokemon(pokemon* init_pokemon)
 {   
-		free(init_pokemon_trainer);
+		free(init_pokemon);
 }
-void destroy_objective(objective_trainer* global_pokemon_trainer)
+void destroy_objective(g_pokemon* global_pokemon)
 { 
-		free(global_pokemon_trainer);
+		free(global_pokemon);
 }
-*/
+
 void destroy_lists_and_loaded_elements()
 {
      list_destroy_and_destroy_elements(values.posicion_entrenador,(void*)destroy_position);
-     //list_destroy_and_destroy_elements(values.pokemon_entrenador, (void*)destroy_pokemon);
-    // list_destroy_and_destroy_elements(values.objetivo_entrenador, (void*)destroy_objective);
+     list_destroy_and_destroy_elements(values.pokemon_entrenador, (void*)destroy_pokemon);
+     list_destroy_and_destroy_elements(values.objetivo_entrenador, (void*)destroy_objective);
 }
 void load_values_config(t_config * config)
 {
@@ -319,8 +326,7 @@ void connection_broker_suscribe_to_appeared_pokemon()
     connection_server->id_connection = receive_connection_id(server_connection); 
 	suscribirseA(APPEARED_POKEMON, server_connection);
 	log_info(optional_logger, "Queue subscription request APPEARED_POKEMON\n");
-
-}	
+}
 void connection_broker_suscribe_to_caught_pokemon()
 {	
     connection *connection_server= malloc(sizeof(connection));

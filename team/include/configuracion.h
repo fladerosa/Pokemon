@@ -36,24 +36,11 @@ typedef struct{
 typedef struct{
     uint32_t id_trainer;
     position_trainer position;
-    pokemon init_pokemon;
-    g_pokemon global_pokemon; 
-    enum_process_state state; 
+    pokemon *init_pokemon;
+    g_pokemon *global_pokemon; 
+    enum_process_state state;
+    uint32_t quantity_poke;  //limitea atrapar total de pokes por entrenador, no por tipo
 }thread_trainer;
-
-/*
-typedef struct{
-    uint32_t id_trainer;
-    pokemon init_pokemon;    
-}pokemon_trainer;
-*/
-
-/*
-typedef struct{
-    uint32_t id_trainer;
-    g_pokemon global_pokemon; 
-}objective_trainer;
-*/
 
 typedef struct{
     char* pokemon;
@@ -79,9 +66,7 @@ typedef struct{
 
 }configuration;
 
-thread_trainer init_position_trainer;
-//pokemon_trainer init_pokemon_trainer;
-//objective_trainer global_pokemon_trainer;
+thread_trainer *init_position_trainer;
 pokemon_team pokemon_to_find;
 position_map map_team;
 configuration values;
@@ -101,18 +86,20 @@ void fix_position(char *);
 
 void load_pokemons_config_team(t_config*);
 void add_pokemon_to_list(char *);
+void read_pokemons_to_char(char **);
 void fix_pokemon(char *);
 
 void load_objectives_config_team(t_config*);;
 void add_objective_to_list(char *);
+void read_objectives_to_char(char **);
 void fix_objective(char *);
 
 uint32_t quantity_trainers(t_list*);
-void assign_data_trainer(t_list*, position_trainer*, pokemon*, g_pokemon*);
+void assign_data_trainer(t_list*, position_trainer*, pokemon**, g_pokemon**);
 
 void destroy_position(thread_trainer*);
-//void destroy_pokemon(pokemon_trainer*);
-//void destroy_objective(objective_trainer*);
+void destroy_pokemon(pokemon*);
+void destroy_objective(g_pokemon*);
 
 void destroy_lists_and_loaded_elements();
 
