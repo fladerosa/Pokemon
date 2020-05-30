@@ -5,6 +5,9 @@
 #include<commons/string.h>
 #include "common_utils.h"
 
+#define POSIX   10
+#define POSIY   10
+
 typedef enum{
 	NEW = 0,
 	READY,
@@ -14,8 +17,7 @@ typedef enum{
 } enum_process_state;
 
 typedef struct{
-    uint32_t position_x;   
-    uint32_t position_y;   
+    uint32_t map[POSIX][POSIY];  //ubicacion de entrenadores y pokemon
 }position_map;
 
 typedef struct{
@@ -26,11 +28,13 @@ typedef struct{
 typedef struct{
     char * pokemon; 
     uint32_t initial_quantity_pokemon;
+    uint32_t initial_dif_species;
 }pokemon;
 
 typedef struct{
     char* pokemon; 
     uint32_t global_quantity_pokemon;
+    uint32_t global_dif_species;
 }g_pokemon;
 
 typedef struct{
@@ -39,7 +43,7 @@ typedef struct{
     pokemon *init_pokemon;
     g_pokemon *global_pokemon; 
     enum_process_state state;
-    uint32_t quantity_poke;  //limitea atrapar total de pokes por entrenador, no por tipo
+    uint32_t quantity_poke;  //limite a atrapar total de pokes por entrenador, no por tipo
 }thread_trainer;
 
 typedef struct{
@@ -95,7 +99,7 @@ void read_objectives_to_char(char **);
 void fix_objective(char *);
 
 uint32_t quantity_trainers(t_list*);
-void assign_data_trainer(t_list*, position_trainer*, pokemon**, g_pokemon**);
+void assign_data_trainer(t_config*, position_trainer*, pokemon**, g_pokemon**);
 
 void destroy_position(thread_trainer*);
 void destroy_pokemon(pokemon*);

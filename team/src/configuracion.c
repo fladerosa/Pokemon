@@ -15,11 +15,10 @@ void read_config()
 
 void load_positions_config_team(t_config *config)
 {      
+   // [1|2, 3|7, 5|5]
     char** position_config =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
     values.posicion_entrenador = list_create(); 
-    string_iterate_lines(position_config, fix_position);
-   // assign_trainer_id(values.posicion_entrenador,&position);
-    
+    string_iterate_lines(position_config, fix_position);    
 }
 
 void add_position_to_list(char *position) 
@@ -31,45 +30,19 @@ void add_position_to_list(char *position)
     }  
 }
 
-void fix_position(char *value) 
+void fix_position(char *value) //"1|2"
 {
     if(value != NULL) 
     {
       position_trainer *position = malloc(sizeof(position_trainer));
-      char **positions = string_split(value, "|");
-      uint32_t value_x = (uint32_t)atoi(positions[0]);
-      uint32_t value_y = (uint32_t)atoi(positions[1]);
+      char **positions = string_split(value, "|"); //["1", "2"]
+      uint32_t value_x = (uint32_t)atoi(positions[0]); //1
+      uint32_t value_y = (uint32_t)atoi(positions[1]); //2
       position->posix = value_x;
       position->posiy = value_y;
- 
+            //"1", "2"
       string_iterate_lines(positions, add_position_to_list);   
     }  
-}
-
-uint32_t quantity_trainers(t_list* position_trainers)
-{
-  return list_size(position_trainers)/2;
-}
-//procesar estructura de cada hilo de entrenador
-    
-void assign_data_trainer(t_list* position_trainers_on_list, position_trainer *position, pokemon **init_pokemon, g_pokemon **global_pokemon)
-{
-    for(uint32_t i = 1; i <= quantity_trainers(position_trainers_on_list); i++)
-    {
-        thread_trainer **init_position_trainer = malloc(sizeof(init_position_trainer));
-        
-         (*init_position_trainer+i)->id_trainer = i; 
-         (*init_position_trainer+i)->position.posix = position[i].posix;
-         (*init_position_trainer+i)->position.posiy = position[i].posiy;
-
-         (*init_position_trainer+i)->init_pokemon->pokemon =(*init_pokemon[i]).pokemon;
-         (*init_position_trainer+i)->init_pokemon->initial_quantity_pokemon= (*init_pokemon[i]).initial_quantity_pokemon;  
-
-         (*init_position_trainer+i)->global_pokemon->pokemon = (*global_pokemon[i]).pokemon;
-         (*init_position_trainer+i)->global_pokemon->global_quantity_pokemon = (*global_pokemon[i]).global_quantity_pokemon;
-         
-         (*init_position_trainer+i)->state = NEW;
-    }
 }
 
 void load_pokemons_config_team(t_config *config)
@@ -91,19 +64,22 @@ void read_pokemons_to_char(char **pokemons)
   uint32_t i = 0;  
     while(pokemons[i] != NULL)
       {
-          uint32_t quantity = 0;
-          pokemon **init_pokemon = malloc(sizeof(init_pokemon));
+          pokemon **init_pokemon = malloc(sizeof(init_pokemon));        
+          uint32_t quantity = 1;
+          uint32_t dif_species = 1;
+
           (*init_pokemon+i)->pokemon = pokemons[i];
-          quantity++;
           
-            if((strcmp(pokemons[i],  pokemons[i+1])==0))
+            if(i>0 && (strcmp(pokemons[i],  pokemons[i-1])==0))
             {
                 quantity++;
                 (*init_pokemon+i)->initial_quantity_pokemon = quantity;
             }
             else{
                  (*init_pokemon+i)->initial_quantity_pokemon = quantity;
-            }                
+                 dif_species++;
+            }
+          (*init_pokemon+i)->initial_dif_species = dif_species;                            
         i++;
       }
 }
@@ -135,20 +111,22 @@ void read_objectives_to_char(char **objectives)
 {
  uint32_t i = 0;
     while(objectives[i] != NULL)
-      {
-          uint32_t quantity = 0;
+      {          
           g_pokemon **global_pokemon = malloc(sizeof(global_pokemon));
           (*global_pokemon+i)->pokemon = objectives[i];
-          quantity++;
+          uint32_t quantity = 1;
+          uint32_t g_dif_species = 1; 
           
-            if((strcmp(objectives[i],  objectives[i+1])==0))
+            if(i>0 && (strcmp(objectives[i],  objectives[i-1])==0))
             {
                 quantity++;
                 (*global_pokemon+i)->global_quantity_pokemon = quantity;
             }
             else{
                  (*global_pokemon+i)->global_quantity_pokemon = quantity;
-            }               
+                 g_dif_species++; 
+            } 
+            (*global_pokemon+i)->global_dif_species = g_dif_species;     //limite de captura                                    
         i++;
       }
 }
@@ -159,6 +137,40 @@ void fix_objective(char *value)
       char **objectives = string_split(value, "|");
       read_objectives_to_char(objectives);
       string_iterate_lines(objectives, add_objective_to_list);
+    }
+}
+
+uint32_t quantity_trainers(t_list* position_trainers)
+{
+  return list_size(position_trainers)/2;
+}
+
+//procesar estructura de cada hilo de entrenador
+    
+void assign_data_trainer(t_config *config, position_trainer *position, pokemon **init_pokemon, g_pokemon **global_pokemon)
+{
+    for(uint32_t i = 1; i <= quantity_trainers(values.posicion_entrenador); i++)
+    {
+        thread_trainer **init_position_trainer = malloc(sizeof(init_position_trainer));
+
+         (*init_position_trainer+i)->id_trainer = i; 
+         (*init_position_trainer+i)->position.posix = position[i].posix;
+         (*init_position_trainer+i)->position.posiy = position[i].posiy;
+
+    for(uint32_t j = 1; j<= (*init_pokemon+i)->initial_dif_species; j++)
+    {
+         (*init_position_trainer+i)->init_pokemon->pokemon =(*init_pokemon[j]).pokemon;
+         (*init_position_trainer+i)->init_pokemon->initial_quantity_pokemon= (*init_pokemon[j]).initial_quantity_pokemon;  
+
+    }
+    for(uint32_t k = 1; k<= (*global_pokemon+i)->global_dif_species; k++)
+    {
+         (*init_position_trainer+i)->global_pokemon->pokemon = (*global_pokemon[k]).pokemon;
+         (*init_position_trainer+i)->global_pokemon->global_quantity_pokemon = (*global_pokemon[k]).global_quantity_pokemon;
+       
+    } 
+         
+         (*init_position_trainer+i)->state = NEW;
     }
 }
 
@@ -229,6 +241,8 @@ void initialize_team()
     create_optional_logger();
     load_values_config(config);
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);
+
+   // assign_data_trainer(config, position_trainer, pokemon, g_pokemon);
 
     pthread_t connection_broker;
     pthread_create(&connection_broker,NULL,(void*)connection_broker_global_suscribe,NULL); 
