@@ -8,4 +8,6 @@ void broker_run_tests();
 void test_agregar_a_queue();
 void manejo_memoria();
 
+bool testSeekAlgorithms();
+
 #endif

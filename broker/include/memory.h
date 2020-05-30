@@ -5,6 +5,7 @@
 #include "common_utils.h"
 #include "initializer.h"
 
+
 typedef enum {
 	FREE = 1,
 	OCCUPIED = 2
@@ -14,36 +15,49 @@ typedef struct t_data{
     uint32_t size;
     void* data;
     char* queueAssociated;
-    int id;
+    uint32_t id;
     e_dataState state;
-    int usedTime;
+    uint32_t usedTime;
 } t_data;
 
 typedef struct t_memory_configuration{
     char* memoryAlgorithm;
     char* replaceAlgorithm;
     char* freePartitionAlgorithm;
-    int size;
-    int minimunPartitionSize;
-    int countFailedSearchForCompact;
+    uint32_t size;
+    uint32_t minimunPartitionSize;
+    uint32_t countFailedSearchForCompact;
 } t_memory_configuration;
 
 typedef struct t_memory{
     t_memory_configuration configuration;
     t_list* partitions;
-    int failedSearchCount;
+    uint32_t failedSearchCount;
 } t_memory;
 
 t_memory memory;
 
 void initializeMemory();
-void addData(int sizeData, void* data);
+void addData(uint32_t sizeData, void* data);
 
-t_data* seekPartitionAvailable(int sizeData);
-t_data* getPartitionAvailable(int sizeData);
+t_data* seekPartitionAvailable(uint32_t sizeData);
+t_data* getPartitionAvailable(uint32_t sizeData);
 bool verifMustCompact();
 void compact();
 void destroyPartition();
-void allocateData(int sizeData, void* data, t_data* freePartition);
+void allocateData(uint32_t sizeData, void* data, t_data* freePartition);
 
+t_data* FF_getPartitionAvailable();
+t_data* BF_getPartitionAvailable();
+
+bool partition_size_validation(void* data, void* sizeData);
+
+void BS_compact();
+void DP_compact();
+
+void FIFO_destroyPartition();
+void LRU_destroyPartition();
+
+void BS_allocateData(uint32_t sizeData, void* data, void* freePartition);
+void DP_allocateData(uint32_t sizeData, void* data, void* freePartition);
 #endif
