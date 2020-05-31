@@ -9,5 +9,6 @@ void test_agregar_a_queue();
 void manejo_memoria();
 
 bool testSeekAlgorithms();
-
+bool testAllocateDataBS();
+bool testAllocateDataDP();
 #endif

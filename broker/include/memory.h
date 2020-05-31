@@ -13,7 +13,7 @@ typedef enum {
 
 typedef struct t_data{
     uint32_t size;
-    void* data;
+    uint32_t offset;
     char* queueAssociated;
     uint32_t id;
     e_dataState state;
@@ -33,6 +33,7 @@ typedef struct t_memory{
     t_memory_configuration configuration;
     t_list* partitions;
     uint32_t failedSearchCount;
+    void* data;
 } t_memory;
 
 t_memory memory;
@@ -58,6 +59,6 @@ void DP_compact();
 void FIFO_destroyPartition();
 void LRU_destroyPartition();
 
-void BS_allocateData(uint32_t sizeData, void* data, void* freePartition);
-void DP_allocateData(uint32_t sizeData, void* data, void* freePartition);
+void BS_allocateData(uint32_t sizeData, void* data, t_data* freePartition);
+void DP_allocateData(uint32_t sizeData, void* data, t_data* freePartition);
 #endif

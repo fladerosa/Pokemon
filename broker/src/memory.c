@@ -8,10 +8,11 @@ void initializeMemory(){
     memory.configuration.size = cfg_values.tamano_memoria;
     memory.configuration.minimunPartitionSize = cfg_values.tamano_minimo_particion;
     memory.configuration.countFailedSearchForCompact = cfg_values.frecuencia_compactacion;
+    memory.data = malloc(memory.configuration.size);
    
     t_data data;
     data.size = memory.configuration.size;
-    data.data = malloc(memory.configuration.size);
+    data.offset = 0;
     data.state = FREE;
 
     list_add(memory.partitions, &data);
@@ -111,13 +112,41 @@ void LRU_destroyPartition(){
 
 }
 
-void BS_allocateData(uint32_t sizeData, void* data, void* freePartition){
-
-}
-void DP_allocateData(uint32_t sizeData, void* data, void* freePartition){
-    t_data* data = (t_data*) freePartition;
-    if(sizeData != data.size){
-        //Si los tamaños no coinciden debo realizar una partición
+void BS_allocateData(uint32_t sizeData, void* data, t_data* freePartitionData){
+    //t_data* freePartitionData = *freePartition;
+    
+    if(sizeData <= freePartitionData->size / 2){
+        t_data newData;
+        newData.size = freePartitionData->size - sizeData;
+        newData.offset = freePartitionData->offset + sizeData;
+        newData.state = FREE;
+        list_add(memory.partitions, &newData);
+        freePartitionData->size = freePartitionData->size / 2;
+        BS_allocateData(sizeData, data, freePartitionData);
+    }else{
+        memcpy(memory.data + freePartitionData->offset, data, sizeData);
     }
+}
+/*
+void BS_allocateData_test(uint32_t sizeData, void* data, t_data freePartition){
+   return;
+}
+void BS_allocateData_test2(uint32_t sizeData, void* data, t_data** freePartition){
+   return;
+}
+*/
+
+void DP_allocateData(uint32_t sizeData, void* data, t_data* freePartitionData){
+    //t_data* freePartitionData = (t_data*)freePartition;
+    if(sizeData != freePartitionData->size){
+        //Si los tamaños no coinciden debo realizar una partición
+        t_data newData;
+        newData.size = freePartitionData->size - sizeData;
+        newData.offset = freePartitionData->offset + sizeData;
+        newData.state = FREE;
+        list_add(memory.partitions, &newData);
+    }
+    freePartitionData->size = sizeData;
+    memcpy(memory.data + freePartitionData->offset, data, sizeData);
 }
 //end region

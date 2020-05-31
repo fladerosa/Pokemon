@@ -18,6 +18,10 @@ void manejo_memoria(){
     initialize();
     initializeMemory();
     CU_ASSERT_TRUE(testSeekAlgorithms());
+    initializeMemory();
+    CU_ASSERT_TRUE(testAllocateDataBS());
+    initializeMemory();
+    CU_ASSERT_TRUE(testAllocateDataDP());
     /*
     casos de prueba particiones dinamicas
         ubicar dato con memoria vacía
@@ -44,6 +48,36 @@ bool testSeekAlgorithms(){
     }
     data = BF_getPartitionAvailable(512);
     if(data == NULL){
+        return false;
+    }
+    return true;
+}
+
+bool testAllocateDataBS(){
+    t_data* data = FF_getPartitionAvailable(512);
+    if(data == NULL){
+        return false;
+    }
+    void* strData = malloc(128);
+    strcpy(strData, "Hola test");
+    //BS_allocateData_test(128, strData, *data);
+    //BS_allocateData_test2(128, strData, &data);
+    BS_allocateData(128, strData, data);
+    if(list_size(memory.partitions) != 5){
+        return false;
+    }
+    return true;
+}
+
+bool testAllocateDataDP(){
+    t_data* data = FF_getPartitionAvailable(512);
+    if(data == NULL){
+        return false;
+    }
+    void* strData = malloc(128);
+    strcpy(strData, "Hola test");
+    DP_allocateData(128, strData, data);
+    if(list_size(memory.partitions) != 2){
         return false;
     }
     return true;
