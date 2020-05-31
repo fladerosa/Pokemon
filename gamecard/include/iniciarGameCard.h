@@ -13,4 +13,5 @@ uint32_t id_connection;
 void iniciarGameCard();
 void suscribirseATodo();
 void finalizarGameCard();
+void connect_client();
 #endif
