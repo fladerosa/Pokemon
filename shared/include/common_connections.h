@@ -59,7 +59,7 @@ void free_package(t_paquete* package);
 void send_ack(uint32_t socket_broker, uint32_t id_message);
 void send_new_connection(uint32_t socket_broker);
 uint32_t receive_connection_id(uint32_t socket_broker);
-void send_reconnect(uint32_t socket_broker);
+void send_reconnect(uint32_t socket_broker, uint32_t id_connection);
 
 
 #endif

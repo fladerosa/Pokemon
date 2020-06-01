@@ -253,11 +253,9 @@ void send_new_connection(uint32_t socket_broker){
     free_new_connection(newConnection);
 }
 
-void send_reconnect(uint32_t socket_broker){
+void send_reconnect(uint32_t socket_broker, uint32_t id_connection){
     t_paquete* paquete = malloc(sizeof(t_paquete));
     paquete->buffer = malloc(sizeof(t_buffer));
-
-    uint32_t id_connection = receive_connection_id(socket_broker);
 
     reconnect* reconnectToBroker = init_reconnect(id_connection);
 
