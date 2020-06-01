@@ -10,12 +10,12 @@ void initializeMemory(){
     memory.configuration.countFailedSearchForCompact = cfg_values.frecuencia_compactacion;
     memory.data = malloc(memory.configuration.size);
    
-    t_data data;
-    data.size = memory.configuration.size;
-    data.offset = 0;
-    data.state = FREE;
+    t_data* data = malloc(sizeof(t_data));
+    data->size = memory.configuration.size;
+    data->offset = 0;
+    data->state = FREE;
 
-    list_add(memory.partitions, &data);
+    list_add(memory.partitions, data);
 }
 
 void addData(uint32_t sizeData, void* data){
@@ -87,7 +87,7 @@ t_data* BF_getPartitionAvailable(uint32_t sizeData){
     t_data* dataAux;
     for(int i = 0; i < sizeList; i++){
         dataAux = (t_data*)list_get(memory.partitions, i);
-        if(dataAux->size < minimunSize){
+        if(dataAux->state == FREE && dataAux->size < minimunSize){
             minimunSize = dataAux->size;
         }
     }
@@ -95,7 +95,7 @@ t_data* BF_getPartitionAvailable(uint32_t sizeData){
 }
 
 bool partition_size_validation(void* data, void* sizeData){
-    return data ? ((t_data*) data)->size > (uint32_t) sizeData : false;
+    return data ? ((t_data*) data)->size > (uint32_t) sizeData && ((t_data*) data)->state == FREE : false;
 }
 
 void BS_compact(){
@@ -106,47 +106,64 @@ void DP_compact(){
 }
 
 void FIFO_destroyPartition(){
-
+    time_t minimunTime = time(NULL);
+    uint32_t sizeList =  list_size(memory.partitions);
+    uint32_t indexFinded = 0;
+    t_data* dataAux;
+    for(int i = 0; i < sizeList; i++){
+        dataAux = (t_data*)list_get(memory.partitions, i);
+        if(dataAux->state == USING && difftime(dataAux->creationTime, minimunTime) < 0){
+            minimunTime = dataAux->creationTime;
+            indexFinded = i;
+        }
+    }
+    t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFinded);
+    partitionSelected->state = FREE;
 }
 void LRU_destroyPartition(){
-
+    time_t oldestTime = time(NULL);
+    uint32_t sizeList =  list_size(memory.partitions);
+    uint32_t indexFinded = 0;
+    t_data* dataAux;
+    for(int i = 0; i < sizeList; i++){
+        dataAux = (t_data*)list_get(memory.partitions, i);
+        if(dataAux->state == USING && difftime(dataAux->lastTimeUsed, oldestTime) < 0){
+            oldestTime = dataAux->lastTimeUsed;
+            indexFinded = i;
+        }
+    }
+    t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFinded);
+    partitionSelected->state = FREE;
 }
 
 void BS_allocateData(uint32_t sizeData, void* data, t_data* freePartitionData){
-    //t_data* freePartitionData = *freePartition;
-    
     if(sizeData <= freePartitionData->size / 2){
-        t_data newData;
-        newData.size = freePartitionData->size - sizeData;
-        newData.offset = freePartitionData->offset + sizeData;
-        newData.state = FREE;
-        list_add(memory.partitions, &newData);
+        t_data* newData = malloc(sizeof(t_data));
+        newData->size = freePartitionData->size - sizeData;
+        newData->offset = freePartitionData->offset + sizeData;
+        newData->state = FREE;
+        list_add(memory.partitions, newData);
         freePartitionData->size = freePartitionData->size / 2;
         BS_allocateData(sizeData, data, freePartitionData);
     }else{
+        freePartitionData->creationTime = time(NULL);
+        freePartitionData->lastTimeUsed = time(NULL);
         memcpy(memory.data + freePartitionData->offset, data, sizeData);
     }
 }
-/*
-void BS_allocateData_test(uint32_t sizeData, void* data, t_data freePartition){
-   return;
-}
-void BS_allocateData_test2(uint32_t sizeData, void* data, t_data** freePartition){
-   return;
-}
-*/
 
 void DP_allocateData(uint32_t sizeData, void* data, t_data* freePartitionData){
-    //t_data* freePartitionData = (t_data*)freePartition;
     if(sizeData != freePartitionData->size){
         //Si los tamaños no coinciden debo realizar una partición
-        t_data newData;
-        newData.size = freePartitionData->size - sizeData;
-        newData.offset = freePartitionData->offset + sizeData;
-        newData.state = FREE;
-        list_add(memory.partitions, &newData);
+        t_data* newData = malloc(sizeof(t_data));
+        newData->size = freePartitionData->size - sizeData;
+        newData->offset = freePartitionData->offset + sizeData;
+        newData->state = FREE;
+        list_add(memory.partitions, newData);
     }
     freePartitionData->size = sizeData;
+    freePartitionData->creationTime = time(NULL);
+    freePartitionData->lastTimeUsed = time(NULL);
     memcpy(memory.data + freePartitionData->offset, data, sizeData);
 }
 //end region

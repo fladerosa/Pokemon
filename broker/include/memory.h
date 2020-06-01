@@ -5,10 +5,9 @@
 #include "common_utils.h"
 #include "initializer.h"
 
-
 typedef enum {
 	FREE = 1,
-	OCCUPIED = 2
+	USING = 2
 }e_dataState;
 
 typedef struct t_data{
@@ -17,7 +16,8 @@ typedef struct t_data{
     char* queueAssociated;
     uint32_t id;
     e_dataState state;
-    uint32_t usedTime;
+    time_t lastTimeUsed;
+    time_t creationTime;
 } t_data;
 
 typedef struct t_memory_configuration{

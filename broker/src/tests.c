@@ -60,8 +60,6 @@ bool testAllocateDataBS(){
     }
     void* strData = malloc(128);
     strcpy(strData, "Hola test");
-    //BS_allocateData_test(128, strData, *data);
-    //BS_allocateData_test2(128, strData, &data);
     BS_allocateData(128, strData, data);
     if(list_size(memory.partitions) != 5){
         return false;
