@@ -9,7 +9,11 @@
             "args": [
                 "SUSCRIPTOR",
                 "NEW_POKEMON",
+<<<<<<< HEAD
                 "30000000"
+=======
+                "3000"
+>>>>>>> origin/master
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
