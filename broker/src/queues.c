@@ -56,12 +56,14 @@ void handle_reconnect(uint32_t client_fd, reconnect* reconn){
         );
     pthread_mutex_unlock(&m_connections);
     if (conn){
-        log_info(optional_logger, "Entre donde no deberia socket: %d id_conn: %d", client_fd, reconn->id_connection);
+        log_info(optional_logger, "Entre donde no deberia socket: %d id_conn: %d %d", client_fd, reconn->id_connection, conn->id_connection);
         conn->socket = client_fd;
         conn->is_connected = true;
     } else {
+        log_info(optional_logger, "SI PUDE id_conn %d", reconn->id_connection);
         handle_new_connection(client_fd);
     }
+    free(reconn);
 }
 
 void handle_subscribe(uint32_t client_fd, subscribe* subs){

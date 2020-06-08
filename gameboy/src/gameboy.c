@@ -71,7 +71,7 @@ int main(int argc, char ** argv){
             process_request->socket = malloc(sizeof(uint32_t));
             *process_request->socket = conexion; 
             process_request->request_receiver = receiveMessageSubscriptor;
-            send_reconnect(conexion);
+            send_reconnect(conexion, id_connection);
         }     
     }else{
         send_message(argv, conexion, optional_logger); //Mando el mensaje
