@@ -23,10 +23,10 @@ void load_positions_config_team(t_config *config)
 
 void add_position_to_list(char *position) 
 {
-    if (position != NULL) 
+    if(position != NULL) 
     {
         uint32_t value = (uint32_t)atoi(position);
-        list_add(values.posicion_entrenador,(void*)value);
+        list_add(values.posicion_entrenador,(void*)value);       
     }  
 }
 
@@ -34,15 +34,10 @@ void fix_position(char *value) //"1|2"
 {
     if(value != NULL) 
     {
-      position_trainer *position = malloc(sizeof(position_trainer));
-      char **positions = string_split(value, "|"); //["1", "2"]
-      uint32_t value_x = (uint32_t)atoi(positions[0]); //1
-      uint32_t value_y = (uint32_t)atoi(positions[1]); //2
-      position->posix = value_x;
-      position->posiy = value_y;
+      char **positions = string_split(value, "|"); //["1", "2"
             //"1", "2"
-      string_iterate_lines(positions, add_position_to_list);   
-    }  
+      string_iterate_lines(positions, add_position_to_list);        
+    } 
 }
 
 void load_pokemons_config_team(t_config *config)
@@ -59,39 +54,39 @@ void add_pokemon_to_list(char *pokemon)
       list_add(values.pokemon_entrenador, (void*)pokemon);    
 }
 
-void read_pokemons_to_char(char **pokemons)
+uint32_t* count_pokemon(char* value, uint32_t pipe)
 {
-  uint32_t i = 0;  
-    while(pokemons[i] != NULL)
-      {
-          pokemon **init_pokemon = malloc(sizeof(init_pokemon));        
-          uint32_t quantity = 1;
-          uint32_t dif_species = 1;
+   uint32_t *poke =(uint32_t*)1; 
 
-          (*init_pokemon+i)->pokemon = pokemons[i];
-          
-            if(i>0 && (strcmp(pokemons[i],  pokemons[i-1])==0))
-            {
-                quantity++;
-                (*init_pokemon+i)->initial_quantity_pokemon = quantity;
-            }
-            else{
-                 (*init_pokemon+i)->initial_quantity_pokemon = quantity;
-                 dif_species++;
-            }
-          (*init_pokemon+i)->initial_dif_species = dif_species;                            
-        i++;
-      }
+   for(uint32_t i=0; i<strlen(value); i++)
+   {       
+        if(value[i]==pipe)
+            poke++;
+   }
+ return poke;
+}
+t_tot_pokemon* add_count_pokemon_on_memory(uint32_t *value)
+{
+    t_tot_pokemon *i_tot_pokemon = malloc(sizeof(i_tot_pokemon));
+        if(i_tot_pokemon != NULL)
+        {
+            i_tot_pokemon->init_tot_pokemon = value;
+        }
+    return i_tot_pokemon;
 }
 
 void fix_pokemon(char *value) 
 {
     if(value != NULL) 
     {
+      uint32_t pipe= (uint32_t)"|";
+      uint32_t *poke = count_pokemon(value, pipe);
+      t_tot_pokemon *i_tot_pokemon = add_count_pokemon_on_memory(poke);
       char **pokemons = string_split(value, "|");
-      read_pokemons_to_char(pokemons);
+
       string_iterate_lines(pokemons, add_pokemon_to_list);
-    } 
+        free(i_tot_pokemon);
+    }  
 }
 
 void load_objectives_config_team(t_config *config)
@@ -110,24 +105,33 @@ void add_objective_to_list(char *objective)
 void read_objectives_to_char(char **objectives)
 {
  uint32_t i = 0;
+ uint32_t quantity = 1;
+ uint32_t g_dif_species = 1;
+ char*pg_pokemon; 
+    
     while(objectives[i] != NULL)
       {          
-          g_pokemon **global_pokemon = malloc(sizeof(global_pokemon));
-          (*global_pokemon+i)->pokemon = objectives[i];
-          uint32_t quantity = 1;
-          uint32_t g_dif_species = 1; 
+        g_pokemon *global_pokemon = malloc(sizeof(global_pokemon));
+          if(global_pokemon != NULL)
+          {
+            (global_pokemon+i)->pokemon = objectives[i];  
+            pg_pokemon = objectives[i];
           
-            if(i>0 && (strcmp(objectives[i],  objectives[i-1])==0))
+            if(i>0 && (strcmp(pg_pokemon,  objectives[i])==0))
             {
                 quantity++;
-                (*global_pokemon+i)->global_quantity_pokemon = quantity;
+                (global_pokemon+i)->global_quantity_pokemon = quantity;
             }
             else{
-                 (*global_pokemon+i)->global_quantity_pokemon = quantity;
+                 (global_pokemon+i)->global_quantity_pokemon = quantity;
                  g_dif_species++; 
             } 
-            (*global_pokemon+i)->global_dif_species = g_dif_species;     //limite de captura                                    
-        i++;
+            (global_pokemon+i)->global_dif_species = g_dif_species;     //limite de captura  
+             i++;
+          }
+           else{
+          log_info(optional_logger, "Error on request malloc to global pokemon \n");
+            }
       }
 }
 void fix_objective(char *value) 
@@ -146,48 +150,128 @@ uint32_t quantity_trainers(t_list* position_trainers)
 }
 
 //procesar estructura de cada hilo de entrenador
-    
-void assign_data_trainer(t_config *config, position_trainer *position, pokemon **init_pokemon, g_pokemon **global_pokemon)
+
+position_trainer* add_position_trainer_on_memory(t_list* copy_position)
 {
-    for(uint32_t i = 1; i <= quantity_trainers(values.posicion_entrenador); i++)
+    uint32_t coordinate = 2;
+    t_list *coordinates = list_create();
+    
+    position_trainer *position = malloc(sizeof(position));
+    if(position != NULL && !list_is_empty(copy_position))
     {
-        thread_trainer **init_position_trainer = malloc(sizeof(init_position_trainer));
-
-         (*init_position_trainer+i)->id_trainer = i; 
-         (*init_position_trainer+i)->position.posix = position[i].posix;
-         (*init_position_trainer+i)->position.posiy = position[i].posiy;
-
-    for(uint32_t j = 1; j<= (*init_pokemon+i)->initial_dif_species; j++)
-    {
-         (*init_position_trainer+i)->init_pokemon->pokemon =(*init_pokemon[j]).pokemon;
-         (*init_position_trainer+i)->init_pokemon->initial_quantity_pokemon= (*init_pokemon[j]).initial_quantity_pokemon;  
-
+       coordinates = list_take_and_remove(copy_position, coordinate);
+       position->posix = (uint32_t)list_remove(coordinates, 1);
+       position->posiy = (uint32_t)list_remove(coordinates, 2);
+    
+       log_info(optional_logger, "Request malloc to POSITION successfully\n");
     }
-    for(uint32_t k = 1; k<= (*global_pokemon+i)->global_dif_species; k++)
+    else{
+       log_info(optional_logger, "Error on request malloc to POSITION \n"); 
+    }
+    list_destroy(coordinates);
+  return position;
+} 
+
+pokemon* add_pokemon_trainer_on_memory(t_list* copy_pokemon, t_tot_pokemon* i_tot_pokemon)
+{
+ t_list *pokemones_by_trainer = list_create();
+ pokemon *init_pokemon = malloc(sizeof(init_pokemon));
+
+    int pokes = (int)i_tot_pokemon->init_tot_pokemon;
+    uint32_t poke = 1;
+    if(init_pokemon != NULL && !list_is_empty(copy_pokemon))
     {
-         (*init_position_trainer+i)->global_pokemon->pokemon = (*global_pokemon[k]).pokemon;
-         (*init_position_trainer+i)->global_pokemon->global_quantity_pokemon = (*global_pokemon[k]).global_quantity_pokemon;
-       
-    } 
+        pokemones_by_trainer = list_take_and_remove(copy_pokemon, pokes);
+
+        for(uint32_t j=0; j< pokes; j++)
+        {
+            init_pokemon->pokemon = list_remove(pokemones_by_trainer, j);
+            init_pokemon->initial_quantity_pokemon = poke;
+        }
+        
+      log_info(optional_logger, "Request malloc to POKEMON succesfully\n");   
+    }
+    else{
+       log_info(optional_logger, "Error on request malloc to POKEMON \n"); 
+    }
+
+  list_destroy(pokemones_by_trainer);
+  return init_pokemon;
+}
+ 
+void assign_data_trainer(t_config *config, t_tot_pokemon* i_tot_pokemon, g_pokemon **global_pokemon)
+{
+   t_list* trainers = list_create();
+   list_add_all(values.posicion_entrenador, trainers);
+
+   t_list* pokemones = list_create();
+   list_add_all(values.pokemon_entrenador, pokemones);
+    
+   for(uint32_t i = 0; i < quantity_trainers(values.posicion_entrenador); i++)
+   //while(aux != NULL)
+    {
+        trainer **init_trainer = malloc(sizeof(init_trainer));    
+        if(init_trainer != NULL)
+        {
+         (*init_trainer+i)->id_trainer = i+1;
+         position_trainer *position = add_position_trainer_on_memory(trainers); 
+         (*init_trainer+i)->position->posix = position[0].posix;
+         (*init_trainer+i)->position->posiy = position[1].posiy;
          
-         (*init_position_trainer+i)->state = NEW;
+         (*init_trainer+i)->i_tot_pokemon->init_tot_pokemon = i_tot_pokemon->init_tot_pokemon;
+         uint32_t max_poke_by_trainer = *i_tot_pokemon->init_tot_pokemon;;
+         pokemon *init_pokemon = add_pokemon_trainer_on_memory(pokemones, i_tot_pokemon);
+        
+        for(uint32_t j = 0; j< max_poke_by_trainer; j++)
+        {
+         strcpy((*init_trainer+i)->init_pokemon->pokemon,(init_pokemon[j]).pokemon);
+         (*init_trainer+i)->init_pokemon->initial_quantity_pokemon= (init_pokemon[j]).initial_quantity_pokemon;  
+        }
+
+        for(uint32_t k = 0; k< (*global_pokemon+i)->global_dif_species; k++)
+        {
+         strcpy((*init_trainer+i)->global_pokemon->pokemon, (*global_pokemon[k]).pokemon);
+         (*init_trainer+i)->global_pokemon->global_quantity_pokemon = (*global_pokemon[k]).global_quantity_pokemon;
+       
+        } 
+         
+         (*init_trainer+i)->state = NEW;
+         log_info(optional_logger, "Request malloc to TRAINER successfully\n");
+        }
+        else{
+         log_info(optional_logger, "Error on request malloc to TRAINER \n");
+        }
+       // aux = *aux->next;
     }
+    list_destroy(trainers);
+    list_destroy(pokemones);
+    
 }
 
-void destroy_position(thread_trainer* init_position_trainer)
+void destroy_position(position_trainer* position)
 {		
-		free(init_position_trainer);
+		free(position);
 }
 
 void destroy_pokemon(pokemon* init_pokemon)
 {   
 		free(init_pokemon);
 }
+
 void destroy_objective(g_pokemon* global_pokemon)
 { 
 		free(global_pokemon);
 }
 
+void free_assign_trainer(trainer *init_trainer)
+{
+        for(uint32_t i = 0; i < quantity_trainers(values.posicion_entrenador); ++i)
+        {
+            free(init_trainer);
+        }
+        
+    free(init_trainer);
+}
 void destroy_lists_and_loaded_elements()
 {
      list_destroy_and_destroy_elements(values.posicion_entrenador,(void*)destroy_position);
@@ -242,7 +326,7 @@ void initialize_team()
     load_values_config(config);
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);
 
-   // assign_data_trainer(config, position_trainer, pokemon, g_pokemon);
+   // assign_data_trainer(config, i_tot_pokemon, pokemon, g_pokemon);
 
     pthread_t connection_broker;
     pthread_create(&connection_broker,NULL,(void*)connection_broker_global_suscribe,NULL); 
@@ -265,6 +349,7 @@ void release_resources()
         log_destroy(optional_logger);
 
     destroy_lists_and_loaded_elements();
+    free_assign_trainer(init_trainer);
     close(socket_team);  
     close(socket_broker);
 }
@@ -322,12 +407,12 @@ void connection_broker_suscribe_to_appeared_pokemon()
 {   //se envia un connect por cada cola de mensajes a suscribirse
     connection *connection_server= malloc(sizeof(connection));
 
-    uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
+    uint32_t server_connection_appeared_pokemon = crear_conexion(values.ip_broker, values.puerto_broker);
     listen_to_gameboy();
     //si la conexion falla(, debe haber un reintento de conexion por el .cfg por medio de un hilo.
-    while(server_connection == -1)
+    while(server_connection_appeared_pokemon == -1)
     {
-        send_reconnect(server_connection);
+        send_reconnect(server_connection_appeared_pokemon);
         pthread_t reconnection_broker_appeared_pokemon;
         pthread_create(&reconnection_broker_appeared_pokemon, NULL, (void*)retry_on_x_time, NULL);
         log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", values.tiempo_reconexion,  reconnection_broker_appeared_pokemon);
@@ -337,17 +422,17 @@ void connection_broker_suscribe_to_appeared_pokemon()
     pthread_t connection_broker_appeared_pokemon;
     pthread_create(&connection_broker_appeared_pokemon, NULL, (void*)connection_broker_suscribe_to_appeared_pokemon, NULL);
 
-    connection_server->id_connection = receive_connection_id(server_connection); 
-	suscribirseA(APPEARED_POKEMON, server_connection);
+    connection_server->id_connection = receive_connection_id(server_connection_appeared_pokemon); 
+	suscribirseA(APPEARED_POKEMON, server_connection_appeared_pokemon);
 	log_info(optional_logger, "Queue subscription request APPEARED_POKEMON\n");
 }
 void connection_broker_suscribe_to_caught_pokemon()
 {	
     connection *connection_server= malloc(sizeof(connection));
-    uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
-    while(server_connection == -1)
+    uint32_t server_connection_caught_pokemon = crear_conexion(values.ip_broker, values.puerto_broker);
+    while(server_connection_caught_pokemon == -1)
     {
-    send_reconnect(server_connection);
+    send_reconnect(server_connection_caught_pokemon);
     pthread_t reconnection_broker_caught_pokemon;
     pthread_create(&reconnection_broker_caught_pokemon, NULL, (void*)retry_on_x_time, NULL);
     log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", values.tiempo_reconexion,  reconnection_broker_caught_pokemon);
@@ -360,18 +445,18 @@ void connection_broker_suscribe_to_caught_pokemon()
     pthread_t connection_broker_caught_pokemon;
     pthread_create(&connection_broker_caught_pokemon, NULL, (void*) connection_broker_suscribe_to_caught_pokemon, NULL);
 
-    connection_server->id_connection = receive_connection_id(server_connection);
-    suscribirseA(CAUGHT_POKEMON, server_connection);
+    connection_server->id_connection = receive_connection_id(server_connection_caught_pokemon);
+    suscribirseA(CAUGHT_POKEMON, server_connection_caught_pokemon);
 	log_info(optional_logger, "Queue subscription request CAUGHT_POKEMON\n");
 }
 
 void connection_broker_suscribe_to_localized_pokemon()
 {
     connection *connection_server= malloc(sizeof(connection));
-    uint32_t server_connection = crear_conexion(values.ip_broker, values.puerto_broker);
-    while(server_connection == -1)
+    uint32_t server_connection_localized_pokemon = crear_conexion(values.ip_broker, values.puerto_broker);
+    while(server_connection_localized_pokemon == -1)
     {
-    send_reconnect(server_connection);
+    send_reconnect(server_connection_localized_pokemon);
     pthread_t reconnection_broker_localized_pokemon;
     pthread_create(&reconnection_broker_localized_pokemon, NULL, (void*)retry_on_x_time, NULL);
     log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", values.tiempo_reconexion,  reconnection_broker_localized_pokemon);
@@ -386,8 +471,8 @@ void connection_broker_suscribe_to_localized_pokemon()
     pthread_t connection_broker_localized_pokemon;
     pthread_create(&connection_broker_localized_pokemon, NULL, (void*) connection_broker_suscribe_to_localized_pokemon, NULL);
 
-    connection_server->id_connection = receive_connection_id(server_connection);
-	suscribirseA(LOCALIZED_POKEMON, server_connection);
+    connection_server->id_connection = receive_connection_id(server_connection_localized_pokemon);
+	suscribirseA(LOCALIZED_POKEMON, server_connection_localized_pokemon);
 	log_info(optional_logger, "Queue subscription request LOCALIZED_POKEMON\n"); 
     
 }

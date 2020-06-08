@@ -5,9 +5,6 @@
 #include<commons/string.h>
 #include "common_utils.h"
 
-#define POSIX   10
-#define POSIY   10
-
 typedef enum{
 	NEW = 0,
 	READY,
@@ -17,19 +14,29 @@ typedef enum{
 } enum_process_state;
 
 typedef struct{
-    uint32_t map[POSIX][POSIY];  //ubicacion de entrenadores y pokemon
+    uint32_t **map;  //matriz dinamica para ubicacion de entrenadores y pokemon
+    uint32_t *fil;
+    uint32_t *col; //tanto el puntero fila como columna de la matriz, permitirar el desplazamiento para la ubicacion
 }position_map;
 
 typedef struct{
     uint32_t posix;
     uint32_t posiy;
+    
 }position_trainer;
 
 typedef struct{
     char * pokemon; 
     uint32_t initial_quantity_pokemon;
-    uint32_t initial_dif_species;
 }pokemon;
+
+typedef struct{
+    uint32_t *init_tot_pokemon;
+}t_tot_pokemon;
+
+typedef struct{
+    uint32_t initial_dif_species;
+}t_dif_pokemon;
 
 typedef struct{
     char* pokemon; 
@@ -39,18 +46,21 @@ typedef struct{
 
 typedef struct{
     uint32_t id_trainer;
-    position_trainer position;
+    position_trainer *position;
     pokemon *init_pokemon;
+    t_tot_pokemon *i_tot_pokemon;
+ //   t_dif_pokemon *i_dif_pokemon;
     g_pokemon *global_pokemon; 
     enum_process_state state;
     uint32_t quantity_poke;  //limite a atrapar total de pokes por entrenador, no por tipo
-}thread_trainer;
+    struct trainer  *next;
+}trainer;
 
 typedef struct{
     char* pokemon;
     uint32_t total_init_quantity_pokemon;
     uint32_t total_global_quantity_pokemon;
-    uint32_t dif_init_team_quantity_pokemon;    
+    uint32_t dif_init_team_quantity_pokemon;   
 }pokemon_team;
 
 typedef struct{
@@ -70,7 +80,15 @@ typedef struct{
 
 }configuration;
 
-thread_trainer *init_position_trainer;
+trainer *init_trainer;
+position_trainer position;
+pokemon init_pokemon;
+t_tot_pokemon i_tot_pokemon;
+
+t_dif_pokemon i_dif_pokemon;
+
+g_pokemon global_pokemon;
+
 pokemon_team pokemon_to_find;
 position_map map_team;
 configuration values;
@@ -90,7 +108,8 @@ void fix_position(char *);
 
 void load_pokemons_config_team(t_config*);
 void add_pokemon_to_list(char *);
-void read_pokemons_to_char(char **);
+uint32_t* count_pokemon(char*, uint32_t);
+t_tot_pokemon* add_count_pokemon_on_memory(uint32_t*);
 void fix_pokemon(char *);
 
 void load_objectives_config_team(t_config*);;
@@ -99,13 +118,16 @@ void read_objectives_to_char(char **);
 void fix_objective(char *);
 
 uint32_t quantity_trainers(t_list*);
-void assign_data_trainer(t_config*, position_trainer*, pokemon**, g_pokemon**);
+position_trainer* add_position_trainer_on_memory(t_list*);
+pokemon* add_pokemon_trainer_on_memory(t_list*, t_tot_pokemon*);
+void assign_data_trainer(t_config*, t_tot_pokemon*, g_pokemon**);
 
-void destroy_position(thread_trainer*);
+void destroy_position(position_trainer*);
 void destroy_pokemon(pokemon*);
 void destroy_objective(g_pokemon*);
 
 void destroy_lists_and_loaded_elements();
+void free_assign_trainer(trainer *init_trainer);
 
 void initialize_team();
 void release_resources();
