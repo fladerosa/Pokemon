@@ -38,13 +38,11 @@ typedef struct t_message_queue {
     sem_t* sem_message;
     sem_t* sem_all_ack;
     pthread_mutex_t* m_queue_modify;
+    pthread_mutex_t* m_subscribers_modify;
 } t_message_queue;
 
 t_list* list_queues;
 t_list* connections;
-
-uint32_t get_id_connection();
-uint32_t get_id_message();
 
 void handle_new_connection(uint32_t client_fd);
 void handle_reconnect(uint32_t client_fd, reconnect* reconn);
