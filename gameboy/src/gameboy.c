@@ -54,8 +54,9 @@ int main(int argc, char ** argv){
     if(strcmp(server, "SUSCRIPTOR") == 0){
         id_queue_to_subscribe = stringToEnum(argv[2]);
         t_process_request* process_request = malloc(sizeof(t_process_request)); 
-        (*process_request).socket = conexion; 
-        (*process_request).request_receiver = receiveMessageSubscriptor;
+        process_request->socket = malloc(sizeof(uint32_t));
+        *process_request->socket = conexion; 
+        process_request->request_receiver = receiveMessageSubscriptor;
     
         pthread_t threadConnection; //Creo un hilo asi cuenta el tiempo de conexion
         pthread_create(&threadConnection, NULL, (void*) countTime, (void*) atoi(argv[3]));
@@ -65,8 +66,11 @@ int main(int argc, char ** argv){
         send_message(argv, conexion, optional_logger);
         while(1){
             serve_client(process_request);
-            close(conexion);
             conexion = crear_conexion(ip, port);
+            process_request = malloc(sizeof(t_process_request)); 
+            process_request->socket = malloc(sizeof(uint32_t));
+            *process_request->socket = conexion; 
+            process_request->request_receiver = receiveMessageSubscriptor;
             send_reconnect(conexion);
         }     
     }else{

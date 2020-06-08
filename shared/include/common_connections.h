@@ -7,7 +7,7 @@ typedef void (*on_request)(uint32_t codop, uint32_t sizeofstruct, uint32_t socke
 
 typedef struct
 {
-	uint32_t socket;
+	uint32_t* socket;
 	on_request request_receiver;
 } t_process_request;
 
@@ -44,7 +44,7 @@ typedef struct
 void start_server(char* ip, char* port, on_request request_receiver);
 void run_server(void* processor);
 void receive_new_connections(uint32_t socket_escucha, on_request request_receiver);
-void serve_client(t_process_request* processor);
+void serve_client(void* processor);
 void* serializar_paquete(t_paquete* paquete, uint32_t bytes);
 void devolver_mensaje(void* payload, uint32_t socket_cliente);
 uint32_t crear_conexion(char *ip, char* puerto);

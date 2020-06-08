@@ -56,18 +56,16 @@ void fill_config_values(){
 
 void set_sig_handler(void)
 {
-    struct sigaction* action = malloc(sizeof(sigaction));
+    struct sigaction action;
 
 
-    (*action).sa_flags = SA_SIGINFO; 
-    (*action).sa_sigaction = dump;
-
-    if (sigaction(SIGUSR1, action, NULL) == -1) { 
+    action.sa_flags = SA_SIGINFO; 
+    action.sa_handler = dump;
+    sigemptyset(&action.sa_mask);
+    if (sigaction(SIGUSR1, &action, NULL) == -1) { 
         perror("sigusr: sigaction");
         _exit(1);
     }
-
-    free(action);
 }
 
 void init_queues(){

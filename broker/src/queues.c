@@ -39,6 +39,7 @@ void handle_new_connection(uint32_t client_fd){
     send(client_fd, response, size, 0);
     free_connection(response_conn);
     free_package(package);
+    free(response);
 }
 
 bool has_connection_id(void* data, void* id){
@@ -74,6 +75,7 @@ void handle_subscribe(uint32_t client_fd, subscribe* subs){
     if (queue && conn){
         list_add(queue->subscribers, conn);
     }
+    free(subs);
 }
 
 void* connection_to_receiver(void* connection){

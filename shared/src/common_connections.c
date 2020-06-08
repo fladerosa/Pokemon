@@ -48,16 +48,20 @@ void start_server(char* ip, char* port, on_request request_receiver){
 
     freeaddrinfo(servinfo);
 	t_process_request* server_processor = malloc(sizeof(t_process_request));
-	(*server_processor).socket = socket_servidor;
-	(*server_processor).request_receiver = request_receiver;
+	server_processor->socket = malloc(sizeof(uint32_t)); 
+    *server_processor->socket = socket_servidor;
+	server_processor->request_receiver = request_receiver;
 	pthread_create(&server, NULL, (void*)run_server, server_processor);
 }
 
 void run_server(void * server_processor){
     mask_sig();
-	uint32_t socket = (*(t_process_request*)server_processor).socket;
+	uint32_t socket = *((t_process_request*)server_processor)->socket;
+    log_info(optional_logger,"listening socket: %d", socket);
 	listen(socket, SOMAXCONN);
-	on_request request_receiver = (*(t_process_request*)server_processor).request_receiver;
+	on_request request_receiver = ((t_process_request*)server_processor)->request_receiver;
+    free(((t_process_request*)server_processor)->socket);
+    free(((t_process_request*)server_processor));
 	while(true){
 		receive_new_connections(socket,request_receiver);
 	}
@@ -73,19 +77,22 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
         log_info(optional_logger, "Server accept failed..."); 
     } else {
         log_info(optional_logger, "Server accepted a new client on socket: %d", connfd);
-        t_process_request processor;
-        processor.socket = connfd;
-        processor.request_receiver = request_receiver;
+        t_process_request* processor = malloc(sizeof(t_process_request));
+        processor->socket = malloc(sizeof(uint32_t));
+        *processor->socket = connfd;
+        processor->request_receiver = request_receiver;
         pthread_create_and_detach( 
             (void*) serve_client, 
-            &processor);
+            (void*) processor);
     }
 }
 
-void serve_client(t_process_request* processor){
+void serve_client(void* processor){
     mask_sig();
-    uint32_t socket = processor->socket, size = -1, cod_op=-1;
-    on_request request_receiver = (*processor).request_receiver;
+    uint32_t socket = *((t_process_request*) processor)->socket, size = 0, cod_op=0;
+    on_request request_receiver = ((t_process_request*)processor)->request_receiver;
+    free(((t_process_request*) processor)->socket);
+    free(((t_process_request*) processor));
 	while(1){
         if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;
         if( cod_op >= 1 && cod_op <= SIZEOP ){
