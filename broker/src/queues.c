@@ -55,7 +55,7 @@ void handle_reconnect(uint32_t client_fd, reconnect* reconn){
             (void*) reconn->id_connection
         );
     pthread_mutex_unlock(&m_connections);
-    if (conn){
+    if (conn && !conn->is_connected){
         log_info(optional_logger, "Entre donde no deberia socket: %d id_conn: %d %d", client_fd, reconn->id_connection, conn->id_connection);
         conn->socket = client_fd;
         conn->is_connected = true;
