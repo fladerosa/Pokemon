@@ -12,45 +12,88 @@ typedef enum{
 	BLOCKED,
 	EXIT
 } enum_process_state;
-
+/* map sera  matriz dinamica para ubicacion de entrenadores y pokemon
+   *fil como *col del mapa, permitiran el desplazamiento para la ubicacion y planificacion
+*/
 typedef struct{
-    uint32_t **map;  //matriz dinamica para ubicacion de entrenadores y pokemon
+    uint32_t **map;  
     uint32_t *fil;
-    uint32_t *col; //tanto el puntero fila como columna de la matriz, permitirar el desplazamiento para la ubicacion
+    uint32_t *col; 
 }position_map;
 
+/*estructura para cargar inicialmente con los datos de la lista de config 
+    (posicion inicial del entrenador)
+*/
 typedef struct{
     uint32_t posix;
-    uint32_t posiy;
-    
+    uint32_t posiy;   
 }position_trainer;
 
+/*estructura para cargar inicialmente con los datos de la lista de config 
+    (Pokemon inicial por entrenador)
+    se agrega el campo initial_quantity_pokemon que tendra el valor, sin contar repetidos
+    [Bulbasaur, 1]
+    [Pikachu, 1]
+    [Bulbasaur, 1]
+*/
 typedef struct{
     char * pokemon; 
     uint32_t initial_quantity_pokemon;
 }pokemon;
 
+/*estructura para cargar el total de pokemones iniciales que tiene el entrenador 
+    cuenta todos incluso repetidos
+    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Bulbasaur, 1]
+    su total seria de 3
+*/
 typedef struct{
     uint32_t *init_tot_pokemon;
 }t_tot_pokemon;
 
+/*estructura para cargar el total de especies  iniciales que tiene el entrenador 
+    cuenta todos sin repetidos
+    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Bulbasaur, 1]
+    su total seria de 2
+*/
 typedef struct{
-    uint32_t *initial_dif_species;
+    uint32_t *initial_dif_species; 
 }t_dif_pokemon;
 
+/*estructura para cargar inicialmente con los datos de la lista de config
+    (Objetivos por entrenador)
+    se agrega el campo initial_quantity_pokemon que tendra el valor, sin contar repetidos
+    [Bulbasaur, 1]
+    [Pikachu, 1]
+    [Squirtle, 1]
+    [Charmander, 1]
+*/
 typedef struct{
     char* pokemon; 
     uint32_t global_quantity_pokemon;
 }g_pokemon;
 
+/*estructura para cargar el total de pokemones a capturar por el entrenador 
+    cuenta todos incluso repetidos
+    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Squirtle, 1] [Charmander, 1]
+    su total seria de 4 y define la cantidad maxima a atrapar por entrenador
+*/
 typedef struct{
     uint32_t *global_tot_pokemon;
 }t_gtot_pokemon;
 
+/*estructura para cargar el total de especies  iniciales que tiene el entrenador 
+    cuenta todos sin repetidos
+    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Squirtle, 1] [Charmander, 1]
+    su total seria de 4 
+*/
 typedef struct{
     uint32_t *global_dif_species;
 }t_gdif_pokemon;
 
+/*estructura completa con todos los datos que seran requeridos por cada enrenador
+    en el caso de las estructuras anidadas pokemon* y g*pokemon son arrays de char
+   
+*/
 typedef struct{
     uint32_t id_trainer;
     position_trainer *position;
@@ -61,10 +104,14 @@ typedef struct{
     t_gtot_pokemon *g_tot_pokemon;
     t_gdif_pokemon *g_dif_pokemon;
     enum_process_state state;
-    uint32_t quantity_poke;  //limite a atrapar total de pokes por entrenador, no por tipo
     struct trainer  *next;
 }trainer;
 
+/*
+ estructura para definir pokemon y cantidad a capturar por entrenador / team
+ ESTA FALTANDO COMPARAR AMBOS ARRAYS (pokemon* y g_pokemon*) 
+ PARA DEFINIR LOS OBJETIVOS A CUMPLIR EN LA PLANIFICACION
+*/
 typedef struct{
     char* pokemon;
     uint32_t total_init_quantity_pokemon;
@@ -72,6 +119,8 @@ typedef struct{
     uint32_t dif_init_team_quantity_pokemon;   
 }pokemon_team;
 
+/* estructura para cargar los datos de team.config
+*/
 typedef struct{
        uint32_t nro_team; 
        char *ip_team;
@@ -97,7 +146,7 @@ t_dif_pokemon i_dif_pokemon;
 g_pokemon global_pokemon;
 t_gtot_pokemon g_tot_pokemon;
 t_gdif_pokemon g_dif_pokemon;
-//pokemon_team pokemon_to_find;
+pokemon_team pokemon_to_find;
 position_map map_team;
 configuration values;
 

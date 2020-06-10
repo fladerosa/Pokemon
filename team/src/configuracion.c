@@ -399,7 +399,7 @@ void initialize_team()
     load_values_config(config);
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);
 
-    assign_data_trainer(config, &i_tot_pokemon,& g_tot_pokemon);
+    assign_data_trainer(config, &i_tot_pokemon,&g_tot_pokemon);
 
     pthread_t connection_broker;
     pthread_create(&connection_broker,NULL,(void*)connection_broker_global_suscribe,NULL); 
