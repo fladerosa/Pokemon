@@ -88,6 +88,7 @@ typedef struct t_connection {
 } t_connection;
 
 t_list* connections; // solo para broker, pero no me quedaba otra que ponerlo aca
+pthread_mutex_t m_connections;
 
 new_pokemon* stream_to_new_pokemon(void* stream, uint32_t* id_message, bool is_broker);
 void* new_pokemon_to_stream(new_pokemon* newPokemonMessage, uint32_t* id_message);

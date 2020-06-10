@@ -106,10 +106,12 @@ void serve_client(void* processor){
     }
     log_info(optional_logger, "Socket %d has disconnected", socket);
     if (connections != NULL){ //turrada para broker, no dar bola
+        pthread_mutex_lock(&m_connections);
         t_connection* conn = list_find_with_args(connections, has_socket_fd, (void*) socket);
         if (conn){
             conn->is_connected = false;
-        }     
+        }
+        pthread_mutex_unlock(&m_connections);     
     }
     close(socket);
 }
