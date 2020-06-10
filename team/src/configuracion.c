@@ -60,15 +60,24 @@ t_tot_pokemon* add_count_pokemon_on_memory(uint32_t *value)
 {
     t_tot_pokemon *i_tot_pokemon = malloc(sizeof(i_tot_pokemon));
         if(i_tot_pokemon != NULL)
-        {
             i_tot_pokemon->init_tot_pokemon = value;
-        }
+        
     return i_tot_pokemon;
+}
+
+t_dif_pokemon* add_dif_count_pokemon_on_memory(uint32_t *value)
+{
+    t_dif_pokemon *i_dif_pokemon = malloc(sizeof(i_dif_pokemon));
+        if(i_dif_pokemon != NULL)
+            i_dif_pokemon->initial_dif_species = value;
+        
+    return i_dif_pokemon;
 }
 
 void fix_pokemon(char *value) 
 {  
     uint32_t *poke =(uint32_t*)0;
+    uint32_t *dif_poke =(uint32_t*)0;
      //"Bulbasaur|Pikachu|Bulbasaur"
     if(value != NULL) 
     {     
@@ -78,8 +87,46 @@ void fix_pokemon(char *value)
             poke++; 
     }  
     t_tot_pokemon *i_tot_pokemon = add_count_pokemon_on_memory(poke);
-       
+
+    dif_poke = count_dif_species(value);
+    // ["Bulbasaur", "Bulbasaur", "Pikachu"]
+    t_dif_pokemon *i_dif_pokemon = add_dif_count_pokemon_on_memory(dif_poke);  
+    
     free(i_tot_pokemon);
+    free(i_dif_pokemon);
+}
+
+void sort_array_pokemon(char* value)
+{
+    char*aux;
+    for(uint32_t i =0; i<sizeof value/sizeof *value; i++)
+    {
+        for(uint32_t j=i+1; j<sizeof value/sizeof *value; j++)
+        {
+            if(strcmp(&value[i], &value[j])>0)
+            {
+                strcpy(aux, &value[i]);
+                strcpy(&value[i], &value[j]);
+                strcpy(&value[j], aux);
+            }
+        }
+    }
+}
+
+uint32_t* count_dif_species(char*value)
+{
+    uint32_t poke = 0;
+    sort_array_pokemon(value);
+    for(uint32_t i =0; i<sizeof value/sizeof *value; i++)
+    {
+        for(uint32_t j=i+1; j<sizeof value/sizeof *value; j++)
+        {
+            poke++;
+            if(string_equals_ignore_case(&value[i], &value[j])==0)         
+                poke++;           
+        }
+    }
+return (uint32_t*)poke;
 }
 
 void load_objectives_config_team(t_config *config)
@@ -100,16 +147,26 @@ void add_objective_to_list(char *objective) // "Charmander"
 t_gtot_pokemon* add_count_pokemon_objetive_on_memory(uint32_t*value)
 {
     t_gtot_pokemon *g_tot_pokemon = malloc(sizeof(g_tot_pokemon));
+        
         if(g_tot_pokemon != NULL)
-        {
             g_tot_pokemon->global_tot_pokemon = value;
-        }
+        
     return g_tot_pokemon;
-
 }
+t_gdif_pokemon* add_dif_count_pokemon_objetive_on_memory(uint32_t*value)
+{
+    t_gdif_pokemon *g_dif_pokemon = malloc(sizeof(g_dif_pokemon));
+        if(g_dif_pokemon != NULL)
+            g_dif_pokemon->global_dif_species = value;
+        
+        return g_dif_pokemon;
+}
+ 
+  
 void fix_objective(char *value) 
 {   
-    uint32_t *poke =(uint32_t*)0;
+   uint32_t *poke =(uint32_t*)0; 
+   uint32_t *dif_global_poke =(uint32_t*)0;
     //"Charmander|Pikachu|Bulbasaur"
     if(value != NULL) 
     {
@@ -118,7 +175,11 @@ void fix_objective(char *value)
       poke++;
     }
     t_gtot_pokemon* g_tot_pokemon= add_count_pokemon_objetive_on_memory(poke);
+    dif_global_poke = count_dif_species(value);
+    t_gdif_pokemon* g_dif_pokemon= add_count_dif_pokemon_objetive_on_memory(dif_global_poke);
+
     free(g_tot_pokemon);
+    free(g_dif_pokemon);
 }
 
 uint32_t quantity_trainers(t_list* position_trainers)
