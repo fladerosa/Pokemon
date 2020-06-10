@@ -420,11 +420,14 @@ void connection_broker_suscribe_to_appeared_pokemon()
     connection *connection_server= malloc(sizeof(connection));
 
     uint32_t server_connection_appeared_pokemon = crear_conexion(values.ip_broker, values.puerto_broker);
+    send_new_connection(server_connection_appeared_pokemon); 
+    uint32_t id_connection = receive_connection_id(server_connection_appeared_pokemon);
+
     listen_to_gameboy();
     //si la conexion falla(, debe haber un reintento de conexion por el .cfg por medio de un hilo.
     while(server_connection_appeared_pokemon == -1)
     {
-        send_reconnect(server_connection_appeared_pokemon);
+        send_reconnect(server_connection_appeared_pokemon, id_connection);
         pthread_t reconnection_broker_appeared_pokemon;
         pthread_create(&reconnection_broker_appeared_pokemon, NULL, (void*)retry_on_x_time, NULL);
         log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", values.tiempo_reconexion,  reconnection_broker_appeared_pokemon);
@@ -442,9 +445,13 @@ void connection_broker_suscribe_to_caught_pokemon()
 {	
     connection *connection_server= malloc(sizeof(connection));
     uint32_t server_connection_caught_pokemon = crear_conexion(values.ip_broker, values.puerto_broker);
+
+    send_new_connection(server_connection_caught_pokemon); 
+    uint32_t id_connection = receive_connection_id(server_connection_caught_pokemon);
+
     while(server_connection_caught_pokemon == -1)
     {
-    send_reconnect(server_connection_caught_pokemon);
+    send_reconnect(server_connection_caught_pokemon, id_connection);
     pthread_t reconnection_broker_caught_pokemon;
     pthread_create(&reconnection_broker_caught_pokemon, NULL, (void*)retry_on_x_time, NULL);
     log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", values.tiempo_reconexion,  reconnection_broker_caught_pokemon);
@@ -466,9 +473,13 @@ void connection_broker_suscribe_to_localized_pokemon()
 {
     connection *connection_server= malloc(sizeof(connection));
     uint32_t server_connection_localized_pokemon = crear_conexion(values.ip_broker, values.puerto_broker);
+   
+    send_new_connection(server_connection_localized_pokemon); 
+    uint32_t id_connection = receive_connection_id(server_connection_localized_pokemon);
+
     while(server_connection_localized_pokemon == -1)
     {
-    send_reconnect(server_connection_localized_pokemon);
+    send_reconnect(server_connection_localized_pokemon, id_connection);
     pthread_t reconnection_broker_localized_pokemon;
     pthread_create(&reconnection_broker_localized_pokemon, NULL, (void*)retry_on_x_time, NULL);
     log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", values.tiempo_reconexion,  reconnection_broker_localized_pokemon);
