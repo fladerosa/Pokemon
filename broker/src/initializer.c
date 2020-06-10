@@ -17,8 +17,11 @@ void initialize(){
     log_info(optional_logger, "Initializing Application...");
     fill_config_values();
     connections = list_create();
+    id_connection = 0;
+    id_message = 0;
     pthread_mutex_init(&m_id_connection, NULL);
     pthread_mutex_init(&m_id_message, NULL);
+    pthread_mutex_init(&m_connections,NULL);
     init_queues();
     set_sig_handler();
     p_on_request = &process_request;
@@ -56,18 +59,16 @@ void fill_config_values(){
 
 void set_sig_handler(void)
 {
-    struct sigaction* action = malloc(sizeof(sigaction));
+    struct sigaction action;
 
 
-    (*action).sa_flags = SA_SIGINFO; 
-    (*action).sa_sigaction = dump;
-
-    if (sigaction(SIGUSR1, action, NULL) == -1) { 
+    action.sa_flags = SA_SIGINFO; 
+    action.sa_handler = dump;
+    sigemptyset(&action.sa_mask);
+    if (sigaction(SIGUSR1, &action, NULL) == -1) { 
         perror("sigusr: sigaction");
         _exit(1);
     }
-
-    free(action);
 }
 
 void init_queues(){
@@ -79,8 +80,12 @@ void init_queues(){
         queue->subscribers = list_create();
         queue->sem_all_ack = malloc(sizeof(sem_t));
         queue->sem_message = malloc(sizeof(sem_t));
+        queue->m_queue_modify = malloc(sizeof(pthread_mutex_t));
+        queue->m_subscribers_modify = malloc(sizeof(pthread_mutex_t));
         sem_init(queue->sem_message, 0, 0);
         sem_init(queue->sem_all_ack, 0, 0); 
+        pthread_mutex_init(queue->m_queue_modify,NULL);
+        pthread_mutex_init(queue->m_subscribers_modify,NULL);
         list_add(list_queues,queue);
         pthread_create_and_detach(queue_message_sender,queue);
     }

@@ -81,6 +81,14 @@ typedef struct{
 	uint32_t colaMensajes;
 }subscribe;
 
+typedef struct t_connection {
+    uint32_t socket;
+    uint32_t id_connection;
+    bool is_connected;
+} t_connection;
+
+t_list* connections; // solo para broker, pero no me quedaba otra que ponerlo aca
+pthread_mutex_t m_connections;
 
 new_pokemon* stream_to_new_pokemon(void* stream, uint32_t* id_message, bool is_broker);
 void* new_pokemon_to_stream(new_pokemon* newPokemonMessage, uint32_t* id_message);
@@ -132,6 +140,7 @@ uint32_t size_of_caught_pokemon(caught_pokemon* caughtPokemonMessage);
 uint32_t size_of_catch_pokemon(catch_pokemon* catchPokemonMessage);
 uint32_t size_of_appeared_pokemon(appeared_pokemon* appearedPokemonMessage);
 uint32_t size_of_new_pokemon(new_pokemon* newPokemonMessage);
-
+void* list_find_with_args(t_list *self, bool(*condition)(void* elem, void* args), void* args);
+bool has_socket_fd(void* data, void* socket);
 
 #endif

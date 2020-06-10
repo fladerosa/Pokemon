@@ -465,17 +465,17 @@ subscribe* init_subscribe(uint32_t id_queue){
 }
 
 void free_new_pokemon(new_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
 void free_appeared_pokemon(appeared_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
 void free_catch_pokemon(catch_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
@@ -484,7 +484,7 @@ void free_caught_pokemon(caught_pokemon* pokemon){
 }
 
 void free_get_pokemon(get_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
@@ -514,9 +514,21 @@ void free_ack(ack* acknowledgement){
     free(acknowledgement);
 }
 
+void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* args) {
+	t_link_element *element = self->head;
+	int position = 0;
 
+	while (element != NULL && !condition(element->data, args)) {
+		element = element->next;
+		position++;
+	}
 
+	return element != NULL ? element->data : NULL;
+}
 
+bool has_socket_fd(void* data, void* socket){
+    return data ? ((t_connection*) data)->socket == (uint32_t) socket : false;
+}
 
 
 

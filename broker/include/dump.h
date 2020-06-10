@@ -6,7 +6,7 @@
 
 
 void signal_handler(void* arg);
-void dump();
+void dump(int signum);
 
 
 #endif
