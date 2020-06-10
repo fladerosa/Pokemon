@@ -105,6 +105,12 @@ void serve_client(void* processor){
         request_receiver(cod_op, size, socket);
     }
     log_info(optional_logger, "Socket %d has disconnected", socket);
+    if (connections != NULL){ //turrada para broker, no dar bola
+        t_connection* conn = list_find_with_args(connections, has_socket_fd, (void*) socket);
+        if (conn){
+            conn->is_connected = false;
+        }     
+    }
     close(socket);
 }
 

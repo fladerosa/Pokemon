@@ -514,9 +514,21 @@ void free_ack(ack* acknowledgement){
     free(acknowledgement);
 }
 
+void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* args) {
+	t_link_element *element = self->head;
+	int position = 0;
 
+	while (element != NULL && !condition(element->data, args)) {
+		element = element->next;
+		position++;
+	}
 
+	return element != NULL ? element->data : NULL;
+}
 
+bool has_socket_fd(void* data, void* socket){
+    return data ? ((t_connection*) data)->socket == (uint32_t) socket : false;
+}
 
 
 

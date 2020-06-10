@@ -1,17 +1,5 @@
 #include "queues.h"
 
-void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* args) {
-	t_link_element *element = self->head;
-	int position = 0;
-
-	while (element != NULL && !condition(element->data, args)) {
-		element = element->next;
-		position++;
-	}
-
-	return element != NULL ? element->data : NULL;
-}
-
 void handle_new_connection(uint32_t client_fd){
     t_connection *conn = malloc(sizeof(t_connection));
     conn->socket = client_fd;
@@ -36,10 +24,6 @@ void handle_new_connection(uint32_t client_fd){
 
 bool has_connection_id(void* data, void* id){
     return ((t_connection*) data)->id_connection == (uint32_t) id;
-}
-
-bool has_socket_fd(void* data, void* socket){
-    return data ? ((t_connection*) data)->socket == (uint32_t) socket : false;
 }
 
 bool has_queue_id(void* data, void* id){
