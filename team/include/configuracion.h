@@ -35,14 +35,21 @@ typedef struct{
 }t_tot_pokemon;
 
 typedef struct{
-    uint32_t initial_dif_species;
+    uint32_t *initial_dif_species;
 }t_dif_pokemon;
 
 typedef struct{
     char* pokemon; 
     uint32_t global_quantity_pokemon;
-    uint32_t global_dif_species;
 }g_pokemon;
+
+typedef struct{
+    uint32_t *global_tot_pokemon;
+}t_gtot_pokemon;
+
+typedef struct{
+    uint32_t *global_dif_species;
+}t_gdif_pokemon;
 
 typedef struct{
     uint32_t id_trainer;
@@ -51,6 +58,8 @@ typedef struct{
     t_tot_pokemon *i_tot_pokemon;
  //   t_dif_pokemon *i_dif_pokemon;
     g_pokemon *global_pokemon; 
+    t_gtot_pokemon *g_tot_pokemon;
+ //   t_gdif_pokemon *g_dif_pokemon;
     enum_process_state state;
     uint32_t quantity_poke;  //limite a atrapar total de pokes por entrenador, no por tipo
     struct trainer  *next;
@@ -84,12 +93,11 @@ trainer *init_trainer;
 position_trainer position;
 pokemon init_pokemon;
 t_tot_pokemon i_tot_pokemon;
-
-t_dif_pokemon i_dif_pokemon;
-
+//t_dif_pokemon i_dif_pokemon;
 g_pokemon global_pokemon;
-
-pokemon_team pokemon_to_find;
+t_gtot_pokemon g_tot_pokemon;
+//t_gdif_pokemon g_dif_pokemon;
+//pokemon_team pokemon_to_find;
 position_map map_team;
 configuration values;
 
@@ -108,19 +116,19 @@ void fix_position(char *);
 
 void load_pokemons_config_team(t_config*);
 void add_pokemon_to_list(char *);
-uint32_t* count_pokemon(char*, uint32_t);
 t_tot_pokemon* add_count_pokemon_on_memory(uint32_t*);
 void fix_pokemon(char *);
 
 void load_objectives_config_team(t_config*);;
 void add_objective_to_list(char *);
-void read_objectives_to_char(char **);
+t_gtot_pokemon* add_count_pokemon_objetive_on_memory(uint32_t*);
 void fix_objective(char *);
 
 uint32_t quantity_trainers(t_list*);
 position_trainer* add_position_trainer_on_memory(t_list*);
 pokemon* add_pokemon_trainer_on_memory(t_list*, t_tot_pokemon*);
-void assign_data_trainer(t_config*, t_tot_pokemon*, g_pokemon**);
+g_pokemon* add_global_pokemon_trainer_on_memory(t_list*, t_gtot_pokemon*);
+void assign_data_trainer(t_config*, t_tot_pokemon*, t_gtot_pokemon*);
 
 void destroy_position(position_trainer*);
 void destroy_pokemon(pokemon*);
