@@ -1,5 +1,5 @@
-#ifndef CONFIGURACION_H
-#define CONFIGURACION_H
+#ifndef INICIALIZACION_H
+#define INICIALIZACION_H
 
 #include<commons/collections/list.h>
 #include<commons/string.h>
@@ -12,15 +12,6 @@ typedef enum{
 	BLOCKED,
 	EXIT
 } enum_process_state;
-/* map sera  matriz dinamica para ubicacion de entrenadores y pokemon
-   *fil como *col del mapa, permitiran el desplazamiento para la ubicacion y planificacion
-*/
-typedef struct{
-    uint32_t **map;  
-    uint32_t *fil;
-    uint32_t *col; 
-}position_map;
-
 /*estructura para cargar inicialmente con los datos de la lista de config 
     (posicion inicial del entrenador)
 */
@@ -107,18 +98,6 @@ typedef struct{
     struct trainer  *next;
 }trainer;
 
-/*
- estructura para definir pokemon y cantidad a capturar por entrenador / team
- ESTA FALTANDO COMPARAR AMBOS ARRAYS (pokemon* y g_pokemon*) 
- PARA DEFINIR LOS OBJETIVOS A CUMPLIR EN LA PLANIFICACION
-*/
-typedef struct{
-    char* pokemon;
-    uint32_t total_init_quantity_pokemon;
-    uint32_t total_global_quantity_pokemon;
-    uint32_t dif_init_team_quantity_pokemon;   
-}pokemon_team;
-
 /* estructura para cargar los datos de team.config
 */
 typedef struct{
@@ -146,14 +125,7 @@ t_dif_pokemon i_dif_pokemon;
 g_pokemon global_pokemon;
 t_gtot_pokemon g_tot_pokemon;
 t_gdif_pokemon g_dif_pokemon;
-pokemon_team pokemon_to_find;
-position_map map_team;
 configuration values;
-
-op_code code;
-uint32_t socket_team;
-uint32_t socket_broker;
-on_request request;
 
 void read_config();
 void create_optional_logger();
@@ -193,18 +165,8 @@ void free_assign_trainer(trainer *init_trainer);
 void initialize_team();
 void release_resources();
 
-void listen_to_gameboy();
-void retry_on_x_time();
-uint32_t caught_default(caught_pokemon*);
-void localized_default(localized_pokemon*, pokemon_team*);
 
-void connection_broker_global_suscribe();
-void connection_broker_suscribe_to_appeared_pokemon();
-void connection_broker_suscribe_to_caught_pokemon();
-void connection_broker_suscribe_to_localized_pokemon();
 
-void reception_message_queue_subscription(uint32_t, uint32_t, uint32_t);
-enum t_algoritmo {fifo, rr, sjf_sd, sjf_cd};
 
 
 #endif
