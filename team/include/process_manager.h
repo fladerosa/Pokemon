@@ -2,10 +2,9 @@
 #define PROCESS_MANAGER_H
 
 #include <commons/collections/list.h>
-#include "ready_coaches.h"
-#include "running_coaches.h"
-#include "blocked_coaches.h"
-#include "finished_coaches.h"
+#include "ready_trainers.h"
+#include "blocked_trainers.h"
+#include "finished_trainers.h"
 
 
 void inicialize_process_queue();

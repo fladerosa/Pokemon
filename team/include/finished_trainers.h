@@ -1,5 +1,5 @@
-#ifndef FINISHED_COACHES_H
-#define FINISHED_COACHES_H
+#ifndef FINISHED_TRAINERS_H
+#define FINISHED_TRAINERS_H
 
 #include <stdio.h>
 #include <commons/collections/list.h>

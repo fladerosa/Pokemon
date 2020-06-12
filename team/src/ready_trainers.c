@@ -1,4 +1,4 @@
-#include "ready_coaches.h"
+#include "ready_trainers.h"
 
 t_list *readys = NULL;
 

@@ -1,5 +1,5 @@
-#ifndef BLOCKED_COACHES_H
-#define BLOCKED_COACHES_H
+#ifndef BLOCKED_TRAINERS_H
+#define BLOCKED_TRAINERS_H
 
 #include <stdio.h>
 #include <commons/collections/list.h>

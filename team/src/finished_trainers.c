@@ -1,4 +1,4 @@
-#include "finished_coaches.h"
+#include "finished_trainers.h"
 
 t_list* finishis = NULL;
 

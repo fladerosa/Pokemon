@@ -1,4 +1,4 @@
-#include "blocked_coaches.h"
+#include "blocked_trainers.h"
 
 t_list* blockes = NULL;
 
