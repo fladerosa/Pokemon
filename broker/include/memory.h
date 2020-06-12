@@ -39,11 +39,13 @@ typedef struct t_memory{
 t_memory memory;
 
 void initializeMemory();
+void* getData(t_data* data);
 void addData(uint32_t sizeData, void* data);
 
 t_data* seekPartitionAvailable(uint32_t sizeData);
 t_data* getPartitionAvailable(uint32_t sizeData);
 bool verifMustCompact();
+bool partition_is_free(void* data);
 void compact();
 void destroyPartition();
 void allocateData(uint32_t sizeData, void* data, t_data* freePartition);

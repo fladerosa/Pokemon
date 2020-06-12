@@ -11,4 +11,6 @@ void manejo_memoria();
 bool testSeekAlgorithms();
 bool testAllocateDataBS();
 bool testAllocateDataDP();
+bool testDestroyPartitionFIFO();    
+bool testDestroyPartitionLRU();
 #endif

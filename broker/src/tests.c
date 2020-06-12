@@ -22,6 +22,10 @@ void manejo_memoria(){
     CU_ASSERT_TRUE(testAllocateDataBS());
     initializeMemory();
     CU_ASSERT_TRUE(testAllocateDataDP());
+    initializeMemory();
+    CU_ASSERT_TRUE(testDestroyPartitionFIFO());
+    initializeMemory();
+    CU_ASSERT_TRUE(testDestroyPartitionLRU());
     /*
     casos de prueba particiones dinamicas
         ubicar dato con memoria vacía
@@ -78,5 +82,42 @@ bool testAllocateDataDP(){
     if(list_size(memory.partitions) != 2){
         return false;
     }
+    return true;
+}
+
+bool testDestroyPartitionFIFO(){
+    //Context
+    char* cadena = "Primer dato";
+    void* strData = malloc(strlen(cadena));
+    strcpy(strData, cadena);
+    addData(strlen(cadena), strData);
+    cadena = "Segundo dato";
+    strData = malloc(strlen(cadena));
+    strcpy(strData, cadena);
+    addData(strlen(cadena), strData);
+    if(list_size(memory.partitions) != 3){
+        return false;
+    }
+    FIFO_destroyPartition();
+    t_data* firstPartition = (t_data*)list_get(memory.partitions, 0);
+    if(firstPartition->state != FREE){
+        return false;
+    }
+    t_data* secondPartition = (t_data*)list_get(memory.partitions, 1);
+    if(secondPartition->state == FREE){
+        return false;
+    }
+    //char* partitionData = (char*)getData(secondPartition);
+    void* partitionData = malloc(secondPartition->size);
+    memcpy(partitionData, memory.data + secondPartition->offset, secondPartition->size);
+    char* valor = malloc(secondPartition->size);
+    strcpy(valor, partitionData);
+    if(strcmp(partitionData, cadena) != 0 ){
+        return false;
+    }
+    return true;
+}
+    
+bool testDestroyPartitionLRU(){
     return true;
 }
