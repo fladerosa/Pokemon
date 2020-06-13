@@ -120,6 +120,54 @@ void BS_compact(){
 }
 void DP_compact(){
     //Debería ir desplazando todos los datos a la izquierda y uniendo todas las particiones libres
+    uint32_t sizeList =  list_size(memory.partitions);
+    t_data* freePartition = NULL;
+    t_data* dataAux;
+    uint32_t intAux;
+    t_list* indexPartitionsToRemove = list_create();
+    for(int i = 0; i < sizeList; i++){
+        dataAux = (t_data*)list_get(memory.partitions, i);
+        if(dataAux->state == FREE){
+            if(freePartition == NULL) {
+                //First free partition founded
+                freePartition = dataAux;
+            } else {
+                //I already had a free partition, i join them
+                freePartition->size += dataAux->size;
+                //list_remove(memory.partitions, i);
+                void* dato = malloc(sizeof(int));
+                memcpy(dato, (void*)&i, sizeof(int));
+                list_add(indexPartitionsToRemove, dato);
+            }
+        }else{
+            if(freePartition == NULL){
+                //I do nothing
+            }else{
+                //I had a previous free space, so i move the data
+                memcpy(memory.data + freePartition->offset, memory.data + dataAux->offset, dataAux->size);
+
+                intAux = freePartition->size;
+                freePartition->size = dataAux->size;
+                dataAux->size = intAux;
+
+                dataAux->offset = freePartition->offset;
+                freePartition->offset += dataAux->size;
+
+                freePartition->lastTimeUsed = dataAux->lastTimeUsed;
+                freePartition->creationTime = dataAux->creationTime;
+                freePartition->id = dataAux->id;
+                freePartition->state = dataAux->state;
+
+                freePartition = dataAux;
+            }
+        }
+    }
+
+    sizeList = list_size(indexPartitionsToRemove);
+    for(int i = 0; i < sizeList; i++){
+        uint32_t* index = (uint32_t*)list_get(indexPartitionsToRemove, i);
+        list_remove(memory.partitions, *index);
+    }
 }
 
 void FIFO_destroyPartition(){
