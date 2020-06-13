@@ -16,17 +16,17 @@ typedef enum{
 typedef struct{
     uint32_t posix;
     uint32_t posiy;   
-} t_position;
+} t_position_to_map;
 
 typedef struct{
     char *pokemon; 
-    t_position position;
+    t_position_to_map position;
 } t_pokemon;
 
 /* Estructura basica de un entrenador*/
 typedef struct{
     uint32_t id_trainer;
-    t_position position;
+    t_position_to_map position;
     t_list* pokemonOwned;  //Pokemons that i captured
     t_list* pokemosNeeded; //Pokemons that i must capture to accomplish the objetive
     enum_process_state state;
@@ -36,6 +36,10 @@ typedef struct{
 typedef struct{
        char *ip_team;
        char *puerto_team;
+       //necesito de estas listas para tener todo lo que viene de config
+       t_list* posicion_entrenador;
+       t_list* pokemon_entrenador;
+       t_list* objetivo_entrenador;
        uint32_t tiempo_reconexion; 
        uint32_t  retardo_ciclo_cpu; 
        char *algoritmo_planificacion;
@@ -45,6 +49,7 @@ typedef struct{
        char *puerto_broker;       
 } t_configuration;
 
+t_trainer *data_trainer;
 t_list* trainers; //List of type t_trainer
 t_configuration config_values; //Values readed from tema.config
 
@@ -53,36 +58,33 @@ void read_config();
 void create_optional_logger();
 void create_obligatory_logger();
 
+void load_values_config(t_config *);
+
 void load_positions_config_team(t_config*);
 void add_position_to_list(char *);
 void fix_position(char *);
+t_position_to_map* add_position_trainer_on_memory(t_list*);
 
 void load_pokemons_config_team(t_config*);
 void add_pokemon_to_list(char *);
-t_tot_pokemon* add_count_pokemon_on_memory(uint32_t*);
-t_dif_pokemon* add_dif_count_pokemon_on_memory(uint32_t *);
 void fix_pokemon(char *);
-void sort_array_pokemon(char*);
-uint32_t* count_dif_species(char*);
+
 
 void load_objectives_config_team(t_config*);;
 void add_objective_to_list(char *);
-t_gtot_pokemon* add_count_pokemon_objetive_on_memory(uint32_t*);
-t_gdif_pokemon* add_count_dif_pokemon_objetive_on_memory(uint32_t*);
 void fix_objective(char *);
 
 uint32_t quantity_trainers(t_list*);
-position_trainer* add_position_trainer_on_memory(t_list*);
-pokemon* add_pokemon_trainer_on_memory(t_list*, t_tot_pokemon*);
-g_pokemon* add_global_pokemon_trainer_on_memory(t_list*, t_gtot_pokemon*);
-void assign_data_trainer(t_config*, t_tot_pokemon*, t_gtot_pokemon*);
 
-void destroy_position(position_trainer*);
-void destroy_pokemon(pokemon*);
-void destroy_objective(g_pokemon*);
+void process_trainer(t_config *);
+void add_trainer_to_list(t_trainer *);
+t_trainer* assign_data_trainer(t_config*);
+
+void destroy_position(t_position_to_map*);
+void destroy_pokemon(t_pokemon*);
 
 void destroy_lists_and_loaded_elements();
-void free_assign_trainer(trainer *init_trainer);
+void free_assign_trainer(t_trainer*);
 
 void release_resources();
 

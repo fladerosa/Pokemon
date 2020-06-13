@@ -23,7 +23,7 @@ uint32_t socket_team;
 uint32_t socket_broker;
 on_request request;
 
-void listen_to_gameboy(configuration*);
+void listen_to_gameboy(t_configuration*);
 void retry_on_x_time();
 uint32_t caught_default(caught_pokemon*);
 void localized_default(localized_pokemon*, pokemon_team*);
