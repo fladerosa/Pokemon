@@ -13,6 +13,6 @@ bool testAllocateDataBS();
 bool testAllocateDataDP();
 bool testDestroyPartitionFIFO();    
 bool testDestroyPartitionLRU();
-void internalStringData(char* text);
+void internalStringData(uint32_t id, char* text);
 bool testCompactDP();
 #endif

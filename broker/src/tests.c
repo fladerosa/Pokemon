@@ -14,7 +14,6 @@ void test_agregar_a_queue(){
 }
 
 void manejo_memoria(){
-    CU_ASSERT_TRUE(true);
     initialize();
     initializeMemory();
     CU_ASSERT_TRUE(testSeekAlgorithms());
@@ -64,9 +63,7 @@ bool testAllocateDataBS(){
     if(data == NULL){
         return false;
     }
-    void* strData = malloc(128);
-    strcpy(strData, "Hola test");
-    BS_allocateData(128, strData, data);
+    BS_allocateData(128, data);
     if(list_size(memory.partitions) != 5){
         return false;
     }
@@ -78,9 +75,7 @@ bool testAllocateDataDP(){
     if(data == NULL){
         return false;
     }
-    void* strData = malloc(128);
-    strcpy(strData, "Hola test");
-    DP_allocateData(128, strData, data);
+    DP_allocateData(128, data);
     if(list_size(memory.partitions) != 2){
         return false;
     }
@@ -89,8 +84,8 @@ bool testAllocateDataDP(){
 
 bool testDestroyPartitionFIFO(){
     //Context
-    internalStringData("Primer dato");
-    internalStringData("Segundo dato");
+    internalStringData(1, "Primer dato");
+    internalStringData(2, "Segundo dato");
     if(list_size(memory.partitions) != 3){
         return false;
     }
@@ -103,7 +98,7 @@ bool testDestroyPartitionFIFO(){
     if(secondPartition->state == FREE){
         return false;
     }
-    void* partitionData = getData(secondPartition);
+    void* partitionData = getData(2);
     if(strcmp(partitionData, "Segundo dato") != 0 ){
         return false;
     }
@@ -112,15 +107,15 @@ bool testDestroyPartitionFIFO(){
     
 bool testDestroyPartitionLRU(){
     //Context
-    internalStringData("Primer dato");
-    internalStringData("Segundo dato");
+    internalStringData(1, "Primer dato");
+    internalStringData(2, "Segundo dato");
     if(list_size(memory.partitions) != 3){
         return false;
     }
 
     t_data* firstPartition = (t_data*)list_get(memory.partitions, 0);
     sleep(3);
-    void* partitionData = getData(firstPartition);
+    void* partitionData = getData(1);
 
     LRU_destroyPartition();
     firstPartition = (t_data*)list_get(memory.partitions, 0);
@@ -131,46 +126,41 @@ bool testDestroyPartitionLRU(){
     if(secondPartition->state != FREE){
         return false;
     }
-    partitionData = getData(firstPartition);
+    partitionData = getData(1);
     if(strcmp(partitionData, "Primer dato") != 0 ){
         return false;
     }
     return true;
 }
 
-void internalStringData(char* text){
+void internalStringData(uint32_t id, char* text){
     int sizeText = strlen(text)+1;
-    void* strData = malloc(sizeText);
+    void* strData = mallocMemory(id, sizeText);
     memcpy(strData, text, sizeText);
-    addData(sizeText, strData);
 }
 
 bool testCompactDP(){
     //Context
     memory.configuration.memoryAlgorithm = "DP";
-    internalStringData("Primer dato");
-    internalStringData("Segundo dato");
-    internalStringData("Tercer dato");
+    internalStringData(1, "Primer dato");
+    internalStringData(2, "Segundo dato");
+    internalStringData(3, "Tercer dato");
     if(list_size(memory.partitions) != 4){
         return false;
     }
 
-    t_data* partition1 = (t_data*)list_get(memory.partitions, 0);
-    t_data* partition2 = (t_data*)list_get(memory.partitions, 2);
     sleep(3);
-    void* partitionData1 = getData(partition1);
-    void* partitionData2 = getData(partition2);
+    void* partitionData1 = getData(1);
+    void* partitionData2 = getData(3);
 
     LRU_destroyPartition();
     DP_compact();
     if(list_size(memory.partitions) != 3){
         return false;
     }
-    partition1 = (t_data*)list_get(memory.partitions, 0);
-    partition2 = (t_data*)list_get(memory.partitions, 1);
 
-    partitionData1 = getData(partition1);
-    partitionData2 = getData(partition2);
+    partitionData1 = getData(1);
+    partitionData2 = getData(3);
     if(strcmp(partitionData1, "Primer dato") != 0 ){
         return false;
     }

@@ -13,7 +13,7 @@ typedef enum {
 typedef struct t_data{
     uint32_t size;
     uint32_t offset;
-    char* queueAssociated;
+    uint32_t idQueue;
     uint32_t id;
     e_dataState state;
     time_t lastTimeUsed;
@@ -39,8 +39,10 @@ typedef struct t_memory{
 t_memory memory;
 
 void initializeMemory();
-void* getData(t_data* data);
-void addData(uint32_t sizeData, void* data);
+void* mallocMemory(uint32_t idMensaje, uint32_t size);
+void setIdQueue(uint32_t idQueue, uint32_t idMensaje);
+bool partition_match_id_mensaje(void* data, void* idMensaje);
+void* getData(uint32_t idMensaje);
 
 t_data* seekPartitionAvailable(uint32_t sizeData);
 t_data* getPartitionAvailable(uint32_t sizeData);
@@ -48,7 +50,7 @@ bool verifMustCompact();
 bool partition_is_free(void* data);
 void compact();
 void destroyPartition();
-void allocateData(uint32_t sizeData, void* data, t_data* freePartition);
+void allocateData(uint32_t sizeData, t_data* freePartition);
 
 t_data* FF_getPartitionAvailable();
 t_data* BF_getPartitionAvailable();
@@ -61,6 +63,6 @@ void DP_compact();
 void FIFO_destroyPartition();
 void LRU_destroyPartition();
 
-void BS_allocateData(uint32_t sizeData, void* data, t_data* freePartition);
-void DP_allocateData(uint32_t sizeData, void* data, t_data* freePartition);
+void BS_allocateData(uint32_t sizeData, t_data* freePartition);
+void DP_allocateData(uint32_t sizeData, t_data* freePartition);
 #endif
