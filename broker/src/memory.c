@@ -9,7 +9,7 @@ void initializeMemory(){
     memory.configuration.minimunPartitionSize = cfg_values.tamano_minimo_particion;
     memory.configuration.countFailedSearchForCompact = cfg_values.frecuencia_compactacion;
     memory.data = malloc(memory.configuration.size);
-    memset(memory.data, '\0', memory.configuration.size);
+    //memset(memory.data, '2', memory.configuration.size);
    
     t_data* data = malloc(sizeof(t_data));
     data->size = memory.configuration.size;
@@ -21,6 +21,7 @@ void initializeMemory(){
 
 void* getData(t_data* data){
     //TODO si el retorno debe ser un puntero a la memoria se debe cambiar aca
+    data->lastTimeUsed = time(NULL);
     void* dataReturn = malloc(data->size);
     memcpy(dataReturn, memory.data + data->offset, data->size);
     return dataReturn;
@@ -115,7 +116,7 @@ bool partition_size_validation(void* data, void* sizeData){
 }
 
 void BS_compact(){
-    //Debería ir uniendo las particiones contiguas de igual tamaño
+    //Debería unir solo cuando son particiones del "mismo bloque"
 }
 void DP_compact(){
     //Debería ir desplazando todos los datos a la izquierda y uniendo todas las particiones libres

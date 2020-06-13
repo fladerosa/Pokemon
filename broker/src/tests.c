@@ -88,13 +88,15 @@ bool testAllocateDataDP(){
 bool testDestroyPartitionFIFO(){
     //Context
     char* cadena = "Primer dato";
-    void* strData = malloc(strlen(cadena));
-    strcpy(strData, cadena);
-    addData(strlen(cadena), strData);
+    int largoCadena = strlen(cadena)+1;
+    void* strData = malloc(largoCadena);
+    memcpy(strData, cadena, largoCadena);
+    addData(largoCadena, strData);
     cadena = "Segundo dato";
-    strData = malloc(strlen(cadena));
-    strcpy(strData, cadena);
-    addData(strlen(cadena), strData);
+    largoCadena = strlen(cadena)+1;
+    strData = malloc(largoCadena);
+    memcpy(strData, cadena, largoCadena);
+    addData(largoCadena, strData);
     if(list_size(memory.partitions) != 3){
         return false;
     }
@@ -107,11 +109,7 @@ bool testDestroyPartitionFIFO(){
     if(secondPartition->state == FREE){
         return false;
     }
-    //char* partitionData = (char*)getData(secondPartition);
-    void* partitionData = malloc(secondPartition->size);
-    memcpy(partitionData, memory.data + secondPartition->offset, secondPartition->size);
-    char* valor = malloc(secondPartition->size);
-    strcpy(valor, partitionData);
+    void* partitionData = getData(secondPartition);
     if(strcmp(partitionData, cadena) != 0 ){
         return false;
     }
@@ -119,5 +117,35 @@ bool testDestroyPartitionFIFO(){
 }
     
 bool testDestroyPartitionLRU(){
+    //Context
+    char* cadena = "Primer dato";
+    int largoCadena = strlen(cadena)+1;
+    void* strData = malloc(largoCadena);
+    memcpy(strData, cadena, largoCadena);
+    addData(largoCadena, strData);
+    cadena = "Segundo dato";
+    largoCadena = strlen(cadena)+1;
+    strData = malloc(largoCadena);
+    memcpy(strData, cadena, largoCadena);
+    addData(largoCadena, strData);
+    if(list_size(memory.partitions) != 3){
+        return false;
+    }
+    t_data* firstPartition = (t_data*)list_get(memory.partitions, 0);
+    sleep(3);
+    void* partitionData = getData(firstPartition);
+    LRU_destroyPartition();
+    firstPartition = (t_data*)list_get(memory.partitions, 0);
+    if(firstPartition->state == FREE){
+        return false;
+    }
+    t_data* secondPartition = (t_data*)list_get(memory.partitions, 1);
+    if(secondPartition->state != FREE){
+        return false;
+    }
+    partitionData = getData(firstPartition);
+    if(strcmp(partitionData, "Primer dato") != 0 ){
+        return false;
+    }
     return true;
 }
