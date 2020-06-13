@@ -2,12 +2,20 @@
 #include "inicializacion.h"
 #include <string.h>
 
-void read_config()
-{   
+void initialize_team() {    
+    read_config();
+    create_obligatory_logger();
+    create_optional_logger();
+    load_values_config(config);
+    log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);
+
+    assign_data_trainer(config, &i_tot_pokemon,&g_tot_pokemon);
+}
+
+void read_config() {   
     char* config_path = "./cfg/team.config";
     config = config_create(config_path); 
-    if(config == NULL)   
-    {
+    if(config == NULL) {
         error_show("Error reading TEAM process config on %s\n", config_path);
         exit(CONFIG_FAIL);
     }           
@@ -390,18 +398,6 @@ void create_obligatory_logger()
         exit(LOG_FAIL);
     }
     log_info(optional_logger, "Optional Log was created successfully\n");
-}
-void initialize_team()
-{    
-    read_config(config);
-    create_obligatory_logger();
-    create_optional_logger();
-    load_values_config(config);
-    log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);
-
-    assign_data_trainer(config, &i_tot_pokemon,&g_tot_pokemon);
-
-    
 }
 
 void release_resources()

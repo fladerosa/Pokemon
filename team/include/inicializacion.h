@@ -12,101 +12,30 @@ typedef enum{
 	BLOCKED,
 	EXIT
 } enum_process_state;
-/*estructura para cargar inicialmente con los datos de la lista de config 
-    (posicion inicial del entrenador)
-*/
+/* Estructura de posición */
 typedef struct{
     uint32_t posix;
     uint32_t posiy;   
-}position_trainer;
+} t_position;
 
-/*estructura para cargar inicialmente con los datos de la lista de config 
-    (Pokemon inicial por entrenador)
-    se agrega el campo initial_quantity_pokemon que tendra el valor, sin contar repetidos
-    [Bulbasaur, 1]
-    [Pikachu, 1]
-    [Bulbasaur, 1]
-*/
 typedef struct{
-    char * pokemon; 
-    uint32_t initial_quantity_pokemon;
-}pokemon;
+    char *pokemon; 
+    t_position position;
+} t_pokemon;
 
-/*estructura para cargar el total de pokemones iniciales que tiene el entrenador 
-    cuenta todos incluso repetidos
-    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Bulbasaur, 1]
-    su total seria de 3
-*/
-typedef struct{
-    uint32_t *init_tot_pokemon;
-}t_tot_pokemon;
-
-/*estructura para cargar el total de especies  iniciales que tiene el entrenador 
-    cuenta todos sin repetidos
-    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Bulbasaur, 1]
-    su total seria de 2
-*/
-typedef struct{
-    uint32_t *initial_dif_species; 
-}t_dif_pokemon;
-
-/*estructura para cargar inicialmente con los datos de la lista de config
-    (Objetivos por entrenador)
-    se agrega el campo initial_quantity_pokemon que tendra el valor, sin contar repetidos
-    [Bulbasaur, 1]
-    [Pikachu, 1]
-    [Squirtle, 1]
-    [Charmander, 1]
-*/
-typedef struct{
-    char* pokemon; 
-    uint32_t global_quantity_pokemon;
-}g_pokemon;
-
-/*estructura para cargar el total de pokemones a capturar por el entrenador 
-    cuenta todos incluso repetidos
-    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Squirtle, 1] [Charmander, 1]
-    su total seria de 4 y define la cantidad maxima a atrapar por entrenador
-*/
-typedef struct{
-    uint32_t *global_tot_pokemon;
-}t_gtot_pokemon;
-
-/*estructura para cargar el total de especies  iniciales que tiene el entrenador 
-    cuenta todos sin repetidos
-    Si el E1 tuviera inicialmente [Bulbasaur, 1] [Pikachu, 1] [Squirtle, 1] [Charmander, 1]
-    su total seria de 4 
-*/
-typedef struct{
-    uint32_t *global_dif_species;
-}t_gdif_pokemon;
-
-/*estructura completa con todos los datos que seran requeridos por cada enrenador
-    en el caso de las estructuras anidadas pokemon* y g*pokemon son arrays de char
-   
-*/
+/* Estructura basica de un entrenador*/
 typedef struct{
     uint32_t id_trainer;
-    position_trainer *position;
-    pokemon *init_pokemon;
-    t_tot_pokemon *i_tot_pokemon;
-    t_dif_pokemon *i_dif_pokemon;
-    g_pokemon *global_pokemon; 
-    t_gtot_pokemon *g_tot_pokemon;
-    t_gdif_pokemon *g_dif_pokemon;
+    t_position position;
+    t_list* pokemonOwned;  //Pokemons that i captured
+    t_list* pokemosNeeded; //Pokemons that i must capture to accomplish the objetive
     enum_process_state state;
-    struct trainer  *next;
-}trainer;
+} t_trainer;
 
-/* estructura para cargar los datos de team.config
-*/
+/* Estructura con los datos del archivo de configuración */
 typedef struct{
-       uint32_t nro_team; 
        char *ip_team;
        char *puerto_team;
-       t_list *posicion_entrenador;
-       t_list *pokemon_entrenador;
-       t_list *objetivo_entrenador;
        uint32_t tiempo_reconexion; 
        uint32_t  retardo_ciclo_cpu; 
        char *algoritmo_planificacion;
@@ -114,19 +43,12 @@ typedef struct{
        uint32_t estimacion_inicial;
        char *ip_broker;
        char *puerto_broker;       
+} t_configuration;
 
-}configuration;
+t_list* trainers; //List of type t_trainer
+t_configuration config_values; //Values readed from tema.config
 
-trainer *init_trainer;
-position_trainer position;
-pokemon init_pokemon;
-t_tot_pokemon i_tot_pokemon;
-t_dif_pokemon i_dif_pokemon;
-g_pokemon global_pokemon;
-t_gtot_pokemon g_tot_pokemon;
-t_gdif_pokemon g_dif_pokemon;
-configuration values;
-
+void initialize_team();
 void read_config();
 void create_optional_logger();
 void create_obligatory_logger();
@@ -162,11 +84,7 @@ void destroy_objective(g_pokemon*);
 void destroy_lists_and_loaded_elements();
 void free_assign_trainer(trainer *init_trainer);
 
-void initialize_team();
 void release_resources();
-
-
-
 
 
 #endif
