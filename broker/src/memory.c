@@ -123,6 +123,31 @@ bool partition_size_validation(void* data, void* sizeData){
 
 void BS_compact(){
     //Debería unir solo cuando son particiones del "mismo bloque"
+    uint32_t sizeList =  list_size(memory.partitions);
+    t_data* previousPartition = NULL;
+    t_data* dataAux;
+    bool mustFinish = false;
+    for(int i = 0; i < sizeList && !mustFinish; i++){
+        dataAux = (t_data*)list_get(memory.partitions, i);
+        if(previousPartition == NULL){
+            previousPartition = dataAux;
+        }else{
+            if(previousPartition->size == dataAux->size){
+                if(previousPartition->state == FREE && dataAux->state == FREE){
+                    //I join them
+                    previousPartition->size += dataAux->size;
+                    list_remove(memory.partitions, i);
+                    mustFinish = true;
+                }else{
+                    previousPartition = NULL;
+                }
+            }else{
+                previousPartition = dataAux;
+            }
+        }
+        if(mustFinish) BS_compact();
+    }
+    
 }
 void DP_compact(){
     //It moves the partitions with state using to the init an join the free partitions
@@ -140,7 +165,6 @@ void DP_compact(){
             } else {
                 //I already had a free partition, i join them
                 freePartition->size += dataAux->size;
-                //list_remove(memory.partitions, i);
                 void* dato = malloc(sizeof(int));
                 memcpy(dato, (void*)&i, sizeof(int));
                 list_add(indexPartitionsToRemove, dato);
@@ -184,7 +208,7 @@ void FIFO_destroyPartition(){
     t_data* dataAux;
     for(int i = 0; i < sizeList; i++){
         dataAux = (t_data*)list_get(memory.partitions, i);
-        if(dataAux->state == USING && difftime(dataAux->creationTime, minimunTime) < 0){
+        if(dataAux->state == USING && difftime(dataAux->creationTime, minimunTime) <= 0){
             minimunTime = dataAux->creationTime;
             indexFinded = i;
         }
@@ -199,7 +223,7 @@ void LRU_destroyPartition(){
     t_data* dataAux;
     for(int i = 0; i < sizeList; i++){
         dataAux = (t_data*)list_get(memory.partitions, i);
-        if(dataAux->state == USING && difftime(dataAux->lastTimeUsed, oldestTime) < 0){
+        if(dataAux->state == USING && difftime(dataAux->lastTimeUsed, oldestTime) <= 0){
             oldestTime = dataAux->lastTimeUsed;
             indexFinded = i;
         }
@@ -211,12 +235,12 @@ void LRU_destroyPartition(){
 void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
     if(sizeData <= freePartitionData->size / 2){
         t_data* newData = malloc(sizeof(t_data));
-        newData->size = freePartitionData->size - sizeData;
-        newData->offset = freePartitionData->offset + sizeData;
+        newData->size = freePartitionData->size / 2;
+        newData->offset = freePartitionData->offset + newData->size;
         newData->state = FREE;
         list_add(memory.partitions, newData);
         freePartitionData->size = freePartitionData->size / 2;
-        BS_allocateData(sizeData, freePartitionData);
+        BS_allocateData(sizeData, newData);
     }else{
         freePartitionData->creationTime = time(NULL);
         freePartitionData->lastTimeUsed = time(NULL);
@@ -237,5 +261,53 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
     freePartitionData->creationTime = time(NULL);
     freePartitionData->lastTimeUsed = time(NULL);
     freePartitionData->state = USING;
+}
+
+void dumpMemory(){
+    FILE* file = txt_open_for_append("cfg/dump.txt");
+
+    txt_write_in_file(file, "------------------------------------------------------------------------------\n");
+    dump_write_time(file);
+    dump_partitions(file);
+    txt_write_in_file(file, "------------------------------------------------------------------------------\n");
+
+    txt_close_file(file);
+}
+void dump_write_time(FILE* file){
+    time_t timer;
+    char* timeFormated = malloc(26);
+    struct tm* tm_info;
+
+    timer = time(NULL);
+    tm_info = localtime(&timer);
+
+    strftime(timeFormated, 26, "%d/%m/%Y %H:%M:%S", tm_info);
+    char* prefix = "Dump: ";
+    char* text = malloc(26 + strlen(prefix) + 1);
+    strcpy(text, prefix);
+    strcat(text, timeFormated);
+    txt_write_in_file(file, text);
+    txt_write_in_file(file, "\n");
+}
+void dump_partitions(FILE* file){
+    uint32_t sizeList = list_size(memory.partitions);
+    char* strFormat_using = "Partición %d: %p - %p. [X] Size: %db LRU: %li Cola: %d ID:%d\n";
+    char* str_using = malloc(strlen(strFormat_using) + sizeof(void*)*2 + sizeof(int) * 4 + sizeof(long));
+    char* strFormat_free = "Partición %d: %p - %p. [L] Size: %db\n";
+    char* str_free = malloc(strlen(strFormat_free) + sizeof(void*)*2 + sizeof(int) * 2);
+    void* initialPointer;
+    void* endPointer;
+    for(int i = 0; i < sizeList; i++){
+        t_data* partition = list_get(memory.partitions, i);
+        initialPointer = memory.data + partition->offset;
+        endPointer = initialPointer + partition->size - 1;//TODO mis dudas
+        if(partition->state == FREE){
+            sprintf(str_free, strFormat_free, i, initialPointer, endPointer, partition->size);
+            txt_write_in_file(file, str_free);
+        }else{
+            sprintf(str_using, strFormat_using, i, initialPointer, endPointer, partition->size, partition->lastTimeUsed, partition->idQueue, partition->id);
+            txt_write_in_file(file, str_using);
+        }
+    }
 }
 //end region

@@ -15,4 +15,6 @@ bool testDestroyPartitionFIFO();
 bool testDestroyPartitionLRU();
 void internalStringData(uint32_t id, char* text);
 bool testCompactDP();
+bool testCompactBS();
+bool testDump();
 #endif

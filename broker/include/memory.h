@@ -2,6 +2,7 @@
 #define MEMORY_H
 
 #include <commons/collections/list.h>
+#include <commons/txt.h>
 #include "common_utils.h"
 #include "initializer.h"
 
@@ -65,4 +66,8 @@ void LRU_destroyPartition();
 
 void BS_allocateData(uint32_t sizeData, t_data* freePartition);
 void DP_allocateData(uint32_t sizeData, t_data* freePartition);
+
+void dumpMemory();
+void dump_write_time(FILE* file);
+void dump_partitions(FILE* file);
 #endif

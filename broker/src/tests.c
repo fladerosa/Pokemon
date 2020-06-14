@@ -27,6 +27,10 @@ void manejo_memoria(){
     CU_ASSERT_TRUE(testDestroyPartitionLRU());
     initializeMemory();
     CU_ASSERT_TRUE(testCompactDP());
+    initializeMemory();
+    CU_ASSERT_TRUE(testCompactBS());
+    initializeMemory();
+    CU_ASSERT_TRUE(testDump());
     /*
     casos de prueba particiones dinamicas
         ubicar dato con memoria vacía
@@ -167,5 +171,35 @@ bool testCompactDP(){
     if(strcmp(partitionData2, "Tercer dato") != 0 ){
         return false;
     }
+    return true;
+}
+
+bool testCompactBS(){
+    t_data* data = FF_getPartitionAvailable(512);
+    if(data == NULL){
+        return false;
+    }
+    BS_allocateData(128, data);
+    if(list_size(memory.partitions) != 5){
+        return false;
+    }
+    FIFO_destroyPartition();
+    BS_compact();
+    if(list_size(memory.partitions) != 1){
+        return false;
+    }
+    return true;
+}
+
+bool testDump(){
+    t_data* data = FF_getPartitionAvailable(512);
+    if(data == NULL){
+        return false;
+    }
+    BS_allocateData(128, data);
+    if(list_size(memory.partitions) != 5){
+        return false;
+    }
+    dumpMemory();
     return true;
 }
