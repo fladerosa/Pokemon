@@ -56,9 +56,7 @@ void initialize_team();
 void read_config();
 void create_optional_logger();
 void create_obligatory_logger();
-
 void load_values_config(t_config*);
-
 t_list* assign_data_trainer(t_config*);
 void add_trainer_to_list(t_list*, t_trainer*);
 t_list* calculate_pokemon_to_caught(t_list*, t_list*);
@@ -67,13 +65,9 @@ void fix_pokemonOwned(char*);
 void add_to_pokemonOwn_list(char*);
 void fix_pokemonNeeded(char*);
 void add_to_pokemonNeed_list(char*);
-
 void destroy_position(t_position_to_map*);
 void destroy_trainer(t_trainer*);
-
 void destroy_lists_and_loaded_elements();
-
-
 void release_resources();
 
 

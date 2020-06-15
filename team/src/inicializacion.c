@@ -39,14 +39,7 @@ char** pokemonNeeds = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
 
         string_iterate_lines(pokemonOwns, fix_pokemonOwned);
         string_iterate_lines(pokemonNeeds, fix_pokemonNeeded);
-        //comparar ambas listas y generar una nueva con los pokemon a capturar
-        /*
-        t_list* pokemon_toCatch = calculate_pokemon_to_catch(pokemonNeeded, pokemonOwned)
-            si pokemonOwned esta vacia -> pokemon_toCatch= pokemonNeeded ok
-            no se puede dar el caso de que un entrenador no tenga objetivos a capturar  ok
-            recorro la lista de needed y comparo con la de owned añadiendo en 
-            pokemon_toCatch  aquellos que no esten en la lista de owned
-        */
+       
        t_list* pokemon_toCaught = calculate_pokemon_to_caught(pokemonOwnedByTrainer, pokemonNeededByTrainer);
         
          list_add_all(data_trainer->pokemonOwned, pokemonOwnedByTrainer);
@@ -74,16 +67,27 @@ void add_trainer_to_list(t_list* trainers, t_trainer* data_trainer) {
     list_add(trainers, data_trainer);
 }
 
-t_list* calculate_pokemon_to_catch(t_list* pokemonOwnedByTrainer, t_list* pokemonNeededByTrainer) {
+t_list* calculate_pokemon_to_caught(t_list* pokemonOwnedByTrainer, t_list* pokemonNeededByTrainer) {
 t_list* pokemon_toCaught = list_create();
-    if(list_is_empty(pokemonOwnedByTrainer) == 0) {
+    if(!list_is_empty(pokemonOwnedByTrainer)) {
+
+       for(uint32_t i = 0; i< list_size(pokemonNeededByTrainer); i++) {
+
+           for(uint32_t j = 0; j < list_size(pokemonOwnedByTrainer); j++) {        
+                if(!strcmp(list_get(pokemonNeededByTrainer, i), list_get(pokemonOwnedByTrainer, j)))
+                            list_add(pokemon_toCaught, list_get(pokemonNeededByTrainer, i));             
+              //falta contemplar cuando la lista de pokemonNeeded tengas mas pokemon del mismo tipo como objetivo a atrapar      
+           }
+       }
+
+    } else {
         list_add_all(pokemon_toCaught, pokemonNeededByTrainer);
+         log_info(optional_logger, "This trainer don't have any pokemonOwned\n");   
+        
     }
-
-
-
 return pokemon_toCaught;
 }
+
 void add_to_pokemonOwn_list(char* pokemon) {
 pokemonOwnedByTrainer = list_create();
     if(pokemon != NULL)          
