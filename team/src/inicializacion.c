@@ -38,11 +38,20 @@ char** pokemonNeeds = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
          data_trainer[i].position.posiy = position.posiy;
 
         string_iterate_lines(pokemonOwns, fix_pokemonOwned);
-        list_add_all(pokemonOwnedByTrainer, data_trainer->pokemonOwned);
-
         string_iterate_lines(pokemonNeeds, fix_pokemonNeeded);
-        list_add_all(pokemonNeededByTrainer, data_trainer->pokemonNeeded);
         //comparar ambas listas y generar una nueva con los pokemon a capturar
+        /*
+        t_list* pokemon_toCatch = calculate_pokemon_to_catch(pokemonNeeded, pokemonOwned)
+            si pokemonOwned esta vacia -> pokemon_toCatch= pokemonNeeded ok
+            no se puede dar el caso de que un entrenador no tenga objetivos a capturar  ok
+            recorro la lista de needed y comparo con la de owned añadiendo en 
+            pokemon_toCatch  aquellos que no esten en la lista de owned
+        */
+       t_list* pokemon_toCaught = calculate_pokemon_to_caught(pokemonOwnedByTrainer, pokemonNeededByTrainer);
+        
+         list_add_all(data_trainer->pokemonOwned, pokemonOwnedByTrainer);
+         list_add_all(data_trainer->pokemonNeeded, pokemonNeededByTrainer);
+         list_add_all(data_trainer->pokemonNeeded, pokemon_toCaught);
         data_trainer[i].state = NEW;
 
         add_trainer_to_list(trainers, data_trainer);
@@ -54,9 +63,9 @@ char** pokemonNeeds = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
         }
         list_destroy(pokemonOwnedByTrainer);
         list_destroy(pokemonNeededByTrainer);
+        list_destroy(pokemon_toCaught);
  }
-
-       
+      
    return trainers;
 }
 
@@ -65,6 +74,16 @@ void add_trainer_to_list(t_list* trainers, t_trainer* data_trainer) {
     list_add(trainers, data_trainer);
 }
 
+t_list* calculate_pokemon_to_catch(t_list* pokemonOwnedByTrainer, t_list* pokemonNeededByTrainer) {
+t_list* pokemon_toCaught = list_create();
+    if(list_is_empty(pokemonOwnedByTrainer) == 0) {
+        list_add_all(pokemon_toCaught, pokemonNeededByTrainer);
+    }
+
+
+
+return pokemon_toCaught;
+}
 void add_to_pokemonOwn_list(char* pokemon) {
 pokemonOwnedByTrainer = list_create();
     if(pokemon != NULL)          
@@ -111,11 +130,11 @@ void destroy_trainer(t_trainer* trainer)
 
 void destroy_lists_and_loaded_elements()
 {
-     //list_destroy_and_destroy_elements(config_values.posicion_entrenador,(void*)destroy_position);
+    
      list_destroy_and_destroy_elements(trainers, (void*)destroy_trainer);
      list_destroy(pokemonOwnedByTrainer);
      list_destroy(pokemonNeededByTrainer);
-     
+      destroy_position(&position);
 }
 void load_values_config(t_config * config) {
     

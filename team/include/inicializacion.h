@@ -49,6 +49,7 @@ t_list* trainers; //List of type t_trainer
 t_configuration config_values; //Values readed from tema.config
 t_list* pokemonOwnedByTrainer; //List to save pokemonOwned when string_split then add_all on t_trainer
 t_list* pokemonNeededByTrainer; //List to save pokemonNeeded when string_split then add all on t_trainer
+t_list* pokemon_toCaught;
 t_position_to_map position; //struct to save init_position trainer when string_split then assign posix, posiy on t_trainer
 
 void initialize_team();
@@ -60,6 +61,7 @@ void load_values_config(t_config*);
 
 t_list* assign_data_trainer(t_config*);
 void add_trainer_to_list(t_list*, t_trainer*);
+t_list* calculate_pokemon_to_caught(t_list*, t_list*);
 void fix_position(char*);
 void fix_pokemonOwned(char*);
 void add_to_pokemonOwn_list(char*);
