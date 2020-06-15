@@ -11,7 +11,13 @@ enum t_algoritmo obtenerAlgoritmo()
 		esAlgoritmo = rr;
 	else if(string_equals_ignore_case(sAlgort, "SJF-SD"))
 		esAlgoritmo = sjf_sd;
-	else if(string_equals_ignore_case(sAlgort, "SJF-SD"))
+	else if(string_equals_ignore_case(sAlgort, "SJF-CD"))
 		esAlgoritmo = sjf_cd;
 	return esAlgoritmo;
+}
+
+void create_queue() {
+ready_queue = queue_create();
+finish_queue = queue_create();
+
 }
