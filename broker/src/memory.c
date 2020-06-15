@@ -236,7 +236,7 @@ void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
     if(sizeData <= freePartitionData->size / 2){
         t_data* newData = malloc(sizeof(t_data));
         newData->size = freePartitionData->size / 2;
-        newData->offset = freePartitionData->offset + newData->size;
+        newData->offset = freePartitionData->offset + newData->size + 1;
         newData->state = FREE;
         list_add(memory.partitions, newData);
         freePartitionData->size = freePartitionData->size / 2;
@@ -253,7 +253,7 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
         //If the size of the data is bigger than the free space, its create a new partition
         t_data* newData = malloc(sizeof(t_data));
         newData->size = freePartitionData->size - sizeData;
-        newData->offset = freePartitionData->offset + sizeData;
+        newData->offset = freePartitionData->offset + sizeData + 1;
         newData->state = FREE;
         list_add(memory.partitions, newData);
     }
@@ -300,7 +300,7 @@ void dump_partitions(FILE* file){
     for(int i = 0; i < sizeList; i++){
         t_data* partition = list_get(memory.partitions, i);
         initialPointer = memory.data + partition->offset;
-        endPointer = initialPointer + partition->size - 1;//TODO mis dudas
+        endPointer = initialPointer + partition->size;//TODO mis dudas
         if(partition->state == FREE){
             sprintf(str_free, strFormat_free, i, initialPointer, endPointer, partition->size);
             txt_write_in_file(file, str_free);
