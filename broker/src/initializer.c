@@ -23,6 +23,7 @@ void initialize(){
     pthread_mutex_init(&m_id_message, NULL);
     pthread_mutex_init(&m_connections,NULL);
     init_queues();
+    initializeMemory();
     set_sig_handler();
     p_on_request = &process_request;
     log_info(optional_logger, "Configuration and loggers loaded successfully.");
@@ -63,7 +64,7 @@ void set_sig_handler(void)
 
 
     action.sa_flags = SA_SIGINFO; 
-    action.sa_handler = dump;
+    action.sa_handler = dumpMemory;
     sigemptyset(&action.sa_mask);
     if (sigaction(SIGUSR1, &action, NULL) == -1) { 
         perror("sigusr: sigaction");
@@ -78,12 +79,10 @@ void init_queues(){
         queue->id_queue = i;
         queue->messages = queue_create();
         queue->subscribers = list_create();
-        queue->sem_all_ack = malloc(sizeof(sem_t));
         queue->sem_message = malloc(sizeof(sem_t));
         queue->m_queue_modify = malloc(sizeof(pthread_mutex_t));
         queue->m_subscribers_modify = malloc(sizeof(pthread_mutex_t));
         sem_init(queue->sem_message, 0, 0);
-        sem_init(queue->sem_all_ack, 0, 0); 
         pthread_mutex_init(queue->m_queue_modify,NULL);
         pthread_mutex_init(queue->m_subscribers_modify,NULL);
         list_add(list_queues,queue);

@@ -264,7 +264,8 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
 }
 
 void dumpMemory(){
-    FILE* file = txt_open_for_append("cfg/dump.txt");
+    log_info(optional_logger, "Dumping cache into %s", cfg_values.dump_file);
+    FILE* file = txt_open_for_append(cfg_values.dump_file);
 
     txt_write_in_file(file, "------------------------------------------------------------------------------\n");
     dump_write_time(file);
@@ -272,6 +273,7 @@ void dumpMemory(){
     txt_write_in_file(file, "------------------------------------------------------------------------------\n");
 
     txt_close_file(file);
+    log_info(optional_logger, "Finished dumping.", cfg_values.dump_file);
 }
 void dump_write_time(FILE* file){
     time_t timer;
@@ -310,4 +312,41 @@ void dump_partitions(FILE* file){
         }
     }
 }
+
+t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream){
+    uint32_t sizeofdata;
+    t_data* freePartition;
+    switch(id_queue){
+        case NEW_POKEMON:
+        case CATCH_POKEMON:
+        case GET_POKEMON:
+            sizeofdata = sizeofrawstream - sizeof(uint32_t);
+            freePartition = seekPartitionAvailable(sizeofdata);
+            break;
+        case APPEARED_POKEMON:
+        case CAUGHT_POKEMON:
+        case LOCALIZED_POKEMON:
+            sizeofdata = sizeofrawstream - 2 * sizeof(uint32_t);
+            freePartition = seekPartitionAvailable(sizeofdata);
+            memcpy(&freePartition->id_correlational, stream + sizeofdata + sizeof(uint32_t), sizeof(uint32_t));
+            break;
+        default:
+            return NULL;
+    }
+    allocateData(sizeofdata, freePartition);
+    void* data = memory.data + freePartition->offset;
+    memcpy(data, stream, sizeofdata);
+    pthread_mutex_lock(&m_id_message);
+    id_message++;
+    freePartition->id = id_message;
+    pthread_mutex_unlock(&m_id_message);
+    freePartition->idQueue = id_queue;
+    freePartition->receivers = list_create();
+    freePartition->m_receivers_modify = malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init(freePartition->m_receivers_modify,NULL);
+    return freePartition;
+} 
+
+
+
 //end region

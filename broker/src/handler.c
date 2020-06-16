@@ -1,26 +1,20 @@
 #include "handler.h"
 
-void process_request(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) {
-	void* stream = malloc(sizeofstruct);
-    if (recv(client_fd, stream, sizeofstruct, MSG_WAITALL)<=0){free(stream); return;}
+void process_request(uint32_t cod_op, uint32_t sizeofstream, uint32_t client_fd) {
+	void* stream = malloc(sizeofstream);
+    if (recv(client_fd, stream, sizeofstream, MSG_WAITALL)<=0){free(stream); return;}
     switch(cod_op){
         case NEW_POKEMON:;
-            handle_new_pokemon(stream, client_fd);
-            break;
         case APPEARED_POKEMON:;
-            handle_appeared_pokemon(stream, client_fd);
-            break;
         case CATCH_POKEMON:;
-            handle_catch_pokemon(stream, client_fd);
-            break;
         case CAUGHT_POKEMON:;
-            handle_caught_pokemon(stream, client_fd);
-            break;
         case GET_POKEMON:;
-            handle_get_pokemon(stream, client_fd);
-            break;
         case LOCALIZED_POKEMON:;
-            handle_localized_pokemon(stream, client_fd);
+            t_data* message =  assign_and_return_message(cod_op, sizeofstream, stream);
+            if (message != NULL){
+                send_ack(client_fd, message->id);
+                add_message_to_queue(message, cod_op);
+            }
             break;
         case SUSCRIPTOR:; 
             subscribe* subscribeMessage = stream_to_subscribe(stream);

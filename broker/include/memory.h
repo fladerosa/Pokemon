@@ -16,6 +16,9 @@ typedef struct t_data{
     uint32_t offset;
     uint32_t idQueue;
     uint32_t id;
+    uint32_t id_correlational;
+    t_list* receivers;
+    pthread_mutex_t* m_receivers_modify;
     e_dataState state;
     time_t lastTimeUsed;
     time_t creationTime;
@@ -70,4 +73,6 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartition);
 void dumpMemory();
 void dump_write_time(FILE* file);
 void dump_partitions(FILE* file);
+
+t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream);
 #endif

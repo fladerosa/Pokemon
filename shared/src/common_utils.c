@@ -20,7 +20,7 @@ new_pokemon* stream_to_new_pokemon(void* stream, uint32_t* id_message, bool is_b
     stream += sizeof(uint32_t);
     if (id_message != NULL) memcpy(id_message, stream, sizeof(uint32_t));
     stream += sizeof(uint32_t);
-
+    
     return newPokemonMessage;
 }
 
@@ -154,11 +154,11 @@ caught_pokemon* stream_to_caught_pokemon(void* stream, uint32_t* id_message, uin
         malloc(sizeof(caught_pokemon))
         : malloc(sizeof(caught_pokemon)); 
 
+    memcpy(&(caughtPokemonMessage->success), stream, sizeof(uint32_t));
+    stream += sizeof(uint32_t);
     if (id_message != NULL) memcpy(id_message, stream, sizeof(uint32_t));
     stream += sizeof(uint32_t);
-    if (id_message != NULL) memcpy(id_correlational, stream, sizeof(uint32_t));
-    stream += sizeof(uint32_t);
-    memcpy(&(caughtPokemonMessage->success), stream, sizeof(uint32_t));
+    if (id_correlational != NULL) memcpy(id_correlational, stream, sizeof(uint32_t));
     stream += sizeof(uint32_t);
 
     return caughtPokemonMessage;
@@ -174,11 +174,11 @@ void* caught_pokemon_to_stream(caught_pokemon* caughtPokemonMessage, uint32_t* i
     void* stream = malloc(size); 
     uint32_t forward = 0;
 
+    memcpy(stream + forward, &(caughtPokemonMessage->success), sizeof(uint32_t));
+    forward += sizeof(uint32_t);
     memcpy(stream + forward, id_message, sizeof(uint32_t));
     forward += sizeof(uint32_t);
     memcpy(stream + forward, id_correlational, sizeof(uint32_t));
-    forward += sizeof(uint32_t);
-    memcpy(stream + forward, &(caughtPokemonMessage->success), sizeof(uint32_t));
     forward += sizeof(uint32_t);
 
     return stream;
@@ -235,10 +235,6 @@ localized_pokemon* stream_to_localized_pokemon(void* stream, uint32_t* id_messag
         : malloc(localizedPokemonMessage->sizePokemon);
     memcpy(localizedPokemonMessage->pokemon, stream + forward, localizedPokemonMessage->sizePokemon);
     forward += localizedPokemonMessage->sizePokemon;
-    if (id_message != NULL) memcpy(id_message, stream + forward, sizeof(uint32_t));
-    forward += sizeof(uint32_t);
-    if (id_message != NULL) memcpy(id_correlational, stream + forward, sizeof(uint32_t));
-    forward += sizeof(uint32_t);
     memcpy(&(sizePositions), stream + forward, sizeof(uint32_t));
     forward += sizeof(uint32_t);
     
@@ -251,6 +247,10 @@ localized_pokemon* stream_to_localized_pokemon(void* stream, uint32_t* id_messag
         forward += sizeof(uint32_t);
         list_add(localizedPokemonMessage->positions, position);
     }
+    if (id_message != NULL) memcpy(id_message, stream + forward, sizeof(uint32_t));
+    forward += sizeof(uint32_t);
+    if (id_message != NULL) memcpy(id_correlational, stream + forward, sizeof(uint32_t));
+    forward += sizeof(uint32_t);
 
     return localizedPokemonMessage;
 }
@@ -269,10 +269,6 @@ void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage, ui
     forward += sizeof(uint32_t);
     memcpy(stream + forward, localizedPokemonMessage->pokemon, strlen(localizedPokemonMessage->pokemon) + 1);
     forward += strlen(localizedPokemonMessage->pokemon) + 1;
-    memcpy(stream + forward, id_message, sizeof(uint32_t));
-    forward += sizeof(uint32_t);
-    memcpy(stream + forward, id_correlational, sizeof(uint32_t));
-    forward += sizeof(uint32_t);
     memcpy(stream + forward, &((*localizedPokemonMessage->positions).elements_count), sizeof(uint32_t));
     forward += sizeof(uint32_t);
 
@@ -284,6 +280,10 @@ void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage, ui
         forward += sizeof(uint32_t);
     }
 
+    memcpy(stream + forward, id_message, sizeof(uint32_t));
+    forward += sizeof(uint32_t);
+    memcpy(stream + forward, id_correlational, sizeof(uint32_t));
+    forward += sizeof(uint32_t);
     return stream;
 }
 
