@@ -7,13 +7,11 @@
             "request": "launch",
             "program": "${workspaceFolder}/gameboy",
             "args": [
-                "SUSCRIPTOR",
-                "NEW_POKEMON",
-<<<<<<< HEAD
-                "30000000"
-=======
-                "3000"
->>>>>>> origin/master
+                "BROKER",
+                "APPEARED_POKEMON",
+                "PIKACHU",
+                "1",
+                "5"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

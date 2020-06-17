@@ -118,7 +118,7 @@ t_data* BF_getPartitionAvailable(uint32_t sizeData){
 }
 
 bool partition_size_validation(void* data, void* sizeData){
-    return data ? ((t_data*) data)->size > (uint32_t) sizeData && ((t_data*) data)->state == FREE : false;
+    return data ? ((t_data*) data)->size >= (uint32_t) sizeData && ((t_data*) data)->state == FREE : false;
 }
 
 void BS_compact(){
@@ -215,6 +215,8 @@ void FIFO_destroyPartition(){
     }
     t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFinded);
     partitionSelected->state = FREE;
+    list_destroy(partitionSelected->receivers);
+    pthread_mutex_destroy(partitionSelected->m_receivers_modify);
 }
 void LRU_destroyPartition(){
     time_t oldestTime = time(NULL);
@@ -230,13 +232,15 @@ void LRU_destroyPartition(){
     }
     t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFinded);
     partitionSelected->state = FREE;
+    list_destroy(partitionSelected->receivers);
+    pthread_mutex_destroy(partitionSelected->m_receivers_modify);
 }
 
 void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
     if(sizeData <= freePartitionData->size / 2){
         t_data* newData = malloc(sizeof(t_data));
         newData->size = freePartitionData->size / 2;
-        newData->offset = freePartitionData->offset + newData->size + 1;
+        newData->offset = freePartitionData->offset + newData->size;
         newData->state = FREE;
         list_add(memory.partitions, newData);
         freePartitionData->size = freePartitionData->size / 2;
@@ -253,7 +257,7 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
         //If the size of the data is bigger than the free space, its create a new partition
         t_data* newData = malloc(sizeof(t_data));
         newData->size = freePartitionData->size - sizeData;
-        newData->offset = freePartitionData->offset + sizeData + 1;
+        newData->offset = freePartitionData->offset + sizeData;
         newData->state = FREE;
         list_add(memory.partitions, newData);
     }
