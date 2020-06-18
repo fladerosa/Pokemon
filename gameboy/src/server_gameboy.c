@@ -172,16 +172,8 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
 
             caught_pokemon* caughtPokemonMessage = stream_to_caught_pokemon(stream, id_message, id_correlational, false);
 
-            char* wasCaught; 
-
-            if(caughtPokemonMessage->success){
-                wasCaught = "OK";
-            }else{
-                wasCaught = "FAIL";
-            }
-
             log_info(optional_logger, "Caught pokemon!");
-            log_info(optional_logger, "Was the pokemon catch?: %d", wasCaught);
+            log_info(optional_logger, "Was the pokemon caught?: %s", caughtPokemonMessage->success ? "OK" : "FAIL");
             send_ack(socketfd, *id_message);
             break;
         case GET_POKEMON:;

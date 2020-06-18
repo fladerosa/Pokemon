@@ -61,3 +61,6 @@ gamecard/gamecard
 gameboy/gameboy
 
 so-commons-library/
+
+broker/cfg/*.tmp
+broker/cfg/*.txt
