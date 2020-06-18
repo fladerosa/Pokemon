@@ -11,6 +11,10 @@ char* IP_BROKER;
 
 uint32_t id_connection;
 
+pthread_t suscripcionNewPokemon;
+pthread_t suscripcionCatchPokemon;
+pthread_t suscripcionGetPokemon;
+
 void iniciarGameCard();
 void suscribirseATodo();
 void finalizarGameCard();

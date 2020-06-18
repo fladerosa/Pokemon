@@ -7,10 +7,11 @@ void iniciarTallGrass(){
 }
 
 void crearBloques(){
-    char* buffer = malloc(3*sizeof(char));
-    char* bloque = malloc(sizeof(uint32_t));
     char* nombreArchivo = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
+    char buffer[29];
+    char* bloque = malloc(sizeof(char));
+    
 
     for(uint32_t i = 1; i <= configM.blocks; i++){
         FILE* block;
@@ -26,7 +27,6 @@ void crearBloques(){
     }
 
     free(bloque);
-    //free(buffer);
 }
 
 void obtenerConfig(){
@@ -41,12 +41,20 @@ void obtenerConfig(){
     fread(buffer,sizeof(buffer),1,file);
 
     for(int i = 11; i<13; i++){
+        if(buffer[i] == "\n"){
+            break;
+        }
+        
         BLOCKSIZE[j] = buffer[i];
         j++;
     }
     configM.blockSize = atoi(BLOCKSIZE);
     j=0;
     for(int i = 21; i<25; i++){
+        if(buffer[i] == "\n"){
+            break;
+        }
+
         BLOCKS[j] = buffer[i];
         j++;
     }

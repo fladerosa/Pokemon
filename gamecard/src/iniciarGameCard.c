@@ -58,12 +58,14 @@ void iniciarGameCard(){
     iniciarTallGrass();
     //Se intentara suscribir globalmente al Broker a las siguientes colas de mensajes
     //TODO
-    pthread_t hiloClienteBroker;
-    pthread_create(&hiloClienteBroker,NULL,(void*)suscribirseATodo,NULL); 
+    
+    suscribirseATodo();
 
     start_server(IP_GAMECARD,PUERTO_GAMECARD,request);
 
-    pthread_join(hiloClienteBroker,NULL);
+    pthread_join(suscripcionNewPokemon,NULL);
+    pthread_join(suscripcionCatchPokemon,NULL);
+    pthread_join(suscripcionGetPokemon,NULL);
 
     finalizarGameCard();
 }
@@ -71,11 +73,13 @@ void iniciarGameCard(){
 void suscribirseATodo(){
     socket_broker = crear_conexion(IP_BROKER,PUERTO_BROKER);
     send_new_connection(socket_broker);
-    suscribirseA(NEW_POKEMON,socket_broker);
-    suscribirseA(CATCH_POKEMON,socket_broker);
-    suscribirseA(GET_POKEMON,socket_broker);
+    pthread_create(&suscripcionNewPokemon,NULL,(void*)suscribirseA,(NEW_POKEMON,socket_broker));
+    pthread_create(&suscripcionCatchPokemon,NULL,(void*)suscribirseA,(CATCH_POKEMON,socket_broker));
+    pthread_create(&suscripcionGetPokemon,NULL,(void*)suscribirseA,(GET_POKEMON,socket_broker));
     connect_client();
 }
+
+
 
 void connect_client(){
     on_request request = &receiveMessage; 
