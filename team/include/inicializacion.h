@@ -57,7 +57,7 @@ void read_config();
 void create_optional_logger();
 void create_obligatory_logger();
 void load_values_config(t_config*);
-t_list* assign_data_trainer(t_config*);
+void assign_data_trainer();
 void add_trainer_to_list(t_list*, t_trainer*);
 t_list* calculate_pokemon_to_caught(t_list*, t_list*);
 void fix_position(char*);

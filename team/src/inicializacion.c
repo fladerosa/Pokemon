@@ -19,47 +19,56 @@ void read_config() {
     }           
 }
 
-t_list* assign_data_trainer(t_config *config) {
+void assign_data_trainer() {
 
-trainers = list_create();
-t_trainer *data_trainer = malloc(sizeof(data_trainer));    
-char** init_position =  config_get_array_value(config, "POSICIONES_ENTRENADORES");
-char** pokemonOwns = config_get_array_value(config, "POKEMON_ENTRENADORES");
-char** pokemonNeeds = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
+    trainers = list_create();
+    t_trainer *data_trainer;
+    char** init_position = config_get_array_value(config, "POSICIONES_ENTRENADORES");
+    char** pokemonOwns = config_get_array_value(config, "POKEMON_ENTRENADORES");
+    char** pokemonNeeds = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
+    char** valorAux;
+    char* dataAux;
 
- for(uint32_t i = 0; i< (sizeof init_position/sizeof *init_position); i++) {
-     if(data_trainer != NULL) {
-         data_trainer[i].id_trainer = i+1;
-         data_trainer[i].pokemonOwned = list_create();
-         data_trainer[i].pokemonNeeded = list_create();
+    for(uint32_t i = 0; init_position[i] != NULL; i++) {
+        data_trainer = malloc(sizeof(t_trainer));
+        if(data_trainer != NULL) {
+            data_trainer->id_trainer = i+1;
+            data_trainer->pokemonOwned = list_create();
+            data_trainer->pokemonNeeded = list_create();
 
-        string_iterate_lines(init_position, fix_position);
-         data_trainer[i].position.posix = position.posix;
-         data_trainer[i].position.posiy = position.posiy;
+            valorAux = string_split(init_position[i], "|");
+            data_trainer->position.posix = (uint32_t)atoi(valorAux[0]);
+            data_trainer->position.posiy = (uint32_t)atoi(valorAux[1]);
+            
+            valorAux = string_split(pokemonOwns[i], "|");
 
-        string_iterate_lines(pokemonOwns, fix_pokemonOwned);
-        string_iterate_lines(pokemonNeeds, fix_pokemonNeeded);
-       
-       t_list* pokemon_toCaught = calculate_pokemon_to_caught(pokemonOwnedByTrainer, pokemonNeededByTrainer);
-        
-         list_add_all(data_trainer->pokemonOwned, pokemonOwnedByTrainer);
-         list_add_all(data_trainer->pokemonNeeded, pokemonNeededByTrainer);
-         list_add_all(data_trainer->pokemonNeeded, pokemon_toCaught);
-        data_trainer[i].state = NEW;
+            while(*valorAux != NULL){
+                dataAux = malloc(strlen(*valorAux));
+                strcpy(dataAux, *valorAux);
+                list_add(data_trainer->pokemonOwned, dataAux);
+                valorAux++;
+            };
 
-        add_trainer_to_list(trainers, data_trainer);
+            valorAux = string_split(pokemonNeeds[i], "|");
 
-         log_info(optional_logger, "Request malloc to TRAINER succesfully\n");   
+            while(*valorAux != NULL){
+                dataAux = malloc(strlen(*valorAux));
+                strcpy(dataAux, *valorAux);
+                list_add(data_trainer->pokemonNeeded, dataAux);
+                valorAux++;
+            };
+
+            data_trainer->state = NEW;
+
+            list_add(trainers, (void*)data_trainer);
+
+            log_info(optional_logger, "Request malloc to TRAINER succesfully\n");   
+        }else{
+            log_info(optional_logger, "Error on request malloc to TRAINER \n");
         }
-        else{
-         log_info(optional_logger, "Error on request malloc to TRAINER \n");
-        }
-        list_destroy(pokemonOwnedByTrainer);
-        list_destroy(pokemonNeededByTrainer);
-        list_destroy(pokemon_toCaught);
- }
+    }
       
-   return trainers;
+   return;
 }
 
 void add_trainer_to_list(t_list* trainers, t_trainer* data_trainer) {
@@ -68,24 +77,24 @@ void add_trainer_to_list(t_list* trainers, t_trainer* data_trainer) {
 }
 
 t_list* calculate_pokemon_to_caught(t_list* pokemonOwnedByTrainer, t_list* pokemonNeededByTrainer) {
-t_list* pokemon_toCaught = list_create();
-    if(!list_is_empty(pokemonOwnedByTrainer)) {
+    t_list* pokemon_toCaught = list_create();
+        if(!list_is_empty(pokemonOwnedByTrainer)) {
 
-       for(uint32_t i = 0; i< list_size(pokemonNeededByTrainer); i++) {
+        for(uint32_t i = 0; i< list_size(pokemonNeededByTrainer); i++) {
 
-           for(uint32_t j = 0; j < list_size(pokemonOwnedByTrainer); j++) {        
-                if(!strcmp(list_get(pokemonNeededByTrainer, i), list_get(pokemonOwnedByTrainer, j)))
-                            list_add(pokemon_toCaught, list_get(pokemonNeededByTrainer, i));             
-              //falta contemplar cuando la lista de pokemonNeeded tengas mas pokemon del mismo tipo como objetivo a atrapar      
-           }
-       }
+            for(uint32_t j = 0; j < list_size(pokemonOwnedByTrainer); j++) {        
+                    if(!strcmp(list_get(pokemonNeededByTrainer, i), list_get(pokemonOwnedByTrainer, j)))
+                                list_add(pokemon_toCaught, list_get(pokemonNeededByTrainer, i));             
+                //falta contemplar cuando la lista de pokemonNeeded tengas mas pokemon del mismo tipo como objetivo a atrapar      
+            }
+        }
 
-    } else {
-        list_add_all(pokemon_toCaught, pokemonNeededByTrainer);
-         log_info(optional_logger, "This trainer don't have any pokemonOwned\n");   
-        
-    }
-return pokemon_toCaught;
+        } else {
+            list_add_all(pokemon_toCaught, pokemonNeededByTrainer);
+            log_info(optional_logger, "This trainer don't have any pokemonOwned\n");   
+            
+        }
+    return pokemon_toCaught;
 }
 
 void add_to_pokemonOwn_list(char* pokemon) {
