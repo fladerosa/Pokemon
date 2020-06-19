@@ -41,6 +41,12 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
+typedef struct
+{
+	op_code codigoCola;
+	uint32_t* socket;
+} args_pthread;
+
 void start_server(char* ip, char* port, on_request request_receiver);
 void run_server(void* processor);
 void receive_new_connections(uint32_t socket_escucha, on_request request_receiver);

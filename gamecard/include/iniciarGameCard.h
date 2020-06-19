@@ -19,4 +19,6 @@ void iniciarGameCard();
 void suscribirseATodo();
 void finalizarGameCard();
 void connect_client();
+void crearSuscripcion(uint32_t socket,op_code codeOperation);
+void subscribeAndConnect(args_pthread* arguments);
 #endif
