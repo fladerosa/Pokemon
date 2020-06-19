@@ -36,7 +36,7 @@ typedef struct t_memory_configuration{
 typedef struct t_memory{
     t_memory_configuration configuration;
     t_list* partitions;
-    uint32_t failedSearchCount;
+    int32_t failedSearchCount;
     void* data;
 } t_memory;
 

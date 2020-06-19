@@ -76,6 +76,7 @@ bool partition_is_free(void* data) {
 }
 
 void compact(){
+    memory.configuration.countFailedSearchForCompact = 0;
     if(strcmp(memory.configuration.memoryAlgorithm, "BS") == 0){
         BS_compact();
     }else{

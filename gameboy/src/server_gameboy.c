@@ -143,7 +143,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream, id_message, false);
             
             log_info(optional_logger, "New pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", newPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the pokemon: %.*s",newPokemonMessage->sizePokemon, newPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", newPokemonMessage->position.posx);
             log_info(optional_logger, "This is the position y: %d", newPokemonMessage->position.posy);
             log_info(optional_logger, "This is the quantity: %d", newPokemonMessage->quantity);
@@ -153,7 +153,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream, id_message, id_correlational, false);
 
             log_info(optional_logger, "Appeared pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", appearedPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the pokemon: %.*s", appearedPokemonMessage->sizePokemon, appearedPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", appearedPokemonMessage->position.posx);
             log_info(optional_logger, "This is the position y: %d", appearedPokemonMessage->position.posy);
             send_ack(socketfd, *id_message);
@@ -163,7 +163,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream, id_message, false);
 
             log_info(optional_logger, "Catch pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", catchPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the pokemon: %.*s", catchPokemonMessage->sizePokemon, catchPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", catchPokemonMessage->position.posx);
             log_info(optional_logger, "This is the position y: %d", catchPokemonMessage->position.posy);
             send_ack(socketfd, *id_message);
@@ -189,7 +189,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream, id_message, id_correlational, false);
 
             log_info(optional_logger, "Localized pokemon!");
-            log_info(optional_logger, "This is the pokemon: %s", localizedPokemonMessage->pokemon); 
+            log_info(optional_logger, "This is the pokemon: %.*s", localizedPokemonMessage->sizePokemon,localizedPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the size of the list of positions: %d", (*localizedPokemonMessage->positions).elements_count);
             send_ack(socketfd, *id_message);
             break;
