@@ -7,11 +7,13 @@
             "request": "launch",
             "program": "${workspaceFolder}/gameboy",
             "args": [
-                "BROKER",
-                "APPEARED_POKEMON",
+                "GAMECARD",
+                "NEW_POKEMON",
                 "PIKACHU",
                 "1",
-                "5"
+                "5",
+                "3",
+                "4"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

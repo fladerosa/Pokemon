@@ -4,8 +4,8 @@
 
 #include <commons/collections/queue.h>
 #include "common_utils.h"
-#include "queues.h"
-#include "semaphore.h"
+#include <queues.h>
+#include <semaphore.h>
 #include "memory.h"
 #include "handler.h"
 
