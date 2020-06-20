@@ -47,25 +47,15 @@ typedef struct{
 
 t_list* trainers; //List of type t_trainer
 t_configuration config_values; //Values readed from tema.config
-t_list* pokemonOwnedByTrainer; //List to save pokemonOwned when string_split then add_all on t_trainer
-t_list* pokemonNeededByTrainer; //List to save pokemonNeeded when string_split then add all on t_trainer
-t_list* pokemon_toCaught;
-t_position_to_map position; //struct to save init_position trainer when string_split then assign posix, posiy on t_trainer
+
+//t_list* pokemon_toCaught;
 
 void initialize_team();
 void read_config();
 void create_optional_logger();
 void create_obligatory_logger();
-void load_values_config(t_config*);
+void load_values_config();
 void assign_data_trainer();
-void add_trainer_to_list(t_list*, t_trainer*);
-t_list* calculate_pokemon_to_caught(t_list*, t_list*);
-void fix_position(char*);
-void fix_pokemonOwned(char*);
-void add_to_pokemonOwn_list(char*);
-void fix_pokemonNeeded(char*);
-void add_to_pokemonNeed_list(char*);
-void destroy_position(t_position_to_map*);
 void destroy_trainer(t_trainer*);
 void destroy_lists_and_loaded_elements();
 void release_resources();

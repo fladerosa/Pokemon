@@ -6,7 +6,7 @@ void initialize_team() {
     read_config();
     create_obligatory_logger();
     create_optional_logger();
-    load_values_config(config);
+    load_values_config();
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);    
 }
 
@@ -14,9 +14,10 @@ void read_config() {
     char* config_path = "./cfg/team.config";
     config = config_create(config_path); 
     if(config == NULL) {
-        error_show("Error reading TEAM process config on %s\n", config_path);
+        error_show("Error creating TEAM process config on %s\t", config_path);
         exit(CONFIG_FAIL);
-    }           
+    }    
+    //log_info(optional_logger, "Creation TEAM config path on successfully/n", LOG_LEVEL_INFO);      
 }
 
 void assign_data_trainer() {
@@ -62,94 +63,26 @@ void assign_data_trainer() {
 
             list_add(trainers, (void*)data_trainer);
 
-            log_info(optional_logger, "Request malloc to TRAINER succesfully\n");   
+            log_info(optional_logger, "Request malloc succesfully to TRAINER %d ", (int)i+1);   
         }else{
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
         }
     }
-      
+     
    return;
 }
-
-void add_trainer_to_list(t_list* trainers, t_trainer* data_trainer) {
-    if(data_trainer != NULL)
-    list_add(trainers, data_trainer);
-}
-
-t_list* calculate_pokemon_to_caught(t_list* pokemonOwnedByTrainer, t_list* pokemonNeededByTrainer) {
-    t_list* pokemon_toCaught = list_create();
-        if(!list_is_empty(pokemonOwnedByTrainer)) {
-
-        for(uint32_t i = 0; i< list_size(pokemonNeededByTrainer); i++) {
-
-            for(uint32_t j = 0; j < list_size(pokemonOwnedByTrainer); j++) {        
-                    if(!strcmp(list_get(pokemonNeededByTrainer, i), list_get(pokemonOwnedByTrainer, j)))
-                                list_add(pokemon_toCaught, list_get(pokemonNeededByTrainer, i));             
-                //falta contemplar cuando la lista de pokemonNeeded tengas mas pokemon del mismo tipo como objetivo a atrapar      
-            }
-        }
-
-        } else {
-            list_add_all(pokemon_toCaught, pokemonNeededByTrainer);
-            log_info(optional_logger, "This trainer don't have any pokemonOwned\n");   
-            
-        }
-    return pokemon_toCaught;
-}
-
-void add_to_pokemonOwn_list(char* pokemon) {
-pokemonOwnedByTrainer = list_create();
-    if(pokemon != NULL)          
-         list_add(pokemonOwnedByTrainer,pokemon);
-}
-
-void fix_pokemonOwned(char* pokemonArray) {
-    if(pokemonArray != NULL) {
-        char **pokemonTrainer = string_split(pokemonArray, "|");
-        string_iterate_lines(pokemonTrainer, add_to_pokemonOwn_list);
-    }
-}
-
-void add_to_pokemonNeed_list(char* pokemon) {
- pokemonNeededByTrainer = list_create();
-    if(pokemon != NULL)          
-         list_add(pokemonNeededByTrainer,pokemon);
-}
-void fix_pokemonNeeded(char* pokemonArray) {
-    if(pokemonArray != NULL) {
-        char **pokemonTrainer = string_split(pokemonArray, "|");
-        string_iterate_lines(pokemonTrainer, add_to_pokemonNeed_list);
-    }
-}
-
-void fix_position(char* coordinate) {
-t_position_to_map* position = malloc(sizeof(position));
-    if(coordinate != NULL) {
-        char **position_on_map = string_split(coordinate, "|");
-        position->posix = (uint32_t)atoi(position_on_map[0]);
-        position->posiy = (uint32_t)atoi(position_on_map[1]);
-    }
-}
-
-void destroy_position(t_position_to_map* position)
-{		
-		free(position);
-}
-
+    
 void destroy_trainer(t_trainer* trainer)
 {   
 		free(trainer);
 }
 
 void destroy_lists_and_loaded_elements()
-{
-    
+{   
      list_destroy_and_destroy_elements(trainers, (void*)destroy_trainer);
-     list_destroy(pokemonOwnedByTrainer);
-     list_destroy(pokemonNeededByTrainer);
-      destroy_position(&position);
+        
 }
-void load_values_config(t_config * config) {
+void load_values_config() {
     
     config_values.tiempo_reconexion = (uint32_t)config_get_int_value(config, "TIEMPO_RECONEXION");
     config_values.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
