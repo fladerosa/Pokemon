@@ -71,7 +71,30 @@ void assign_data_trainer() {
      
    return;
 }
-    
+
+void print_trainer_list() {
+
+	t_list* aux = trainers;
+
+	log_info(optional_logger, "Trainers List: ");
+	int i = 0;
+	int quantityTrainer = list_size(aux);
+	while (i < quantityTrainer) {
+		t_trainer* data_trainer;
+		data_trainer = (t_trainer*) list_get(aux, i);
+
+		log_info(optional_logger, "Trainer %d: '%c'", i, data_trainer->id_trainer);
+
+		i++;
+	}
+	if (i == 0)
+		log_warning(optional_logger, "Empty list");
+
+	if (aux == NULL)
+		log_info(optional_logger, "End list");
+}
+
+
 void destroy_trainer(t_trainer* trainer)
 {   
 		free(trainer);

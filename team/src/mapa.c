@@ -1,23 +1,45 @@
 #include "mapa.h"
 #include <string.h>
 
-enum t_algoritmo obtenerAlgoritmo()
-{
-	enum t_algoritmo esAlgoritmo;
-	char* sAlgort = config_values.algoritmo_planificacion;
-    if(string_equals_ignore_case(sAlgort, "FIFO"))
-		esAlgoritmo = fifo;
-	else if(string_equals_ignore_case(sAlgort, "RR"))
-		esAlgoritmo = rr;
-	else if(string_equals_ignore_case(sAlgort, "SJF-SD"))
-		esAlgoritmo = sjf_sd;
-	else if(string_equals_ignore_case(sAlgort, "SJF-CD"))
-		esAlgoritmo = sjf_cd;
-	return esAlgoritmo;
+void planificarProceso(){
+	while(1){
+		if (strcmp(config_values.algoritmo_planificacion, "FIFO") == 0) planificarProcesoFIFO();
+		else if (strcmp(config_values.algoritmo_planificacion, "RR") == 0) planificarProcesoRR();
+		else if (strcmp(config_values.algoritmo_planificacion, "SJF-SD") == 0) planificarProcesoSJF_SD();
+		else if (strcmp(config_values.algoritmo_planificacion, "SJF-CD") == 0) planificarProcesoSJF_CD();
+		else exit(1);
+	}
 }
 
-void create_queue() {
+void create_state_queue() {
 ready_queue = queue_create();
 finish_queue = queue_create();
+
+}
+
+bool is_trainer_more_closer(t_list* trainers, t_pokemon *pokemon) {
+
+}
+
+void move_to_objetivo(t_queue* ready_queue, t_pokemon* pokemon) {
+
+}
+
+bool get_objetive(t_list* trainers, t_list* toCaught) {
+
+}
+void planificarProcesoFIFO() {
+
+}
+
+void planificarProcesoRR() {
+	
+}
+
+void planificarProcesoSJF_SD() {
+
+}
+
+void planificarProcesoSJF_CD() {
 
 }

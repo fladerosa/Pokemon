@@ -56,6 +56,7 @@ void create_optional_logger();
 void create_obligatory_logger();
 void load_values_config();
 void assign_data_trainer();
+void print_trainer_list();
 void destroy_trainer(t_trainer*);
 void destroy_lists_and_loaded_elements();
 void release_resources();

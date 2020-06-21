@@ -5,6 +5,6 @@
 #include "inicializacion.h"
 #include "suscripcion.h"
 
-void mostrar(void *);
+
 
 #endif
