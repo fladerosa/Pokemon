@@ -1,13 +1,27 @@
 
 #include "inicializacion.h"
+#include "suscripcion.h"
+//#include "mapa.h"
 #include <string.h>
 
-void initialize_team() {    
+void initialize_team() { 
+    threadSubscribeList = list_create();   
     read_config();
     create_obligatory_logger();
     create_optional_logger();
     load_values_config();
-    log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO);    
+    assign_data_trainer();
+    log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO); 
+    
+    request = &reception_message_queue_subscription;
+    connection_broker_global_suscribe();
+    listen_to_gameboy();
+
+    pthread_join(suscripcionAppearedPokemon,NULL);
+    pthread_join(suscripcionCaughtPokemon,NULL);
+    pthread_join(suscripcionLocalizedPokemon,NULL);
+
+   
 }
 
 void read_config() {   
@@ -17,7 +31,40 @@ void read_config() {
         error_show("Error creating TEAM process config on %s\t", config_path);
         exit(CONFIG_FAIL);
     }    
-    //log_info(optional_logger, "Creation TEAM config path on successfully/n", LOG_LEVEL_INFO);      
+    log_info(optional_logger, "Creation TEAM config path on successfully/n");      
+}
+
+void create_obligatory_logger() {      
+    char* log_obligatory_config = config_get_string_value(config, "LOG_FILE");
+    obligatory_logger = log_create(log_obligatory_config, "TEAM", 1, LOG_LEVEL_INFO);
+    if(obligatory_logger == NULL) {
+        error_show("Error creating TEAM process obligatory logger %s\n", log_obligatory_config);
+        exit(LOG_FAIL);
+    }
+    log_info(obligatory_logger, "Obligatory Log was created successfully\n");
+}
+ 
+ void create_optional_logger() {        
+    char* log_optional_config = config_get_string_value(config, "LOG_FILE_OPTIONAL");
+    optional_logger = log_create(log_optional_config, "TEAM", 1, LOG_LEVEL_INFO);
+    if(optional_logger == NULL) {
+        error_show("Error creating TEAM process optional logger %s\n", log_optional_config);
+        exit(LOG_FAIL);
+    }
+    log_info(optional_logger, "Optional Log was created successfully\n");
+}
+
+void load_values_config() {
+    
+    config_values.tiempo_reconexion = (uint32_t)config_get_int_value(config, "TIEMPO_RECONEXION");
+    config_values.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
+    config_values.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
+    config_values.quantum = (uint32_t)config_get_int_value(config, "QUANTUM");
+    config_values.estimacion_inicial = (uint32_t)config_get_int_value(config, "ESTIMACION_INICIAL");
+    config_values.ip_broker = config_get_string_value(config, "IP_BROKER");
+    config_values.puerto_broker= config_get_string_value(config, "PUERTO_BROKER");
+    config_values.ip_team = config_get_string_value(config, "IP_TEAM");
+    config_values.puerto_team = config_get_string_value(config, "PUERTO_TEAM");
 }
 
 void assign_data_trainer() {
@@ -94,50 +141,6 @@ void print_trainer_list() {
 		log_info(optional_logger, "End list");
 }
 
-
-void destroy_trainer(t_trainer* trainer)
-{   
-		free(trainer);
-}
-
-void destroy_lists_and_loaded_elements()
-{   
-     list_destroy_and_destroy_elements(trainers, (void*)destroy_trainer);
-        
-}
-void load_values_config() {
-    
-    config_values.tiempo_reconexion = (uint32_t)config_get_int_value(config, "TIEMPO_RECONEXION");
-    config_values.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
-    config_values.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
-    config_values.quantum = (uint32_t)config_get_int_value(config, "QUANTUM");
-    config_values.estimacion_inicial = (uint32_t)config_get_int_value(config, "ESTIMACION_INICIAL");
-    config_values.ip_broker = config_get_string_value(config, "IP_BROKER");
-    config_values.puerto_broker= config_get_string_value(config, "PUERTO_BROKER");
-    config_values.ip_team = config_get_string_value(config, "IP_TEAM");
-    config_values.puerto_team = config_get_string_value(config, "PUERTO_TEAM");
-}
-
-void create_obligatory_logger() {      
-    char* log_obligatory_config = config_get_string_value(config, "LOG_FILE");
-    obligatory_logger = log_create(log_obligatory_config, "TEAM", 1, LOG_LEVEL_INFO);
-    if(obligatory_logger == NULL) {
-        error_show("Error creating TEAM process obligatory logger %s\n", log_obligatory_config);
-        exit(LOG_FAIL);
-    }
-    log_info(obligatory_logger, "Obligatory Log was created successfully\n");
-}
- 
- void create_optional_logger() {        
-    char* log_optional_config = config_get_string_value(config, "LOG_FILE_OPTIONAL");
-    optional_logger = log_create(log_optional_config, "TEAM", 1, LOG_LEVEL_INFO);
-    if(optional_logger == NULL) {
-        error_show("Error creating TEAM process optional logger %s\n", log_optional_config);
-        exit(LOG_FAIL);
-    }
-    log_info(optional_logger, "Optional Log was created successfully\n");
-}
-
 void release_resources() { 
     if(config)
         config_destroy(config);
@@ -149,7 +152,17 @@ void release_resources() {
         log_destroy(optional_logger);
 
     destroy_lists_and_loaded_elements();
-    
+    close_sockets();
 }
 
+void destroy_trainer(t_trainer* trainer)
+{   
+		free(trainer);
+}
+
+void destroy_lists_and_loaded_elements()
+{   
+     list_destroy_and_destroy_elements(trainers, (void*)destroy_trainer);
+        
+}
 

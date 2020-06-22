@@ -7,19 +7,20 @@
 #include "common_utils.h"
 #include "inicializacion.h"
 
-
 typedef struct {
             t_list* time_cpu_trainer;
-            uint32_t total_time_cpu_trainer;
+            uint32_t total_time_cpu_team;
+            uint32_t total_context_switch;
 
 }t_metrics;
 
 //Determina si un entrenador de la lista esta mas cerca del pokemon que devuelve la cola localized 
-bool is_trainer_more_closer(t_list*, t_pokemon *);
+bool its_more_closer(t_list*);
 //calcular la distancia al objetivo
+uint32_t distance_to_pokemon(t_list*);
 //se debe agregar a la cola de procesos ready (eso determina el orden fifo)
-
-void move_to_objetivo(t_queue* , t_pokemon*);
+t_list* trainer_more_closer();
+void move_to_objetive(t_queue*);
 //enviar mensaje caught a broker
 //paso trainer a estado EXEC
 //calculo el tiempo de cpu hasta ducha posicion

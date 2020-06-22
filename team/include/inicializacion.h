@@ -4,6 +4,7 @@
 #include<commons/collections/list.h>
 #include<commons/string.h>
 #include "common_utils.h"
+#include "suscripcion.h"
 
 typedef enum{
 	NEW = 0,
@@ -57,10 +58,9 @@ void create_obligatory_logger();
 void load_values_config();
 void assign_data_trainer();
 void print_trainer_list();
+void release_resources();
 void destroy_trainer(t_trainer*);
 void destroy_lists_and_loaded_elements();
-void release_resources();
-
 
 #endif
 
