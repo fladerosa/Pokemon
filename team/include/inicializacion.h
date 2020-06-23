@@ -33,6 +33,12 @@ typedef struct{
     enum_process_state state;
 } t_trainer;
 
+typedef struct
+{
+    uint32_t idTrainer;
+    enum_process_state state;
+} threadTrainer;
+
 /* Estructura con los datos del archivo de configuración */
 typedef struct{
        char *ip_team;
@@ -49,6 +55,11 @@ typedef struct{
 t_list* trainers; //List of type t_trainer
 t_configuration config_values; //Values readed from tema.config
 
+//hilo por entrenador
+pthread_t processTrainer;
+threadTrainer* structProcessTrainer;
+t_list* threadProcessTrainerList;
+
 //t_list* pokemon_toCaught;
 
 void initialize_team();
@@ -58,6 +69,8 @@ void create_obligatory_logger();
 void load_values_config();
 void assign_data_trainer();
 void print_trainer_list();
+void create_threadTrainer_list(t_list*);
+uint32_t calculate_size_thread_list(t_list*);
 void release_resources();
 void destroy_trainer(t_trainer*);
 void destroy_lists_and_loaded_elements();

@@ -13,10 +13,9 @@ void initialize_team() {
     assign_data_trainer();
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO); 
     
-    request = &reception_message_queue_subscription;
     connection_broker_global_suscribe();
     listen_to_gameboy();
-
+    request = &reception_message_queue_subscription;
     pthread_join(suscripcionAppearedPokemon,NULL);
     pthread_join(suscripcionCaughtPokemon,NULL);
     pthread_join(suscripcionLocalizedPokemon,NULL);
@@ -139,6 +138,22 @@ void print_trainer_list() {
 
 	if (aux == NULL)
 		log_info(optional_logger, "End list");
+}
+
+void create_threadTrainer_list(t_list* trainers) {
+
+structProcessTrainer = malloc(sizeof(threadTrainer));
+uint32_t j = calculate_size_thread_list(trainers);
+
+    for(uint32_t i = 0; i<j; i++) {
+        structProcessTrainer->idTrainer = i;
+        structProcessTrainer->state = READY;
+            list_add(threadProcessTrainerList, structProcessTrainer);
+    }
+}
+uint32_t calculate_size_thread_list(t_list* trainers)  {
+
+   return list_size(trainers);
 }
 
 void release_resources() { 

@@ -48,6 +48,7 @@ void close_sockets();
 void retry_on_x_time();
 caught_pokemon* caught_default();
 localized_pokemon* localized_default();
+void send_message_queue_init(uint32_t, uint32_t, uint32_t);
 
 
 

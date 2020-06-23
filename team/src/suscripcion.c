@@ -207,3 +207,30 @@ void localized_default(char* pokemon) {
 return  list_size(positions) == 0;
 
 }
+
+//envio de mensaje en el inicio, cola get y catch
+void send_message_queue_init(uint32_t code, uint32_t sizeofstruct, uint32_t client_fd) {
+    void* stream;
+    uint32_t* id_message = malloc(sizeof(uint32_t));
+    send(client_fd, stream, sizeofstruct, MSG_WAITALL);
+
+    switch(code) {
+        case GET_POKEMON:;
+        get_pokemon* getPokemonMessage = malloc(sizeof(get_pokemon));
+        stream =get_pokemon_to_stream(getPokemonMessage, id_message);
+        log_info(optional_logger, "Sending Message Get pokemon.");
+            send_ack(client_fd, *id_message);
+        break;
+
+        case CATCH_POKEMON:;
+        catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon));
+        stream =catch_pokemon_to_stream(catchPokemonMessage, id_message);
+        log_info(optional_logger, "Sending Message Catch pokemon.");
+            send_ack(client_fd, *id_message);
+        break;
+
+        default:
+        break;
+    }
+
+}
