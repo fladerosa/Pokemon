@@ -140,6 +140,10 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             break;
         case CAUGHT_POKEMON:;
 			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, id_message, NULL, false);
+            if(caught_Pokemon_Message == NULL) {
+                caught_Pokemon_Message = caught_default();
+                log_info(optional_logger, "Using Caught pokemon default.");
+            }
             log_info(optional_logger, "Receiving Message Caught pokemon.");
             send_ack(client_fd, *id_message);
             break;
@@ -150,6 +154,11 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             break;
         case LOCALIZED_POKEMON:;
             localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, id_message, NULL, false);
+            if(localized_Pokemon_Message == NULL) {
+                localized_Pokemon_Message = localized_default();
+                log_info(optional_logger, "Using Localized pokemon default.");
+            }
+            
             log_info(optional_logger, "Receiving Message Localized pokemon.");
             send_ack(client_fd, *id_message); 
             break;
