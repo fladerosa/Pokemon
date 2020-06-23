@@ -85,7 +85,6 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
         case GET_POKEMON:;
             get_pokemon* getPokemonMessage = init_get_pokemon(message[3]);
             *id_message = -1;
-
             paquete->codigo_operacion = GET_POKEMON;
             paquete->buffer->size = size_of_get_pokemon(getPokemonMessage);
             paquete->buffer->stream = get_pokemon_to_stream(getPokemonMessage, id_message);

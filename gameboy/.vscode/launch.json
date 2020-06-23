@@ -7,13 +7,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/gameboy",
             "args": [
-                "GAMECARD",
-                "NEW_POKEMON",
-                "PIKACHU",
-                "1",
-                "5",
-                "3",
-                "4"
+                "BROKER",
+                "GET_POKEMON",
+                "PIKACHU\n"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

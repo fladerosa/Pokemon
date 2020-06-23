@@ -43,7 +43,7 @@ typedef struct t_message_queue {
 config_values cfg_values;
 uint32_t listening_socket, id_connection, id_message;
 on_request p_on_request;
-pthread_mutex_t m_id_message, m_id_connection;
+pthread_mutex_t m_id_message, m_id_connection, m_new_partition;
 t_list* list_queues;
 
 void initialize();

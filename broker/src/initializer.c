@@ -22,6 +22,7 @@ void initialize(){
     pthread_mutex_init(&m_id_connection, NULL);
     pthread_mutex_init(&m_id_message, NULL);
     pthread_mutex_init(&m_connections,NULL);
+    pthread_mutex_init(&m_new_partition, NULL);
     init_queues();
     initializeMemory();
     set_sig_handler();

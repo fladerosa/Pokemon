@@ -123,7 +123,9 @@ bool receiver_has_socket_fd(void* receiver, void* socket){
 }
 
 void handle_ack(uint32_t client_fd, ack* acknowledgement){
+    pthread_mutex_lock(memory.m_partitions_modify);
     t_data* message = list_find_with_args(memory.partitions, has_message_id, (void*) acknowledgement->id_message);
+    pthread_mutex_unlock(memory.m_partitions_modify);
     if(message){
         t_receiver* receiver = list_find_with_args(
             message->receivers, 

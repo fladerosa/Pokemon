@@ -35,8 +35,10 @@ typedef struct t_memory_configuration{
 
 typedef struct t_memory{
     t_memory_configuration configuration;
-    t_list* partitions;
+    t_list* partitions;    
+    pthread_mutex_t* m_partitions_modify;
     int32_t failedSearchCount;
+    pthread_mutex_t* m_failed_search_modify;
     void* data;
 } t_memory;
 
