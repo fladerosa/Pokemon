@@ -127,10 +127,12 @@ void handle_ack(uint32_t client_fd, ack* acknowledgement){
     t_data* message = list_find_with_args(memory.partitions, has_message_id, (void*) acknowledgement->id_message);
     pthread_mutex_unlock(memory.m_partitions_modify);
     if(message){
+        pthread_mutex_lock(message->m_receivers_modify);
         t_receiver* receiver = list_find_with_args(
             message->receivers, 
             receiver_has_socket_fd,
             (void*) client_fd);
+        pthread_mutex_lock(message->m_receivers_modify);
         if(receiver){
             receiver->received = true;
         }

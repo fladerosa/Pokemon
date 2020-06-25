@@ -13,6 +13,7 @@ typedef enum {
 
 typedef struct t_data{
     uint32_t size;
+    uint32_t partition_size;
     uint32_t offset;
     uint32_t idQueue;
     uint32_t id;
@@ -75,6 +76,8 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartition);
 void dumpMemory();
 void dump_write_time(FILE* file);
 void dump_partitions(FILE* file);
+
+void condense(int index);
 
 t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream);
 #endif

@@ -15,6 +15,7 @@ void initializeMemory(){
     pthread_mutex_init(memory.m_failed_search_modify, NULL );
     t_data* data = malloc(sizeof(t_data));
     data->size = memory.configuration.size;
+    data->partition_size = data->size;
     data->offset = 0;
     data->state = FREE;
 
@@ -130,8 +131,8 @@ t_data* BF_getPartitionAvailable(uint32_t sizeData){
     t_data* dataAux;
     for(int i = 0; i < sizeList; i++){
         dataAux = (t_data*)list_get(memory.partitions, i);
-        if(dataAux->state == FREE && dataAux->size < minimunSize){
-            minimunSize = dataAux->size;
+        if(dataAux->state == FREE && dataAux->partition_size < minimunSize){
+            minimunSize = dataAux->partition_size;
         }
     }
     pthread_mutex_unlock(memory.m_partitions_modify);
@@ -139,7 +140,7 @@ t_data* BF_getPartitionAvailable(uint32_t sizeData){
 }
 
 bool partition_size_validation(void* data, void* sizeData){
-    return data ? ((t_data*) data)->size >= (uint32_t) sizeData && ((t_data*) data)->state == FREE : false;
+    return data ? ((t_data*) data)->partition_size >= (uint32_t) sizeData && ((t_data*) data)->state == FREE : false;
 }
 
 void BS_compact(){
@@ -157,10 +158,10 @@ void BS_compact(){
         if(previousPartition == NULL){
             previousPartition = dataAux;
         }else{
-            if(previousPartition->size == dataAux->size){
+            if(previousPartition->partition_size == dataAux->partition_size){
                 if(previousPartition->state == FREE && dataAux->state == FREE){
                     //I join them
-                    previousPartition->size += dataAux->size;
+                    previousPartition->partition_size += dataAux->partition_size;
                     pthread_mutex_lock(memory.m_partitions_modify);
                     list_remove(memory.partitions, i);
                     pthread_mutex_unlock(memory.m_partitions_modify);
@@ -192,7 +193,7 @@ void DP_compact(){
                 freePartition = dataAux;
             } else {
                 //I already had a free partition, i join them
-                freePartition->size += dataAux->size;
+                freePartition->partition_size += dataAux->partition_size;
                 void* dato = malloc(sizeof(int));
                 memcpy(dato, (void*)&i, sizeof(int));
                 list_add(indexPartitionsToRemove, dato);
@@ -202,13 +203,13 @@ void DP_compact(){
                 //I do nothing
             }else{
                 //I had a previous free space, so i move the data
-                memcpy(memory.data + freePartition->offset, memory.data + dataAux->offset, dataAux->size);
+                memcpy(memory.data + freePartition->offset, memory.data + dataAux->offset, dataAux->partition_size);
 
-                intAux = freePartition->size;
-                freePartition->size = dataAux->size;
-                dataAux->size = intAux;
+                intAux = freePartition->partition_size;
+                freePartition->partition_size = dataAux->partition_size;
+                dataAux->partition_size = intAux;
 
-                dataAux->offset = freePartition->offset + dataAux->size;
+                dataAux->offset = freePartition->offset + dataAux->partition_size;
 
                 freePartition->lastTimeUsed = dataAux->lastTimeUsed;
                 freePartition->creationTime = dataAux->creationTime;
@@ -231,26 +232,52 @@ void DP_compact(){
 }
 
 void FIFO_destroyPartition(){
-    time_t minimunTime = time(NULL);
+    uint32_t minimumId;
     pthread_mutex_lock(memory.m_partitions_modify);
     uint32_t sizeList =  list_size(memory.partitions);
-    uint32_t indexFinded = 0;
+    uint32_t indexFound = 0;
     t_data* dataAux;
     for(int i = 0; i < sizeList; i++){
         dataAux = (t_data*)list_get(memory.partitions, i);
-        if(dataAux->state == USING && difftime(dataAux->creationTime, minimunTime) <= 0){
-            minimunTime = dataAux->creationTime;
-            indexFinded = i;
+        if(dataAux->state == USING && dataAux->id < minimumId){
+            minimumId = dataAux->id;
+            indexFound = i;
         }
     }
-    t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFinded);
-    partitionSelected->state = FREE;
-    pthread_mutex_lock(partitionSelected->m_receivers_modify);
-    list_destroy(partitionSelected->receivers);
-    pthread_mutex_unlock(partitionSelected->m_receivers_modify);
-    pthread_mutex_destroy(partitionSelected->m_receivers_modify);
-    pthread_mutex_unlock(memory.m_partitions_modify);
+    t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFound);
+    if (partitionSelected && partitionSelected->state == USING){
+        partitionSelected->state = FREE;
+        pthread_mutex_lock(partitionSelected->m_receivers_modify);
+        list_destroy(partitionSelected->receivers);
+        pthread_mutex_unlock(partitionSelected->m_receivers_modify);
+        pthread_mutex_destroy(partitionSelected->m_receivers_modify);
+        condense(indexFound);
+        pthread_mutex_unlock(memory.m_partitions_modify);
+    }
 }
+
+void condense(int indexFound){
+    t_data* partitionSelected = list_get(memory.partitions, indexFound );
+    if (indexFound - 1 >= 0){
+        t_data* previousPartition = list_get(memory.partitions, indexFound -1 );
+        if (previousPartition->state == FREE){
+            list_remove(memory.partitions, indexFound - 1);
+            partitionSelected->partition_size += previousPartition->partition_size; 
+            partitionSelected->size = partitionSelected->partition_size; 
+            partitionSelected->offset = previousPartition->offset;
+            partitionSelected->creationTime = time(NULL);
+        }
+    }
+    if (indexFound + 1 <= list_size(memory.partitions) - 1){
+        t_data* nextPartition = list_get(memory.partitions, indexFound + 1 );
+        if (nextPartition->state == FREE){
+            list_remove(memory.partitions, indexFound + 1);
+            partitionSelected->partition_size += nextPartition->partition_size;
+            partitionSelected->creationTime = time(NULL);
+        }
+    }
+}
+
 void LRU_destroyPartition(){
     time_t oldestTime = time(NULL);
     pthread_mutex_lock(memory.m_partitions_modify);
@@ -274,15 +301,15 @@ void LRU_destroyPartition(){
 }
 
 void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
-    if(sizeData <= freePartitionData->size / 2){
+    if(sizeData <= freePartitionData->partition_size / 2){
         t_data* newData = malloc(sizeof(t_data));
-        newData->size = freePartitionData->size / 2;
-        newData->offset = freePartitionData->offset + newData->size;
+        newData->partition_size = freePartitionData->partition_size / 2;
+        newData->offset = freePartitionData->offset + newData->partition_size;
         newData->state = FREE;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_add(memory.partitions, newData);
         pthread_mutex_unlock(memory.m_partitions_modify);
-        freePartitionData->size = freePartitionData->size / 2;
+        freePartitionData->partition_size = freePartitionData->partition_size / 2;
         BS_allocateData(sizeData, newData);
     }else{
         freePartitionData->creationTime = time(NULL);
@@ -291,17 +318,24 @@ void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
     }
 }
 
-void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
+bool _offsetAscending(void* data1, void*data2) {
+        return ((t_data*) data1)->offset < ((t_data*) data2)->offset;
+}
+
+void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){   
     if(sizeData != freePartitionData->size){
         //If the size of the data is bigger than the free space, its create a new partition
         t_data* newData = malloc(sizeof(t_data));
-        newData->size = freePartitionData->size - sizeData;
+        newData->partition_size = freePartitionData->partition_size - sizeData;
+        newData->size = newData->partition_size;
         newData->offset = freePartitionData->offset + sizeData;
         newData->state = FREE;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_add(memory.partitions, newData);
+        list_sort(memory.partitions, _offsetAscending);
         pthread_mutex_unlock(memory.m_partitions_modify);
     }
+    freePartitionData->partition_size = sizeData;
     freePartitionData->size = sizeData;
     freePartitionData->creationTime = time(NULL);
     freePartitionData->lastTimeUsed = time(NULL);
@@ -348,12 +382,12 @@ void dump_partitions(FILE* file){
     for(int i = 0; i < sizeList; i++){
         t_data* partition = list_get(memory.partitions, i);
         initialPointer = memory.data + partition->offset;
-        endPointer = initialPointer + partition->size;//TODO mis dudas
+        endPointer = initialPointer + partition->partition_size;//TODO mis dudas
         if(partition->state == FREE){
-            sprintf(str_free, strFormat_free, i, initialPointer, endPointer, partition->size);
+            sprintf(str_free, strFormat_free, i, initialPointer, endPointer, partition->partition_size);
             txt_write_in_file(file, str_free);
         }else{
-            sprintf(str_using, strFormat_using, i, initialPointer, endPointer, partition->size, partition->lastTimeUsed, partition->idQueue, partition->id);
+            sprintf(str_using, strFormat_using, i, initialPointer, endPointer, partition->partition_size, partition->lastTimeUsed, partition->idQueue, partition->id);
             txt_write_in_file(file, str_using);
         }
     }
@@ -362,28 +396,30 @@ void dump_partitions(FILE* file){
 
 t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream){
     pthread_mutex_lock(&m_new_partition);
-    uint32_t sizeofdata;
+    uint32_t sizeofdata, partition_size;
     t_data* freePartition;
     switch(id_queue){
         case NEW_POKEMON:
         case CATCH_POKEMON:
         case GET_POKEMON:
             sizeofdata = sizeofrawstream - sizeof(uint32_t);
-            if(sizeofdata < memory.configuration.minimunPartitionSize) sizeofdata = memory.configuration.minimunPartitionSize;
-            freePartition = seekPartitionAvailable(sizeofdata);
+            partition_size = sizeofdata > memory.configuration.minimunPartitionSize ? 
+                sizeofdata : memory.configuration.minimunPartitionSize;
+            freePartition = seekPartitionAvailable(partition_size);
             break;
         case APPEARED_POKEMON:
         case CAUGHT_POKEMON:
         case LOCALIZED_POKEMON:
             sizeofdata = sizeofrawstream - 2 * sizeof(uint32_t);
-            if(sizeofdata < memory.configuration.minimunPartitionSize) sizeofdata = memory.configuration.minimunPartitionSize;
-            freePartition = seekPartitionAvailable(sizeofdata);
+            partition_size = sizeofdata > memory.configuration.minimunPartitionSize ? 
+                sizeofdata : memory.configuration.minimunPartitionSize;
+            freePartition = seekPartitionAvailable(partition_size);
             memcpy(&freePartition->id_correlational, stream + sizeofdata + sizeof(uint32_t), sizeof(uint32_t));
             break;
         default:
             return NULL;
     }
-    allocateData(sizeofdata, freePartition);
+    allocateData(partition_size, freePartition);
     log_info(optional_logger, "Creating new partition at position: %d", freePartition->offset);
     void* data = memory.data + freePartition->offset;
     memcpy(data, stream, sizeofdata);
@@ -391,6 +427,8 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
     id_message++;
     freePartition->id = id_message;
     pthread_mutex_unlock(&m_id_message);
+    freePartition->size = sizeofdata;
+    freePartition->partition_size = partition_size;
     freePartition->idQueue = id_queue;
     freePartition->receivers = list_create();
     freePartition->m_receivers_modify = malloc(sizeof(pthread_mutex_t));
