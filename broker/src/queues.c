@@ -57,6 +57,7 @@ void handle_subscribe(uint32_t client_fd, subscribe* subs){
         pthread_mutex_lock(queue->m_subscribers_modify);
         list_add(queue->subscribers, conn);
         pthread_mutex_unlock(queue->m_subscribers_modify);
+        send_all_messages(conn, queue->id_queue);
     }
     free(subs);
 }

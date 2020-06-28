@@ -21,8 +21,8 @@ typedef struct t_data{
     t_list* receivers;
     pthread_mutex_t* m_receivers_modify;
     e_dataState state;
-    time_t lastTimeUsed;
-    time_t creationTime;
+    uint64_t lastTimeUsed;
+    uint64_t creationTime;
 } t_data;
 
 typedef struct t_memory_configuration{
@@ -78,6 +78,6 @@ void dump_write_time(FILE* file);
 void dump_partitions(FILE* file);
 
 void condense(int index);
-
+void send_all_messages(t_connection* conn, uint32_t id_queue);
 t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream);
 #endif
