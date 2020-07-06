@@ -68,4 +68,10 @@ gameboy/gameboy
 gameboy/gameboy
 
 so-commons-library/
+<<<<<<< HEAD
+>>>>>>> master
+=======
+
+broker/cfg/*.tmp
+broker/cfg/*.txt
 >>>>>>> master
