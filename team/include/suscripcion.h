@@ -4,6 +4,7 @@
 #include<commons/collections/list.h>
 #include<commons/string.h>
 #include "common_utils.h"
+#include "inicializacion.h"
 
 typedef struct
 {
@@ -47,7 +48,7 @@ bool compareSockets(void*, void*);
 void close_sockets();
 void retry_on_x_time();
 caught_pokemon* caught_default();
-localized_pokemon* localized_default();
+uint32_t localized_default(char*);
 void send_message_queue_init(uint32_t, uint32_t, uint32_t);
 
 
