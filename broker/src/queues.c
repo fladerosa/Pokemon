@@ -93,6 +93,7 @@ void queue_message_sender(void* args){
                 t_paquete* package = stream_to_package(queue->id_queue, stream, message->size);
                 void* a_enviar = serializar_paquete(package,sizeof(uint32_t)*2 + package->buffer->size);
                 send(conn->socket, a_enviar, sizeof(uint32_t)*2 + package->buffer->size, 0);
+                message->lastTimeUsed = timestamp();
                 t_receiver* receiver = malloc(sizeof(t_receiver));
                 receiver->conn = conn;
                 receiver->sent = true;

@@ -31,7 +31,7 @@ typedef struct t_memory_configuration{
     char* freePartitionAlgorithm;
     uint32_t size;
     uint32_t minimunPartitionSize;
-    uint32_t countFailedSearchForCompact;
+    int countFailedSearchForCompact;
 } t_memory_configuration;
 
 typedef struct t_memory{
