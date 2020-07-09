@@ -1,17 +1,5 @@
 #include "fileSystemTallGrass.h"
 
-void iniciarTallGrass(){
-    obtenerConfig();
-    //crearBloques();
-    if(hayBitmap()){
-        printf("\nCreando Bitmap...\n");
-        crearArchivoBitmap();
-        printf("Bitmap Creado con exito.\n");
-    }
-
-    crearBitMap();
-}
-
 void crearBloques(){
     char* nombreArchivo = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
@@ -153,4 +141,16 @@ int hayBitmap(){
 
     return access( "./TALL_GRASS/Metadata/Bitmap.bin", F_OK ) != -1;
 
+}
+
+void iniciarTallGrass(){
+    obtenerConfig();
+    //crearBloques();
+    if(hayBitmap()){
+        printf("\nCreando Bitmap...\n");
+        crearArchivoBitmap();
+        printf("Bitmap Creado con exito.\n");
+    }
+
+    crearBitMap();
 }

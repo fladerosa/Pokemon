@@ -8,3 +8,28 @@
     //Enviar un mensaje que contenga:ID del mensaje recibido, Pokémon y Coordenada a la cola de mensajes "APPEARED_POKEMON" 
     /**En caso de que no se pueda establecer conexion con el broker notificarlo por Logs y continuar**/
 //}
+
+void newPokemonTallGrass(new_pokemon* newPokemon){
+    char* directorio = "./TALL_GRASS/Files/";
+    char buffer[50];   
+    char* stream = malloc(sizeof(new_pokemon));
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon] = '\0';
+
+    strcpy(buffer, "");
+    strcat(buffer, directorio);
+    strcat(buffer, stream);
+
+    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon); 
+    memcpy(directory, buffer, strlen(directorio) + newPokemon->sizePokemon);
+    directory[strlen(directorio) + newPokemon->sizePokemon] = '\0';
+
+    int created = mkdir(directory, ACCESSPERMS);
+    if(created == -1){
+        printf("%d",errno);
+        printf("No se pudo crear el directorio.");
+    }else{
+        printf("Directorio creado o abierto.");
+    }
+    
+}

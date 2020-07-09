@@ -11,6 +11,7 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             log_info(optional_logger, "New pokemon!");
             
             send_ack(client_fd, *id_message);
+            newPokemonTallGrass(newPokemonMessage);
             //TODO SEND APPEARED
             
             break;
