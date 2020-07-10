@@ -287,27 +287,31 @@ void LRU_destroyPartition(){
     pthread_mutex_unlock(memory.m_partitions_modify);
 }
 
+bool _offsetAscending(void* data1, void*data2) {
+        return ((t_data*) data1)->offset < ((t_data*) data2)->offset;
+}
+
 void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
     if(sizeData <= freePartitionData->partition_size / 2){
         t_data* newData = malloc(sizeof(t_data));
-        newData->partition_size = freePartitionData->partition_size / 2;
-        newData->offset = freePartitionData->offset + newData->partition_size;
+        freePartitionData->partition_size = freePartitionData->partition_size / 2;
+        newData->partition_size = freePartitionData->partition_size;
+        newData->offset = freePartitionData->offset + freePartitionData->partition_size;
         newData->state = FREE;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_add(memory.partitions, newData);
         pthread_mutex_unlock(memory.m_partitions_modify);
-        freePartitionData->partition_size = freePartitionData->partition_size / 2;
-        BS_allocateData(sizeData, newData);
+        BS_allocateData(sizeData, freePartitionData);
     }else{
         freePartitionData->creationTime = timestamp();
         freePartitionData->lastTimeUsed = freePartitionData->creationTime;
         freePartitionData->state = USING;
+        pthread_mutex_lock(memory.m_partitions_modify);
+        list_sort(memory.partitions, _offsetAscending);
+        pthread_mutex_unlock(memory.m_partitions_modify);
     }
 }
 
-bool _offsetAscending(void* data1, void*data2) {
-        return ((t_data*) data1)->offset < ((t_data*) data2)->offset;
-}
 
 void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){   
     if(sizeData != freePartitionData->size){

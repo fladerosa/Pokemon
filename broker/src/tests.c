@@ -251,10 +251,20 @@ void buddySystemBroker(){
 
     buddy_basico();
 
+    t_data* charmander = list_get(memory.partitions, 2);
+    CU_ASSERT_EQUAL(charmander->offset, 32);
+    CU_ASSERT_EQUAL(charmander->size, 22);
+    CU_ASSERT_EQUAL(charmander->state, USING);
     // Segunda parte
     initializeMemoryMockup("BS", "LRU", "FF", 64, 4, 1);
 
     buddy_basico();
+
+    charmander = list_get(memory.partitions, 0);
+
+    CU_ASSERT_EQUAL(charmander->offset, 0);
+    CU_ASSERT_EQUAL(charmander->size, 22);
+    CU_ASSERT_EQUAL(charmander->state, USING);
 
 }
 
