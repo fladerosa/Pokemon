@@ -54,6 +54,9 @@ void handle_subscribe(uint32_t client_fd, subscribe* subs){
     t_connection* conn = list_find_with_args(connections, has_socket_fd,(void*)client_fd);
     pthread_mutex_unlock(&m_connections);
     if (queue && conn){
+        log_info(obligatory_logger, "Se suscribió el proceso de socket %d y ID %d a la cola de mensajes ID %d",
+            client_fd, conn->id_connection, subs->colaMensajes
+        );
         pthread_mutex_lock(queue->m_subscribers_modify);
         list_add(queue->subscribers, conn);
         pthread_mutex_unlock(queue->m_subscribers_modify);
@@ -71,6 +74,7 @@ void* connection_to_receiver(void* connection){
 }
 
 void add_message_to_queue(void* message, uint32_t queue_id){
+    log_info(obligatory_logger, "Llegó un nuevo mensaje a la cola de mensajes ID %d", queue_id);
     t_message_queue* queue = list_find_with_args(list_queues, has_queue_id,(void*) queue_id);
     pthread_mutex_lock(queue->m_queue_modify);
     queue_push(queue->messages, message);
@@ -89,6 +93,7 @@ void queue_message_sender(void* args){
         for(int i=0; i<list_size(queue->subscribers); i++){
             t_connection* conn = list_get(queue->subscribers, i);
             if(conn->is_connected){
+                log_info(obligatory_logger, "Se envía el mensaje ID %d al proceso con ID %d", message->id, conn->id_connection);
                 void* stream = memory.data + message->offset;
                 t_paquete* package = stream_to_package(queue->id_queue, stream, message->size);
                 void* a_enviar = serializar_paquete(package,sizeof(uint32_t)*2 + package->buffer->size);
@@ -136,6 +141,8 @@ void handle_ack(uint32_t client_fd, ack* acknowledgement){
             (void*) client_fd);
         pthread_mutex_lock(message->m_receivers_modify);
         if(receiver){
+            log_info(obligatory_logger, "Se confirma la recepción del mensaje ID %d por parte del proceso ID %d", 
+                message->id, receiver->conn->id_connection);
             receiver->received = true;
         }
     }

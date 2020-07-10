@@ -152,24 +152,21 @@ void BS_compact(){
     //Debería unir solo cuando son particiones del "mismo bloque"
     pthread_mutex_lock(memory.m_partitions_modify);
     uint32_t sizeList =  list_size(memory.partitions);
-    pthread_mutex_unlock(memory.m_partitions_modify);
     t_data* previousPartition = NULL;
     t_data* dataAux;
     bool mustFinish = false;
     for(int i = 0; i < sizeList && !mustFinish; i++){
-        pthread_mutex_lock(memory.m_partitions_modify);
         dataAux = (t_data*)list_get(memory.partitions, i);
-        pthread_mutex_unlock(memory.m_partitions_modify);
         if(previousPartition == NULL){
             previousPartition = dataAux;
         }else{
             if(previousPartition->partition_size == dataAux->partition_size){
                 if(previousPartition->state == FREE && dataAux->state == FREE){
                     //I join them
+                    log_info(optional_logger, "Se asocian las particiones en las posiciones %d y %d bajo Buddy System.", 
+                        previousPartition->offset, dataAux->offset);
                     previousPartition->partition_size += dataAux->partition_size;
-                    pthread_mutex_lock(memory.m_partitions_modify);
                     list_remove(memory.partitions, i);
-                    pthread_mutex_unlock(memory.m_partitions_modify);
                     mustFinish = true;
                 }else{
                     previousPartition = NULL;
@@ -180,7 +177,7 @@ void BS_compact(){
         }
         if(mustFinish) BS_compact();
     }
-    
+    pthread_mutex_unlock(memory.m_partitions_modify);
 }
 
 bool sortByState(void* elem1, void* elem2){
@@ -200,6 +197,7 @@ bool sortByState(void* elem1, void* elem2){
 void DP_compact(){
     //It moves the partitions with state using to the init an join the free partitions
     pthread_mutex_lock(memory.m_partitions_modify);
+    log_info(obligatory_logger, "Se procede a compactar la partición dinámica.");
     if (list_size(memory.partitions) == 1) return;
     list_sort(memory.partitions, sortByState);
     for (int i = list_size(memory.partitions) - 2 ; i >= 0 ; i--){
@@ -230,6 +228,7 @@ void FIFO_destroyPartition(){
     }
     t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFound);
     if (partitionSelected && partitionSelected->state == USING){
+        log_info(obligatory_logger, "Se destruye la particion de memoria en la posicion: %d", partitionSelected->offset);
         partitionSelected->state = FREE;
         pthread_mutex_lock(partitionSelected->m_receivers_modify);
         list_destroy(partitionSelected->receivers);
@@ -277,6 +276,7 @@ void LRU_destroyPartition(){
     }
     t_data* partitionSelected = (t_data*)list_get(memory.partitions, indexFinded);
     if (partitionSelected && partitionSelected->state == USING){
+        log_info(obligatory_logger, "Se destruye la particion de memoria en la posicion: %d", partitionSelected->offset);
         partitionSelected->state = FREE;
         pthread_mutex_lock(partitionSelected->m_receivers_modify);
         list_destroy(partitionSelected->receivers);
@@ -335,6 +335,7 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
 
 void dumpMemory(){
     log_info(optional_logger, "Dumping cache into %s", cfg_values.dump_file);
+    log_info(obligatory_logger, "Se solicitó el Dump de la Caché.");
     FILE* file = txt_open_for_append(cfg_values.dump_file);
 
     txt_write_in_file(file, "------------------------------------------------------------------------------\n");
@@ -408,6 +409,7 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
     }
     allocateData(sizeofdata, freePartition);
     log_debug(optional_logger, "Creating new partition at position: %d", freePartition->offset);
+    log_info(obligatory_logger, "Se almacena un mensaje en memoria en la posicion: %d", freePartition->offset);
     void* data = memory.data + freePartition->offset;
     memcpy(data, stream, sizeofdata);
     pthread_mutex_lock(&m_id_message);
@@ -438,6 +440,7 @@ void send_all_messages(t_connection* conn, uint32_t id_queue){
         t_receiver* rec = list_find(message->receivers, hasReceiver);
         pthread_mutex_unlock(message->m_receivers_modify);
         if(rec == NULL){
+            log_info(obligatory_logger, "Se envía el mensaje ID %d al proceso con ID %d", message->id, conn->id_connection);
             void* stream = memory.data + message->offset;
             t_paquete* package = stream_to_package(id_queue, stream, message->size);
             void* a_enviar = serializar_paquete(package,sizeof(uint32_t)*2 + package->buffer->size);
