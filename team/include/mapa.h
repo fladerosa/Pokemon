@@ -33,6 +33,7 @@ void move_to_objetive(t_queue*);
 bool get_objetive(t_list*, t_list*);
 //compara si los objetivos del entrenador se cumplieron (ambas listas, PokemonNeeded y toCaught, son iguales)
 //se encarga de determinar el orden de los procesos(entrenadores) a ready
+void planificarProceso();
 void planificarProcesoFIFO();
 void planificarProcesoRR();
 void planificarProcesoSJF_SD();

@@ -1,7 +1,7 @@
 
 #include "inicializacion.h"
 #include "suscripcion.h"
-//#include "mapa.h"
+#include "mapa.h"
 #include <string.h>
 
 void initialize_team() { 

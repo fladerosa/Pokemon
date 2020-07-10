@@ -37,9 +37,9 @@ on_request request;
 pthread_t listening_gameboy;
 
 void connection_broker_global_suscribe();
-void connection_broker_suscribe_to_appeared_pokemon(op_code, pthread_t*);
-void connection_broker_suscribe_to_caught_pokemon(op_code, pthread_t*);
-void connection_broker_suscribe_to_localized_pokemon(op_code, pthread_t*);
+void connection_broker_suscribe_to_appeared_pokemon(op_code, pthread_t);
+void connection_broker_suscribe_to_caught_pokemon(op_code, pthread_t);
+void connection_broker_suscribe_to_localized_pokemon(op_code, pthread_t);
 args_pthread* thread_suscribe_arguments(op_code, uint32_t);
 void suscribeOnThreadList(args_pthread*);
 void listen_to_gameboy();

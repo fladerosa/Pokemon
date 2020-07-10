@@ -2,14 +2,13 @@
 #include <string.h>
 
 void connection_broker_global_suscribe() {
-    connection_broker_suscribe_to_appeared_pokemon(APPEARED_POKEMON, &suscripcionAppearedPokemon);
-    connection_broker_suscribe_to_caught_pokemon(CAUGHT_POKEMON, &suscripcionCaughtPokemon);
-    connection_broker_suscribe_to_localized_pokemon(LOCALIZED_POKEMON, &suscripcionLocalizedPokemon);
+    connection_broker_suscribe_to_appeared_pokemon(APPEARED_POKEMON, suscripcionAppearedPokemon);
+    connection_broker_suscribe_to_caught_pokemon(CAUGHT_POKEMON, suscripcionCaughtPokemon);
+    connection_broker_suscribe_to_localized_pokemon(LOCALIZED_POKEMON, suscripcionLocalizedPokemon);
  }
 
-void connection_broker_suscribe_to_appeared_pokemon(op_code code, pthread_t *suscripcionAppearedPokemon) {   
+void connection_broker_suscribe_to_appeared_pokemon(op_code code, pthread_t suscripcionAppearedPokemon) {   
     //se envia un connect por cada cola de mensajes a suscribirse
-    args_pthread* arguments;
     uint32_t server_connection_appeared_pokemon = crear_conexion(config_values.ip_broker, config_values.puerto_broker);
     send_new_connection(server_connection_appeared_pokemon); 
 
@@ -18,8 +17,8 @@ void connection_broker_suscribe_to_appeared_pokemon(op_code code, pthread_t *sus
     while(server_connection_appeared_pokemon == -1) {
 
         pthread_mutex_unlock(&reconnectAppearedPokemon);
-        
-        send_reconnect(server_connection_appeared_pokemon, id_connection);
+        reconnect* reconnectMessage = malloc(sizeof(reconnect));
+        send_reconnect(server_connection_appeared_pokemon, reconnectMessage->id_connection);
         pthread_t reconnection_broker_appeared_pokemon;
         pthread_create(&reconnection_broker_appeared_pokemon, NULL, (void*)retry_on_x_time, NULL);
         log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", config_values.tiempo_reconexion,  reconnection_broker_appeared_pokemon);
@@ -31,7 +30,7 @@ void connection_broker_suscribe_to_appeared_pokemon(op_code code, pthread_t *sus
 	
 }
 
-void connection_broker_suscribe_to_caught_pokemon(op_code code, pthread_t* suscripcionCaughtPokemon)
+void connection_broker_suscribe_to_caught_pokemon(op_code code, pthread_t suscripcionCaughtPokemon)
 {	
     uint32_t server_connection_caught_pokemon = crear_conexion(config_values.ip_broker, config_values.puerto_broker);
     send_new_connection(server_connection_caught_pokemon); 
@@ -41,7 +40,8 @@ void connection_broker_suscribe_to_caught_pokemon(op_code code, pthread_t* suscr
     while(server_connection_caught_pokemon == -1) {
     
     pthread_mutex_unlock(&reconnectCaughtPokemon);
-    send_reconnect(server_connection_caught_pokemon, id_connection);
+    reconnect* reconnectMessage = malloc(sizeof(reconnect));
+    send_reconnect(server_connection_caught_pokemon, reconnectMessage->id_connection);
     pthread_t reconnection_broker_caught_pokemon;
     pthread_create(&reconnection_broker_caught_pokemon, NULL, (void*)retry_on_x_time, NULL);
     log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", config_values.tiempo_reconexion,  reconnection_broker_caught_pokemon);
@@ -53,7 +53,7 @@ void connection_broker_suscribe_to_caught_pokemon(op_code code, pthread_t* suscr
 	
 }
 
-void connection_broker_suscribe_to_localized_pokemon(op_code code, pthread_t* suscripcionLocalizedPokemon) {
+void connection_broker_suscribe_to_localized_pokemon(op_code code, pthread_t suscripcionLocalizedPokemon) {
     
     uint32_t server_connection_localized_pokemon = crear_conexion(config_values.ip_broker, config_values.puerto_broker);   
     send_new_connection(server_connection_localized_pokemon); 
@@ -63,7 +63,8 @@ void connection_broker_suscribe_to_localized_pokemon(op_code code, pthread_t* su
     while(server_connection_localized_pokemon == -1) {
 
     pthread_mutex_unlock(&reconnectLocalizedPokemon);
-    send_reconnect(server_connection_localized_pokemon, id_connection);
+    reconnect* reconnectMessage = malloc(sizeof(reconnect));
+    send_reconnect(server_connection_localized_pokemon, reconnectMessage->id_connection);
     pthread_t reconnection_broker_localized_pokemon;
     pthread_create(&reconnection_broker_localized_pokemon, NULL, (void*)retry_on_x_time, NULL);
     log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", config_values.tiempo_reconexion,  reconnection_broker_localized_pokemon);
