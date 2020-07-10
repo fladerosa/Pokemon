@@ -74,9 +74,6 @@ t_data* getPartitionAvailable(uint32_t sizeData){
 }
 
 bool verifMustCompact(){
-    pthread_mutex_lock(memory.m_failed_search_modify);
-    memory.failedSearchCount++;
-    pthread_mutex_unlock(memory.m_failed_search_modify);
     if(memory.configuration.countFailedSearchForCompact == -1){
         pthread_mutex_lock(memory.m_partitions_modify);
         bool response = list_all_satisfy(memory.partitions, partition_is_free);
@@ -104,6 +101,9 @@ void compact(){
 }
 
 void destroyPartition(){
+    pthread_mutex_lock(memory.m_failed_search_modify);
+    memory.failedSearchCount++;
+    pthread_mutex_unlock(memory.m_failed_search_modify);
     if(strcmp(memory.configuration.replaceAlgorithm, "FIFO") == 0){
         FIFO_destroyPartition();
     }else{

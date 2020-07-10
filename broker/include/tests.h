@@ -20,4 +20,6 @@ bool testDump();
 void baseBroker();
 void consolidacionBroker();
 void compactacionBroker();
+void buddySystemBroker();
+
 #endif

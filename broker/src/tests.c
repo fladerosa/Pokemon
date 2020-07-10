@@ -8,6 +8,7 @@ void broker_run_tests(){
     CU_add_test(broker_tests,"Cargar memoria simple y complejo", baseBroker);
     CU_add_test(broker_tests,"Consolidacion Particiones Dinamicas", consolidacionBroker);
     CU_add_test(broker_tests,"Compactación Particiones Dinámicas", compactacionBroker);
+    CU_add_test(broker_tests,"Buddy System", buddySystemBroker);
     //CU_add_test(broker_tests,"Test manejo a memoria",manejo_memoria);
     run_tests();
 }
@@ -111,7 +112,7 @@ void compactacion_basico(){
 
     send_all_messagesTEST(CAUGHT_POKEMON);
 
-    sleep(2);
+    sleep(1);
 
     catch_pokemon* catchVaporeon = init_catch_pokemon("Vaporeon", 4, 5);
 
@@ -138,7 +139,7 @@ void consolidacion_basico(){
 
     send_all_messagesTEST(CAUGHT_POKEMON);
 
-    sleep(2);
+    sleep(1);
 
     catch_pokemon* catchCharmander = init_catch_pokemon("Charmander", 4, 5);
 
@@ -209,11 +210,53 @@ void compactacionBroker(){
 
     compactacion_basico();
 
-    t_data* admStruct = list_get(memory.partitions, 3);
+    t_data* admStruct = list_get(memory.partitions, 2);
     CU_ASSERT_EQUAL(admStruct->offset, 36);
+    //Segunda parte
+    initializeMemoryMockup("PARTICIONES", "LRU", "FF", 64, 4, 1);
+
+    compactacion_basico();
+
+    t_data* admStruct2 = list_get(memory.partitions, 4);
+    CU_ASSERT_EQUAL(admStruct2->offset, 44);
 }
 
+void buddy_basico(){
+    caught_pokemon* caughtOk = init_caught_pokemon(true);
+    caught_pokemon* caughtFail = init_caught_pokemon(false);
 
+    uint32_t id_corrOk = 1, id_corrFail = 1;
+    assign_and_return_message(CAUGHT_POKEMON, size_of_caught_pokemon(caughtOk), caught_pokemon_to_stream(caughtOk, &id_message, &id_corrOk));
+    assign_and_return_message(CAUGHT_POKEMON, size_of_caught_pokemon(caughtFail), caught_pokemon_to_stream(caughtFail, &id_message, &id_corrFail));
+
+    new_pokemon* newPikachu = init_new_pokemon("Pikachu", 2, 3, 1);
+
+    assign_and_return_message(NEW_POKEMON, size_of_new_pokemon(newPikachu), new_pokemon_to_stream(newPikachu, &id_message));
+
+    catch_pokemon* catchOnyx = init_catch_pokemon("Onyx", 4, 5);
+
+    assign_and_return_message(CATCH_POKEMON, size_of_catch_pokemon(catchOnyx), catch_pokemon_to_stream(catchOnyx, &id_message));
+
+    send_all_messagesTEST(NEW_POKEMON);
+
+    sleep(1);
+
+    catch_pokemon* catchCharmander = init_catch_pokemon("Charmander", 4, 5);
+
+    assign_and_return_message(CATCH_POKEMON, size_of_catch_pokemon(catchCharmander), catch_pokemon_to_stream(catchCharmander, &id_message));
+}
+
+void buddySystemBroker(){
+    initializeMemoryMockup("BS", "FIFO", "FF", 64, 4, 1);
+
+    buddy_basico();
+
+    // Segunda parte
+    initializeMemoryMockup("BS", "LRU", "FF", 64, 4, 1);
+
+    buddy_basico();
+
+}
 
 
 
@@ -353,7 +396,7 @@ bool testDestroyPartitionLRU(){
     }
 
     t_data* firstPartition = (t_data*)list_get(memory.partitions, 0);
-    sleep(3);
+    sleep(1);
     void* partitionData = getData(1);
 
     LRU_destroyPartition();
@@ -388,7 +431,7 @@ bool testCompactDP(){
         return false;
     }
 
-    sleep(3);
+    sleep(1);
     void* partitionData1 = getData(1);
     void* partitionData2 = getData(3);
 
