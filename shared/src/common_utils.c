@@ -517,7 +517,13 @@ int strlenNewLine (const char *str){
     return char_ptr - str;
 }
 
-
+uint64_t timestamp(void) {
+    struct timeval valor;
+    gettimeofday(&valor, NULL);
+    unsigned long long result = (((unsigned long long )valor.tv_sec) * 1000 + ((unsigned long) valor.tv_usec));
+    uint64_t tiempo = result;
+    return tiempo;
+}
 
 
 

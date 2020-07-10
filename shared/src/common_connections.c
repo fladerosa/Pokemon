@@ -77,6 +77,7 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
         log_info(optional_logger, "Server accept failed..."); 
     } else {
         log_info(optional_logger, "Server accepted a new client on socket: %d", connfd);
+        log_info(obligatory_logger, "Se conectó un proceso en el socket %d", connfd);
         t_process_request* processor = malloc(sizeof(t_process_request));
         processor->socket = malloc(sizeof(uint32_t));
         *processor->socket = connfd;

@@ -31,7 +31,6 @@ void test_new_pokemon(){
     new_pokemon* copy = stream_to_new_pokemon(stream, &copy_id_message, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
-    CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
     CU_ASSERT_EQUAL(copy->position.posy, pokemon->position.posy);
@@ -132,7 +131,6 @@ void test_localized_pokemon(){
     void* stream = localized_pokemon_to_stream(pokemon, &id_message, &id_correlational);
     localized_pokemon* copy = stream_to_localized_pokemon(stream, &copy_id_message, &copy_id_correlational, true);
 
-    CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
     CU_ASSERT_EQUAL(copy_id_message, id_message);
     CU_ASSERT_EQUAL(copy_id_correlational, id_correlational);

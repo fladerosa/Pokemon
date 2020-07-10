@@ -6,6 +6,7 @@
 #include <commons/error.h>
 #include <commons/process.h>
 #include <commons/collections/list.h>
+#include <sys/time.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -143,4 +144,8 @@ uint32_t size_of_new_pokemon(new_pokemon* newPokemonMessage);
 void* list_find_with_args(t_list *self, bool(*condition)(void* elem, void* args), void* args);
 bool has_socket_fd(void* data, void* socket);
 int strlenNewLine(const char* str);
+uint64_t timestamp(void);
+
+
+
 #endif
