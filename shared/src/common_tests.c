@@ -104,7 +104,6 @@ void test_get_pokemon(){
     get_pokemon* copy = stream_to_get_pokemon(stream, &copy_id_message, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
-    CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
 
     free_get_pokemon(pokemon);

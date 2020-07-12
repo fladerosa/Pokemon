@@ -58,6 +58,8 @@ t_data* seekPartitionAvailable(uint32_t sizeData){
             compact();
         }else{
             destroyPartition();
+            if(strcmp(memory.configuration.memoryAlgorithm, "BS") == 0)
+                BS_compact();
         }
         return seekPartitionAvailable(partition_size);
     }else{
@@ -94,7 +96,7 @@ bool partition_is_free(void* data) {
 void compact(){
     memory.failedSearchCount = 0;
     if(strcmp(memory.configuration.memoryAlgorithm, "BS") == 0){
-        BS_compact();
+       // BS_compact();
     }else{
         DP_compact();
     }
@@ -160,7 +162,10 @@ void BS_compact(){
         if(previousPartition == NULL){
             previousPartition = dataAux;
         }else{
-            if(previousPartition->partition_size == dataAux->partition_size){
+            if(previousPartition->partition_size == dataAux->partition_size
+            && previousPartition->offset == (dataAux->offset^previousPartition->partition_size)
+            && dataAux->offset == (previousPartition->offset^dataAux->partition_size)
+            ){
                 if(previousPartition->state == FREE && dataAux->state == FREE){
                     //I join them
                     log_info(optional_logger, "Se asocian las particiones en las posiciones %d y %d bajo Buddy System.", 
@@ -168,6 +173,7 @@ void BS_compact(){
                     previousPartition->partition_size += dataAux->partition_size;
                     list_remove(memory.partitions, i);
                     mustFinish = true;
+                    break;
                 }else{
                     previousPartition = NULL;
                 }
@@ -175,8 +181,8 @@ void BS_compact(){
                 previousPartition = dataAux;
             }
         }
-        if(mustFinish) BS_compact();
     }
+    if(mustFinish) BS_compact();
     pthread_mutex_unlock(memory.m_partitions_modify);
 }
 
