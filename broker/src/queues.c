@@ -74,7 +74,6 @@ void* connection_to_receiver(void* connection){
 }
 
 void add_message_to_queue(void* message, uint32_t queue_id){
-    log_info(obligatory_logger, "Llegó un nuevo mensaje a la cola de mensajes ID %d", queue_id);
     t_message_queue* queue = list_find_with_args(list_queues, has_queue_id,(void*) queue_id);
     pthread_mutex_lock(queue->m_queue_modify);
     queue_push(queue->messages, message);
