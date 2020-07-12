@@ -15,7 +15,7 @@ typedef struct{
 configMetadata configM;
 t_bitarray* bitmap;
 
-void crearBloques();
+//void crearBloques();
 void obtenerConfig();
 void crearBitmap();
 

@@ -1,6 +1,6 @@
 #include "fileSystemTallGrass.h"
 
-void crearBloques(){
+/*void crearBloques(){
     char* nombreArchivo = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
     char buffer[29];
@@ -21,7 +21,7 @@ void crearBloques(){
     }
 
     free(bloque);
-}
+}*/
 
 void obtenerConfig(){
     FILE* file; 
@@ -116,7 +116,7 @@ void crearBitMap(){
 
 	msync(archivoBitmap,bytes,MS_SYNC);
 
-    //imprimirBITARRAY(bitmap);
+    imprimirBITARRAY(bitmap);
 
 	close(fd);
 }
