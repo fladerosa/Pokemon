@@ -25,7 +25,7 @@ int main(int argc, char ** argv){
     int showConsole = config_get_int_value(config,"LOG_SHOW");
 
     //Inicializando el logger
-    obligatory_logger = log_create("./cfg/obligatory.log", "obligatory", showConsole, LOG_LEVEL_INFO); 
+    obligatory_logger = log_create("./cfg/obligatory.log", "obligatory", 1, LOG_LEVEL_INFO); 
     optional_logger = log_create("./cfg/optional.log", "optional", showConsole, LOG_LEVEL_INFO);
 
     char* ip; 
@@ -53,6 +53,7 @@ int main(int argc, char ** argv){
     //Me suscribo si el mensaje es SUSCRIPTOR
     if(strcmp(server, "SUSCRIPTOR") == 0){
         id_queue_to_subscribe = stringToEnum(argv[2]);
+        log_info(obligatory_logger, "Suscrito con exito a la cola %d", id_queue_to_subscribe);
         t_process_request* process_request = malloc(sizeof(t_process_request)); 
         process_request->socket = malloc(sizeof(uint32_t));
         *process_request->socket = conexion; 

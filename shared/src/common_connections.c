@@ -181,7 +181,7 @@ uint32_t crear_conexion(char *ip, char* puerto){
     }
 
 	log_info(optional_logger, "Connected successfully with %s:%s.", ip, puerto);
-		
+	log_info(obligatory_logger, "Conectado con exito con el proceso en %s:%s", ip, puerto);
 	freeaddrinfo(server_info);
 
 	return socketfd;
