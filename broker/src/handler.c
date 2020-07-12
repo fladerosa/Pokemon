@@ -10,7 +10,7 @@ void process_request(uint32_t cod_op, uint32_t sizeofstream, uint32_t client_fd)
         case CAUGHT_POKEMON:;
         case GET_POKEMON:;
         case LOCALIZED_POKEMON:;
-            log_info(obligatory_logger, "Llegó un nuevo mensaje a la cola de mensajes ID %d", cod_op);
+            log_info(obligatory_logger, "Llegó un nuevo mensaje a la cola de mensajes %d", cod_op);
             t_data* message =  assign_and_return_message(cod_op, sizeofstream, stream);
             if (message != NULL){
                 send_ack(client_fd, message->id);

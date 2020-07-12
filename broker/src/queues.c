@@ -89,6 +89,7 @@ void queue_message_sender(void* args){
         pthread_mutex_lock(queue->m_queue_modify);
         t_data* message = queue_pop(queue->messages);
         pthread_mutex_unlock(queue->m_queue_modify);
+        pthread_mutex_lock(queue->m_subscribers_modify);
         for(int i=0; i<list_size(queue->subscribers); i++){
             t_connection* conn = list_get(queue->subscribers, i);
             if(conn->is_connected){
@@ -106,6 +107,7 @@ void queue_message_sender(void* args){
                 pthread_mutex_unlock(message->m_receivers_modify);
             }
         }
+        pthread_mutex_unlock(queue->m_subscribers_modify);
     }
 }
 
@@ -145,5 +147,6 @@ void handle_ack(uint32_t client_fd, ack* acknowledgement){
             receiver->received = true;
         }
     }
+    free(acknowledgement);
 }
 

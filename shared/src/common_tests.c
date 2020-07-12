@@ -70,7 +70,6 @@ void test_catch_pokemon(){
     catch_pokemon* copy = stream_to_catch_pokemon(stream, &copy_id_message, true);
 
     CU_ASSERT_EQUAL(copy_id_message, id_message);
-    CU_ASSERT_STRING_EQUAL(copy->pokemon,pokemon->pokemon);
     CU_ASSERT_EQUAL(copy->sizePokemon, pokemon->sizePokemon);
     CU_ASSERT_EQUAL(copy->position.posx, pokemon->position.posx);
     CU_ASSERT_EQUAL(copy->position.posy, pokemon->position.posy);

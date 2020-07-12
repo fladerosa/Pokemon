@@ -172,6 +172,7 @@ void BS_compact(){
                         previousPartition->offset, dataAux->offset);
                     previousPartition->partition_size += dataAux->partition_size;
                     list_remove(memory.partitions, i);
+                    free(dataAux);
                     mustFinish = true;
                     break;
                 }else{
@@ -189,9 +190,12 @@ void BS_compact(){
 bool sortByState(void* elem1, void* elem2){
     t_data* data1 = elem1, *data2 = elem2;
     if (data1->state == FREE && data2->state == USING){
-        memcpy(memory.data + data1->offset,memory.data + data2->offset, data2->partition_size);
+        void* temp = malloc(data2->partition_size);
+        memcpy(temp, memory.data + data2->offset, data2->partition_size);
+        memcpy(memory.data + data1->offset, temp, data2->partition_size);
         data2->offset = data1->offset;
         data1->offset = data2->offset + data2->partition_size;
+        free(temp);
         return false;
     } else {
         return true;
@@ -237,9 +241,10 @@ void FIFO_destroyPartition(){
         log_info(obligatory_logger, "Se destruye la particion de memoria en la posicion: %d", partitionSelected->offset);
         partitionSelected->state = FREE;
         pthread_mutex_lock(partitionSelected->m_receivers_modify);
-        list_destroy(partitionSelected->receivers);
+        list_destroy_and_destroy_elements(partitionSelected->receivers, free);
         pthread_mutex_unlock(partitionSelected->m_receivers_modify);
         pthread_mutex_destroy(partitionSelected->m_receivers_modify);
+        free(partitionSelected->m_receivers_modify);
         condense(indexFound);
     }
     pthread_mutex_unlock(memory.m_partitions_modify);
@@ -253,6 +258,7 @@ void condense(int indexFound){
             list_remove(memory.partitions, indexFound + 1);
             partitionSelected->partition_size += nextPartition->partition_size;
             partitionSelected->creationTime = timestamp();
+            free(nextPartition);
         }
     }
     if (indexFound - 1 >= 0){
@@ -263,6 +269,7 @@ void condense(int indexFound){
             partitionSelected->size = partitionSelected->partition_size; 
             partitionSelected->offset = previousPartition->offset;
             partitionSelected->creationTime = timestamp();
+            free(previousPartition);
         }
     }
 }
@@ -285,9 +292,10 @@ void LRU_destroyPartition(){
         log_info(obligatory_logger, "Se destruye la particion de memoria en la posicion: %d", partitionSelected->offset);
         partitionSelected->state = FREE;
         pthread_mutex_lock(partitionSelected->m_receivers_modify);
-        list_destroy(partitionSelected->receivers);
+        list_destroy_and_destroy_elements(partitionSelected->receivers, free);
         pthread_mutex_unlock(partitionSelected->m_receivers_modify);
         pthread_mutex_destroy(partitionSelected->m_receivers_modify);
+        free(partitionSelected->m_receivers_modify);
         condense(indexFinded);
     }
     pthread_mutex_unlock(memory.m_partitions_modify);
@@ -371,7 +379,7 @@ void dump_write_time(FILE* file){
 void dump_partitions(FILE* file){
     pthread_mutex_lock(memory.m_partitions_modify);
     uint32_t sizeList = list_size(memory.partitions);
-    char* strFormat_using = "Partición %d: %p - %p. [X] Size: %db LRU: %lu Cola: %d ID:%d\n";
+    char* strFormat_using = "Partición %d: %p - %p. [X] Size: %db LRU: %lld Cola: %d ID:%d\n";
     char* str_using = malloc(strlen(strFormat_using) + sizeof(void*)*2 + sizeof(int) * 4 + sizeof(long));
     char* strFormat_free = "Partición %d: %p - %p. [L] Size: %db\n";
     char* str_free = malloc(strlen(strFormat_free) + sizeof(void*)*2 + sizeof(int) * 2);
@@ -458,9 +466,13 @@ void send_all_messages(t_connection* conn, uint32_t id_queue){
             pthread_mutex_lock(message->m_receivers_modify);
             list_add(message->receivers, receiver);
             pthread_mutex_unlock(message->m_receivers_modify);
+            free(package->buffer);
+            free(package);
+            free(a_enviar);
         }
     }
     list_iterate(queueMessages, sendMessage);
+    list_destroy(queueMessages);
     pthread_mutex_unlock(memory.m_partitions_modify);
 }
 
