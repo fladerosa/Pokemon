@@ -27,9 +27,9 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
     int created = mkdir(directory, ACCESSPERMS);
     if(created == -1){
         printf("%d",errno);
-        printf("No se pudo crear el directorio.");
+        printf("No se pudo crear el directorio.\n");
     }else{
-        printf("Directorio creado o abierto.");
+        printf("Directorio creado o abierto.\n");
     }
     
     createMetadataPokemon(directory, newPokemon);
@@ -38,13 +38,22 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
 void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     char* metadata = "/Metadata.bin";
     char* directorioMetadata = malloc(sizeof(new_pokemon)); //Ver que va adentro del sizeof
-    memcpy(directorioMetadata, directory, strlen(directory));
-    memcpy(directorioMetadata + strlen(directory), metadata, strlen(metadata));
+    strcpy(directorioMetadata,"");
+    strcat(directorioMetadata,directory);
+    //memcpy(directorioMetadata, directory, strlen(directory));
+    strcat(directorioMetadata, metadata);
 
-    FILE* file = fopen(directorioMetadata,"wb");
+    FILE* file = fopen(directorioMetadata,"ab+");
 
+    //fseek(file, 0, SEEK_SET);
+
+    //struct stat st;
+    //stat(directorioMetadata,&st);
+    //int sizeFile = st.st_size;
     fseek(file, 0, SEEK_END);
-    int sizeFile = ftell(file);
+    int sizeFile = ftell(file); //fileno(file);
+    fseek(file, 0, SEEK_SET);
+    fclose(file);
 
     if(sizeFile == 0){
         configMetadataCreate(directorioMetadata);
@@ -56,14 +65,12 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
         fwrite(bin, strlen(bin), 1,file); //NO esta funcionando*/
     }
 
-    if(metadataBlocks() == 0){
+    if(metadataBlocks(directorioMetadata) == 0){
         char* bin = crearBloque(newPokemon);
         addBlockMetadata(directorioMetadata,bin);
     }else{
         agregarDatosYOrdenarBloques(directorioMetadata, newPokemon);
     }
-
-    fclose(file);
     //free(directorioMetadata);
 }
 
@@ -137,6 +144,7 @@ void configMetadataCreate(char* metadata){
     t_config* configMetadataTallGrass = config_create("./cfg/tall_grass_metadata.config");
 
     config_save_in_file(configMetadataTallGrass, metadata);
+    //config_destroy(configMetadataTallGrass);
 }
 
 void addBlockMetadata(char* metadata, char* block){
@@ -180,6 +188,7 @@ void addBlockMetadata(char* metadata, char* block){
 
     fseek(file, 0, SEEK_END);
     int sizeFile = ftell(file);
+    fseek(file, 0, SEEK_SET);
 
     fclose(file);
 
@@ -195,6 +204,7 @@ void addBlockMetadata(char* metadata, char* block){
     config_save(configMetadataTallGrass);
     //bloques[size - 1] = block;
     //char** bloquesMasBloqueNuevo = malloc()
+    //config_destroy(configMetadataTallGrass);
     cerrarMetadata(metadata);
 }
 
@@ -204,6 +214,8 @@ void abrirMetadata(char* metadata){
     config_set_value(configMetadataTallGrass, "OPEN", "Y");
 
     config_save(configMetadataTallGrass);
+
+    //config_destroy(configMetadataTallGrass);
 }
 
 void cerrarMetadata(char* metadata){
@@ -212,6 +224,8 @@ void cerrarMetadata(char* metadata){
     config_set_value(configMetadataTallGrass, "OPEN", "N");
 
     config_save(configMetadataTallGrass);
+
+    //config_destroy(configMetadataTallGrass);
 }
 
 int metadataBlocks(char* metadata){
@@ -220,15 +234,251 @@ int metadataBlocks(char* metadata){
     //char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
 
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil(size / configM.blockSize);
+    int cantidadBloques = ceil((float)size / configM.blockSize);
 
+    //config_destroy(configMetadataTallGrass);
     return cantidadBloques;
 }
 
-void agregarDatosYOrdenarBloques(char* directorioMetadata, new_pokemon newPokemon){
+void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
+    t_config* configMetadataTallGrass = config_create(metadata);
 
+    char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
+    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    int cantidadBloques = ceil((float)size / configM.blockSize);
+
+    char* ultimoBloque = bloques[cantidadBloques-1]; 
+
+    char* directorio = "./TALL_GRASS/Blocks/";
+    char* extension = ".bin";
+
+    char* bloque = malloc(strlen(directorio) + sizeof(char) + strlen(extension));
+    strcpy(bloque,"");
+    strcat(bloque, directorio); 
+    strcat(bloque, ultimoBloque); 
+    strcat(bloque, extension);
+
+    FILE* file = fopen(bloque,"ab+");
+    fseek(file, 0, SEEK_END);
+    int sizeFile = ftell(file);
+    fseek(file,0,SEEK_SET);
+
+    if(sizeFile >= configM.blockSize){
+        char* bin = crearBloque(newPokemon);
+        addBlockMetadata(metadata,bin);
+    }else{
+
+        char* posX = malloc(sizeof(char));
+        strcpy(posX,"");
+        sprintf(posX,"%d",newPokemon->position.posx);//(char); 
+
+        char* posY = malloc(sizeof(char));
+        strcpy(posY,"");
+        sprintf(posY,"%d",newPokemon->position.posy);//(char); 
+
+        char* quantity = malloc(sizeof(char));
+        strcpy(quantity,"");
+        sprintf(quantity,"%d",newPokemon->quantity);//(char); 
+
+        t_list* lista = levantarBloquesAMemoria(bloques, cantidadBloques);
+
+        positionQuantity* posicionNewPokemon = malloc(sizeof(positionQuantity));
+        posicionNewPokemon->posicionX = atoi(posX); 
+        posicionNewPokemon->posicionY = atoi(posY);
+        posicionNewPokemon->cantidad = atoi(quantity);
+
+        positionQuantity* posicionEncontrada = list_find_with_args(lista, coincidePosicion, (void*)posicionNewPokemon);
+
+        if(posicionEncontrada != NULL){
+            posicionEncontrada->cantidad = posicionEncontrada->cantidad + posicionNewPokemon->cantidad;
+        }else{
+            list_add(lista, posicionNewPokemon);
+        }
+
+        bajarBloquesADisco(lista, bloques, cantidadBloques);
+ /*       if(posicionEncontrada == NULL){
+            char* writeBinary = malloc(sizeof(char)); 
+            strcpy(writeBinary,"");
+            memcpy(writeBinary, posX, strlen(posX)); 
+            memcpy(writeBinary + strlen(posX), "-", strlen("-")); 
+            memcpy(writeBinary + strlen(posX) + strlen("-"), posY, strlen(posY));
+            memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY), "=", strlen("="));
+            memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("="), quantity, strlen(quantity));
+            //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity), "\n", strlen("\n"));
+            strcat(writeBinary, "\n");
+
+            fseek(file, 0, SEEK_END);
+            fwrite(writeBinary, strlen(writeBinary), 1, file);
+        }*/
+
+        
+    }
+
+    fclose(file);
+    //config_destroy(configMetadataTallGrass);
 }
 
-void actualizarBitmap(){
+void actualizarBitmap(char* bloque){
+    //bitarray_set_bit(bitmap, bin-1);
+}
+
+t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
+    char* directorio = "./TALL_GRASS/Blocks/";
+    char* extension = ".bin";
+    t_list* listaPosiciones = list_create();
+    int caracterActual = 0; 
+    char buffer[10];
+    memset(buffer,'\0',10);
+    positionQuantity* lineaBloque = malloc(sizeof(positionQuantity));
+    bool posx = true;
+    bool posy = false;
+    bool cant = false;
+        
+    for(int i = 0; i<cantidadBloques; i++){
+        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension));
+
+        strcpy(direccionBinario,"");
+        strcat(direccionBinario,directorio);
+        strcat(direccionBinario,bloques[i]);
+        strcat(direccionBinario,extension);
+
+        FILE* fileBloque = fopen(direccionBinario, "rb");
+        //fseek(fileBloque, 0, SEEK_SET);
+
+        int c; 
+        
+        while((c=fgetc(fileBloque)) != EOF){
+            char position = (char) c; 
+            if(posx){
+                if(isdigit(position)){
+                    buffer[caracterActual] = position;
+                    caracterActual++; //revisar
+                }else{
+                    lineaBloque->posicionX = atoi(buffer);
+                    posx = false;
+                    posy = true;
+                    memset(buffer,'\0',10);
+                    caracterActual = 0;
+                    continue;
+                }     
+            }else if(posy){
+                if(isdigit(position)){
+                    buffer[caracterActual] = position;
+                    caracterActual++; //revisar
+                }else{
+                    lineaBloque->posicionY = atoi(buffer);
+                    posy = false;
+                    cant = true;
+                    memset(buffer,'\0',10);
+                    caracterActual = 0;
+                    continue;
+                } 
+            }else if(cant){
+                if(isdigit(position)){
+                    buffer[caracterActual] = position;
+                    caracterActual++; //revisar
+                }else{
+                    lineaBloque->cantidad = atoi(buffer);
+                    posx = true;
+                    cant = false;
+                    memset(buffer,'\0',10);
+                    caracterActual = 0;
+                    list_add(listaPosiciones, lineaBloque);
+                    lineaBloque = malloc(sizeof(positionQuantity));
+                    continue;
+                } 
+            }
+        }
+        fclose(fileBloque);
+    }
     
+    return listaPosiciones;
+}
+
+bool coincidePosicion(void* elem, void* args){
+    positionQuantity* posLista = (positionQuantity*) elem; 
+    positionQuantity* posNewPokemon = (positionQuantity*) args;
+
+    if(posLista->posicionX == posNewPokemon->posicionX &&
+        posLista->posicionY == posNewPokemon->posicionY){
+            return true;
+    }
+    return false; 
+}
+
+void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
+    t_list* writeListBinary = list_map(lista, structALinea);
+    char* listaConcatenada = (char*)list_fold(writeListBinary, "", concatenarStrings);
+    int j=0;
+    char* directorio = "./TALL_GRASS/Blocks/";
+    char* extension = ".bin";
+    for(int i = 0; i<cantidadBloques; i++){
+        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension));
+
+        strcpy(direccionBinario,"");
+        strcat(direccionBinario,directorio);
+        strcat(direccionBinario,bloques[i]);
+        strcat(direccionBinario,extension);
+
+        FILE* fileBloque = fopen(direccionBinario, "wb");
+
+        int sizeArchivo = 0; 
+        char* escrituraArchivo = malloc(configM.blockSize);
+
+        while(sizeArchivo < configM.blockSize){
+            if(strlen(listaConcatenada) < j){
+                break;
+            }
+            fputc(listaConcatenada[j],fileBloque);
+            j++;
+            sizeArchivo++;
+            //fwrite(,1,fileBloque);
+        }
+
+        fclose(fileBloque);
+    
+    }
+}
+
+void* structALinea(void* posicion){
+    positionQuantity* lineaStruct = (positionQuantity*)posicion;
+
+    char* posX = malloc(sizeof(char));
+    strcpy(posX,"");
+    sprintf(posX,"%d",lineaStruct->posicionX);//(char); 
+
+    char* posY = malloc(sizeof(char));
+    strcpy(posY,"");
+    sprintf(posY,"%d",lineaStruct->posicionY);//(char); 
+
+    char* quantity = malloc(sizeof(char));
+    strcpy(quantity,"");
+    sprintf(quantity,"%d",lineaStruct->cantidad);//(char); 
+
+    char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity) + 1); 
+    strcpy(writeBinary,"");
+    strcat(writeBinary,posX);
+    strcat(writeBinary,"-");
+    strcat(writeBinary,posY);
+    strcat(writeBinary, "=");
+    strcat(writeBinary,quantity);
+    strcat(writeBinary, "\n");
+    //memcpy(writeBinary, posX, strlen(posX)); 
+    //memcpy(writeBinary + strlen(posX), "-", strlen("-")); 
+    //memcpy(writeBinary + strlen(posX) + strlen("-"), posY, strlen(posY));
+    //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY), "=", strlen("="));
+    //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("="), quantity, strlen(quantity));
+    //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity), "\n", strlen("\n"));
+    //strcat(writeBinary, "\n");
+
+    return (void*)writeBinary;
+}
+
+void* concatenarStrings(void* str1, void* str2){
+    char* concatenacion = malloc(strlen(str1) + strlen(str2) + 1);
+    strcpy(concatenacion,"");
+    strcat(concatenacion, str1);
+    strcat(concatenacion, str2); 
+
+    return (void*)concatenacion;
 }
