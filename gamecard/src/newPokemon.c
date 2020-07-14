@@ -20,7 +20,7 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
     strcat(buffer, directorio);
     strcat(buffer, stream);
 
-    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon + 1); 
+    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon + 2); //revisar 
     memcpy(directory, buffer, strlen(directorio) + newPokemon->sizePokemon + 1);
     memcpy(directory + strlen(directorio) + newPokemon->sizePokemon + 1, "\0", sizeof(char));
     //directory[strlen(directorio) + newPokemon->sizePokemon + 1] = '\0';
@@ -40,7 +40,7 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
 
 void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     char* metadata = "/Metadata.bin";
-    char* directorioMetadata = malloc(strlen(directory) + strlen(metadata)); //Ver que va adentro del sizeof
+    char* directorioMetadata = malloc(strlen(directory) + strlen(metadata) + 1); //Ver que va adentro del sizeof
     strcpy(directorioMetadata,"");
     strcat(directorioMetadata,directory);
     //memcpy(directorioMetadata, directory, strlen(directory));
@@ -104,15 +104,15 @@ char* crearBloque(new_pokemon* newPokemon){
             
             FILE* binary = fopen(directorioBloques,"wb"); 
 
-            char* posX = malloc(sizeof(char));
+            char* posX = malloc(10);
             strcpy(posX,"");
             sprintf(posX,"%d",newPokemon->position.posx);//(char); 
 
-            char* posY = malloc(sizeof(char));
+            char* posY = malloc(10);
             strcpy(posY,"");
             sprintf(posY,"%d",newPokemon->position.posy);//(char); 
 
-            char* quantity = malloc(sizeof(char));
+            char* quantity = malloc(10);
             strcpy(quantity,"");
             sprintf(quantity,"%d",newPokemon->quantity);//(char); 
 
@@ -257,7 +257,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
 
-    char* bloque = malloc(strlen(directorio) + sizeof(char) + strlen(extension));
+    char* bloque = malloc(strlen(directorio) + sizeof(char) + strlen(extension)+1);
     strcpy(bloque,"");
     strcat(bloque, directorio); 
     strcat(bloque, ultimoBloque); 
@@ -273,15 +273,15 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
         addBlockMetadata(metadata,bin);
     }else{
 
-        char* posX = malloc(sizeof(char));
+        char* posX = malloc(10);
         strcpy(posX,"");
         sprintf(posX,"%d",newPokemon->position.posx);//(char); 
 
-        char* posY = malloc(sizeof(char));
+        char* posY = malloc(10);
         strcpy(posY,"");
         sprintf(posY,"%d",newPokemon->position.posy);//(char); 
 
-        char* quantity = malloc(sizeof(char));
+        char* quantity = malloc(10);
         strcpy(quantity,"");
         sprintf(quantity,"%d",newPokemon->quantity);//(char); 
 
@@ -460,15 +460,15 @@ void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
 void* structALinea(void* posicion){
     positionQuantity* lineaStruct = (positionQuantity*)posicion;
 
-    char* posX = malloc(sizeof(char));
+    char* posX = malloc(10);
     strcpy(posX,"");
     sprintf(posX,"%d",lineaStruct->posicionX);//(char); 
 
-    char* posY = malloc(sizeof(char));
+    char* posY = malloc(10);
     strcpy(posY,"");
     sprintf(posY,"%d",lineaStruct->posicionY);//(char); 
 
-    char* quantity = malloc(sizeof(char));
+    char* quantity = malloc(10);
     strcpy(quantity,"");
     sprintf(quantity,"%d",lineaStruct->cantidad);//(char); 
 
@@ -500,7 +500,7 @@ void* concatenarStrings(void* str1, void* str2){
     strcat(concatenacion, str1);
     strcat(concatenacion, str2); 
     
-    free(str1);
+    //free(str1);
     free(str2);
     return (void*)concatenacion;
 }
