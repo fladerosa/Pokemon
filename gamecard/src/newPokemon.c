@@ -129,6 +129,10 @@ char* crearBloque(new_pokemon* newPokemon){
             fwrite(writeBinary, strlen(writeBinary), 1, binary);
             fclose(binary);
             bitarray_set_bit(bitmap, bin-1);
+            free(posX);
+            free(posY);
+            free(quantity);
+            free(directorioBloques);
             //imprimirBITARRAY(bitmap);
             return binChar;
             break; 
@@ -146,7 +150,7 @@ void configMetadataCreate(char* metadata){
     t_config* configMetadataTallGrass = config_create("./cfg/tall_grass_metadata.config");
 
     config_save_in_file(configMetadataTallGrass, metadata);
-    //config_destroy(configMetadataTallGrass);
+    config_destroy(configMetadataTallGrass);
 }
 
 void addBlockMetadata(char* metadata, char* block){
@@ -209,8 +213,9 @@ void addBlockMetadata(char* metadata, char* block){
     config_save(configMetadataTallGrass);
     //bloques[size - 1] = block;
     //char** bloquesMasBloqueNuevo = malloc()
-    //config_destroy(configMetadataTallGrass);
+    config_destroy(configMetadataTallGrass);
     cerrarMetadata(metadata);
+    free(bloque);
 }
 
 void abrirMetadata(char* metadata){
@@ -220,7 +225,7 @@ void abrirMetadata(char* metadata){
 
     config_save(configMetadataTallGrass);
 
-    //config_destroy(configMetadataTallGrass);
+    config_destroy(configMetadataTallGrass);
 }
 
 void cerrarMetadata(char* metadata){
@@ -230,7 +235,7 @@ void cerrarMetadata(char* metadata){
 
     config_save(configMetadataTallGrass);
 
-    //config_destroy(configMetadataTallGrass);
+    config_destroy(configMetadataTallGrass);
 }
 
 int metadataBlocks(char* metadata){
@@ -346,7 +351,7 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
     bool cant = false;
         
     for(int i = 0; i<cantidadBloques; i++){
-        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension));
+        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension) + 1);
 
         strcpy(direccionBinario,"");
         strcat(direccionBinario,directorio);
@@ -421,12 +426,12 @@ bool coincidePosicion(void* elem, void* args){
 
 void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
     t_list* writeListBinary = list_map(lista, structALinea);
-    char* listaConcatenada = (char*)list_fold(writeListBinary, "", concatenarStrings);
+    char* listaConcatenada = concatenarStrings(writeListBinary);
     int j=0;
     char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
     for(int i = 0; i<cantidadBloques; i++){
-        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension));
+        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension) + 1);
 
         strcpy(direccionBinario,"");
         strcat(direccionBinario,directorio);
@@ -451,7 +456,7 @@ void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
     }
 
     //list_destroy_and_destroy_elements(lista,free);
-    //list_destroy_and_destroy_elements(writeListBinary, free);
+    list_destroy_and_destroy_elements(writeListBinary, free);
     //free(directorio);
     //free(extension);
     free(listaConcatenada);
@@ -472,7 +477,7 @@ void* structALinea(void* posicion){
     strcpy(quantity,"");
     sprintf(quantity,"%d",lineaStruct->cantidad);//(char); 
 
-    char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity) + 1); 
+    char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity) + 3); 
     strcpy(writeBinary,"");
     strcat(writeBinary,posX);
     strcat(writeBinary,"-");
@@ -494,13 +499,17 @@ void* structALinea(void* posicion){
     return (void*)writeBinary;
 }
 
-void* concatenarStrings(void* str1, void* str2){
-    char* concatenacion = malloc(strlen(str1) + strlen(str2) + 1);
-    strcpy(concatenacion,"");
-    strcat(concatenacion, str1);
-    strcat(concatenacion, str2); 
-    
-    //free(str1);
-    free(str2);
-    return (void*)concatenacion;
+char* concatenarStrings(t_list* lista){
+    uint32_t tamano = 0;
+    for(int i = 0; i<list_size(lista); i++){
+        tamano += strlen(list_get(lista, i));
+    }
+    tamano++;
+    char* concatenacion = malloc(tamano);
+
+    for(int i = 0; i<list_size(lista); i++){
+        strcat(concatenacion, list_get(lista,i));
+    }
+
+    return concatenacion;
 }

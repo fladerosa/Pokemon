@@ -30,7 +30,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon);
 t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques);
 bool coincidePosicion(void* elem, void* args);
 void* structALinea(void* posicion);
-void* concatenarStrings(void* str1, void* str2);
+char* concatenarStrings(t_list* lista);
 void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques);
 
 #endif

@@ -297,7 +297,7 @@ new_connection* stream_to_new_connection(void* stream){
 }
 
 void* new_connection_to_stream(new_connection* newConnectionMessage){
-    void* stream = malloc(sizeof(new_connection)); 
+    void* stream = malloc(4); 
     return stream;
 }
 
@@ -446,7 +446,7 @@ subscribe* init_subscribe(uint32_t id_queue){
 }
 
 void free_new_pokemon(new_pokemon* pokemon){
-    //if(pokemon->pokemon) free(pokemon->pokemon);
+    free(pokemon->pokemon);
     free(pokemon);
 }
 
