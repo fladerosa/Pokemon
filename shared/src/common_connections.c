@@ -111,6 +111,7 @@ void serve_client(void* processor){
         t_connection* conn = list_find_with_args(connections, has_socket_fd, (void*) socket);
         if (conn){
             conn->is_connected = false;
+            conn->socket = 0;
         }
         pthread_mutex_unlock(&m_connections);     
     }

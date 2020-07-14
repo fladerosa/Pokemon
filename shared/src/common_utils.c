@@ -508,7 +508,7 @@ void* list_find_with_args(t_list *self, bool(*condition)(void*, void*), void* ar
 }
 
 bool has_socket_fd(void* data, void* socket){
-    return data ? ((t_connection*) data)->socket == (uint32_t) socket : false;
+    return data ? ((t_connection*) data)->socket == (uint32_t) socket && ((t_connection*) data)->is_connected: false;
 }
 
 int strlenNewLine (const char *str){
