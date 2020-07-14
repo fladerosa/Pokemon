@@ -16,6 +16,8 @@ void initializeMemory(){
     pthread_mutex_init(memory.m_failed_search_modify, NULL );
     t_data* data = malloc(sizeof(t_data));
     data->size = memory.configuration.size;
+    data->id = 0;
+    data->id_correlational = 0;
     data->partition_size = data->size;
     data->offset = 0;
     data->state = FREE;
@@ -312,6 +314,8 @@ void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
         newData->partition_size = freePartitionData->partition_size;
         newData->offset = freePartitionData->offset + freePartitionData->partition_size;
         newData->state = FREE;
+        newData->id = 0;
+        newData->id_correlational = 0;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_add(memory.partitions, newData);
         pthread_mutex_unlock(memory.m_partitions_modify);
@@ -320,6 +324,8 @@ void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
         freePartitionData->creationTime = timestamp();
         freePartitionData->lastTimeUsed = freePartitionData->creationTime;
         freePartitionData->state = USING;
+        freePartitionData->id = 0;
+        freePartitionData->id_correlational = 0;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_sort(memory.partitions, _offsetAscending);
         pthread_mutex_unlock(memory.m_partitions_modify);
@@ -335,6 +341,8 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
         newData->size = newData->partition_size;
         newData->offset = freePartitionData->offset + sizeData;
         newData->state = FREE;
+        newData->id = 0;
+        newData->id_correlational = 0;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_add(memory.partitions, newData);
         list_sort(memory.partitions, _offsetAscending);
@@ -342,6 +350,8 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
     }
     freePartitionData->partition_size = sizeData;
     freePartitionData->size = sizeData;
+    freePartitionData->id = 0;
+    freePartitionData->id_correlational = 0;
     freePartitionData->creationTime = timestamp();
     freePartitionData->lastTimeUsed = freePartitionData->creationTime;
     freePartitionData->state = USING;
@@ -409,19 +419,24 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
         case CATCH_POKEMON:
         case GET_POKEMON:
             sizeofdata = sizeofrawstream - sizeof(uint32_t);
-            freePartition = seekPartitionAvailable(sizeofdata);
             break;
         case APPEARED_POKEMON:
         case CAUGHT_POKEMON:
         case LOCALIZED_POKEMON:
             sizeofdata = sizeofrawstream - 2 * sizeof(uint32_t);
-            freePartition = seekPartitionAvailable(sizeofdata);
-            memcpy(&freePartition->id_correlational, stream + sizeofdata + sizeof(uint32_t), sizeof(uint32_t));
             break;
         default:
             return NULL;
     }
+    freePartition = seekPartitionAvailable(sizeofdata);
     allocateData(sizeofdata, freePartition);
+    switch(id_queue){
+        case APPEARED_POKEMON:
+        case CAUGHT_POKEMON:
+        case LOCALIZED_POKEMON:
+            memcpy(&freePartition->id_correlational, stream + sizeofdata + sizeof(uint32_t), sizeof(uint32_t));
+        default:;
+    }
     log_debug(optional_logger, "Creating new partition at position: %d", freePartition->offset);
     log_info(obligatory_logger, "Se almacena un mensaje en memoria en la posicion: %d", freePartition->offset);
     void* data = memory.data + freePartition->offset;
@@ -455,8 +470,22 @@ void send_all_messages(t_connection* conn, uint32_t id_queue){
         pthread_mutex_unlock(message->m_receivers_modify);
         if(rec == NULL){
             log_info(obligatory_logger, "Se envía el mensaje ID %d al proceso con ID %d", message->id, conn->id_connection);
-            void* stream = memory.data + message->offset;
-            t_paquete* package = stream_to_package(id_queue, stream, message->size);
+            void* mensaje = memory.data + message->offset;
+            void* stream;
+            uint32_t buffer_size;
+            if(message->id_correlational){
+                buffer_size = message->size + 2*sizeof(uint32_t);
+                stream = malloc(buffer_size);
+                memcpy(stream, mensaje, message->size);
+                memcpy(stream + message->size, &message->id, sizeof(uint32_t));
+                memcpy(stream + message->size + sizeof(uint32_t), &message->id_correlational, sizeof(uint32_t));
+            } else {
+                buffer_size = message->size + sizeof(uint32_t);
+                stream = malloc(buffer_size);
+                memcpy(stream, mensaje, message->size);
+                memcpy(stream + message->size, &message->id, sizeof(uint32_t));
+            }
+            t_paquete* package = stream_to_package(id_queue, stream, buffer_size);
             void* a_enviar = serializar_paquete(package,sizeof(uint32_t)*2 + package->buffer->size);
             send(conn->socket, a_enviar, sizeof(uint32_t)*2 + package->buffer->size, 0);
             message->lastTimeUsed = timestamp();
