@@ -154,7 +154,7 @@ void handle_ack(uint32_t client_fd, ack* acknowledgement){
             message->receivers, 
             receiver_has_socket_fd,
             (void*) client_fd);
-        pthread_mutex_lock(message->m_receivers_modify);
+        pthread_mutex_unlock(message->m_receivers_modify);
         if(receiver){
             log_info(obligatory_logger, "Se confirma la recepción del mensaje ID %d por parte del proceso ID %d", 
                 message->id, receiver->conn->id_connection);

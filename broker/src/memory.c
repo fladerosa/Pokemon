@@ -463,7 +463,7 @@ void send_all_messages(t_connection* conn, uint32_t id_queue){
     void sendMessage(void* data){
         t_data* message = data;
         bool hasReceiver(void* receiver){
-            return ((t_receiver*) receiver)->conn->id_connection == conn->id_connection;
+            return ((t_receiver*) receiver)->conn->id_connection == conn->id_connection && ((t_receiver*) receiver)->conn->is_connected;
         }
         pthread_mutex_lock(message->m_receivers_modify);
         t_receiver* rec = list_find(message->receivers, hasReceiver);
