@@ -19,8 +19,7 @@ void initializeMemory(){
     data->partition_size = data->size;
     data->offset = 0;
     data->state = FREE;
-    data->id = 0;
-    data->id_correlational = 0;
+
     list_add(memory.partitions, data);
 }
 
@@ -313,8 +312,6 @@ void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
         newData->partition_size = freePartitionData->partition_size;
         newData->offset = freePartitionData->offset + freePartitionData->partition_size;
         newData->state = FREE;
-        newData->id = 0;
-        newData->id_correlational = 0;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_add(memory.partitions, newData);
         pthread_mutex_unlock(memory.m_partitions_modify);
@@ -323,8 +320,6 @@ void BS_allocateData(uint32_t sizeData, t_data* freePartitionData){
         freePartitionData->creationTime = timestamp();
         freePartitionData->lastTimeUsed = freePartitionData->creationTime;
         freePartitionData->state = USING;
-        freePartitionData->id = 0;
-        freePartitionData->id_correlational = 0;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_sort(memory.partitions, _offsetAscending);
         pthread_mutex_unlock(memory.m_partitions_modify);
@@ -340,8 +335,6 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
         newData->size = newData->partition_size;
         newData->offset = freePartitionData->offset + sizeData;
         newData->state = FREE;
-        newData->id = 0;
-        newData->id_correlational = 0;
         pthread_mutex_lock(memory.m_partitions_modify);
         list_add(memory.partitions, newData);
         list_sort(memory.partitions, _offsetAscending);
@@ -349,8 +342,6 @@ void DP_allocateData(uint32_t sizeData, t_data* freePartitionData){
     }
     freePartitionData->partition_size = sizeData;
     freePartitionData->size = sizeData;
-    freePartitionData->id = 0;
-    freePartitionData->id_correlational = 0;
     freePartitionData->creationTime = timestamp();
     freePartitionData->lastTimeUsed = freePartitionData->creationTime;
     freePartitionData->state = USING;
