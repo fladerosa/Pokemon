@@ -428,6 +428,13 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
         default:
             return NULL;
     }
+    if(sizeofdata > memory.configuration.size){
+        log_info(optional_logger, 
+            "El tamano del mensaje (%db) es mayor a la capacidad de la memoria(%db). Se ingorara el mensaje.",
+            sizeofdata, memory.configuration.size
+        );
+        return NULL;
+    }
     freePartition = seekPartitionAvailable(sizeofdata);
     allocateData(sizeofdata, freePartition);
     switch(id_queue){
