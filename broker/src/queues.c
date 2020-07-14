@@ -94,8 +94,22 @@ void queue_message_sender(void* args){
             t_connection* conn = list_get(queue->subscribers, i);
             if(conn->is_connected){
                 log_info(obligatory_logger, "Se envía el mensaje ID %d al proceso con ID %d", message->id, conn->id_connection);
-                void* stream = memory.data + message->offset;
-                t_paquete* package = stream_to_package(queue->id_queue, stream, message->size);
+                void* mensaje = memory.data + message->offset;
+                void* stream;
+                uint32_t buffer_size;
+                if (message->id_correlational){
+                    buffer_size = message->size + 2*sizeof(uint32_t));
+                    stream = malloc(buffer_size);
+                    memcpy(stream, mensaje, message->size);
+                    memcpy(stream, &message->id, sizeof(uint32_t));
+                    memcpy(stream, &message->id_correlational, sizeof(uint32_t));                    
+                } else {
+                    buffer_size = message->size + sizeof(uint32_t));
+                    stream = malloc(buffer_size);
+                    memcpy(stream, mensaje, message->size);
+                    memcpy(stream, &message->id, sizeof(uint32_t)); 
+                }
+                t_paquete* package = stream_to_package(queue->id_queue, stream, buffer_size);
                 void* a_enviar = serializar_paquete(package,sizeof(uint32_t)*2 + package->buffer->size);
                 send(conn->socket, a_enviar, sizeof(uint32_t)*2 + package->buffer->size, 0);
                 message->lastTimeUsed = timestamp();
