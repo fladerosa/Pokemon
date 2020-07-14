@@ -12,7 +12,7 @@
 void newPokemonTallGrass(new_pokemon* newPokemon){
     char* directorio = "./TALL_GRASS/Files/";
     char buffer[50];   
-    char* stream = malloc(sizeof(new_pokemon)); //Ver que va adentro del sizeof
+    char* stream = malloc(newPokemon->sizePokemon + 1); //Ver que va adentro del sizeof
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
     stream[newPokemon->sizePokemon] = '\0';
 
@@ -20,9 +20,10 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
     strcat(buffer, directorio);
     strcat(buffer, stream);
 
-    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon); 
-    memcpy(directory, buffer, strlen(directorio) + newPokemon->sizePokemon);
-    directory[strlen(directorio) + newPokemon->sizePokemon] = '\0';
+    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon + 1); 
+    memcpy(directory, buffer, strlen(directorio) + newPokemon->sizePokemon + 1);
+    memcpy(directory + strlen(directorio) + newPokemon->sizePokemon + 1, "\0", sizeof(char));
+    //directory[strlen(directorio) + newPokemon->sizePokemon + 1] = '\0';
 
     int created = mkdir(directory, ACCESSPERMS);
     if(created == -1){
@@ -33,11 +34,13 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
     }
     
     createMetadataPokemon(directory, newPokemon);
+    free(directory);
+    free(stream);
 }
 
 void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     char* metadata = "/Metadata.bin";
-    char* directorioMetadata = malloc(sizeof(new_pokemon)); //Ver que va adentro del sizeof
+    char* directorioMetadata = malloc(strlen(directory) + strlen(metadata)); //Ver que va adentro del sizeof
     strcpy(directorioMetadata,"");
     strcat(directorioMetadata,directory);
     //memcpy(directorioMetadata, directory, strlen(directory));
@@ -71,16 +74,14 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     }else{
         agregarDatosYOrdenarBloques(directorioMetadata, newPokemon);
     }
-    //free(directorioMetadata);
+    
+    free(directorioMetadata);
 }
 
 char* crearBloque(new_pokemon* newPokemon){
     char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
 
-    //FILE* bitmap = fopen("./TALL_GRASS/Metadata/Bitmap.bin", "wb+");
-
-    char ch;
     size_t sizeBitmap = bitarray_get_max_bit(bitmap);
     int bin = 1;  
     while(bin <= (int)sizeBitmap + 1){
@@ -137,6 +138,7 @@ char* crearBloque(new_pokemon* newPokemon){
     }
 
     //fclose(bitmap);
+    return NULL;
 }
 
 
@@ -162,11 +164,14 @@ void addBlockMetadata(char* metadata, char* block){
     strcpy(bloquesConfig,"");
     //bloques = realloc(bloques, sizeof(char*)*(size+1));
     //bloques[size] = block;
+
     strcat(bloquesConfig,"[");
-    for(int i = 0; i < (cantidadBloques*2); i++){
-        bloquesConfig[i]=*bloques[i];
-        bloquesConfig[i++]=",";
-        i++;
+    for(int i = 0; i < (cantidadBloques*2); (i = i + 2)){
+        strcat(bloquesConfig,bloques[i]);
+        strcat(bloquesConfig,",");
+        //bloquesConfig[i]=*bloques[i];
+        //bloquesConfig[i++]=",";
+        //i++;
     }
     strcat(bloquesConfig,block); 
     strcat(bloquesConfig,"]");
@@ -236,7 +241,7 @@ int metadataBlocks(char* metadata){
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
     int cantidadBloques = ceil((float)size / configM.blockSize);
 
-    //config_destroy(configMetadataTallGrass);
+    config_destroy(configMetadataTallGrass);
     return cantidadBloques;
 }
 
@@ -311,11 +316,17 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
             fwrite(writeBinary, strlen(writeBinary), 1, file);
         }*/
 
-        
+        list_destroy_and_destroy_elements(lista,free);
+        free(posicionNewPokemon);
+        free(posY);
+        free(posX);
+        free(quantity);
     }
 
     fclose(file);
-    //config_destroy(configMetadataTallGrass);
+    config_destroy(configMetadataTallGrass);
+    free(bloque);
+    free(bloques);
 }
 
 void actualizarBitmap(char* bloque){
@@ -390,8 +401,10 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
             }
         }
         fclose(fileBloque);
+        free(direccionBinario);
     }
     
+    free(lineaBloque);
     return listaPosiciones;
 }
 
@@ -423,7 +436,6 @@ void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
         FILE* fileBloque = fopen(direccionBinario, "wb");
 
         int sizeArchivo = 0; 
-        char* escrituraArchivo = malloc(configM.blockSize);
 
         while(sizeArchivo < configM.blockSize){
             if(strlen(listaConcatenada) < j){
@@ -432,12 +444,17 @@ void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
             fputc(listaConcatenada[j],fileBloque);
             j++;
             sizeArchivo++;
-            //fwrite(,1,fileBloque);
         }
 
         fclose(fileBloque);
-    
+        free(direccionBinario);
     }
+
+    //list_destroy_and_destroy_elements(lista,free);
+    //list_destroy_and_destroy_elements(writeListBinary, free);
+    //free(directorio);
+    //free(extension);
+    free(listaConcatenada);
 }
 
 void* structALinea(void* posicion){
@@ -471,6 +488,9 @@ void* structALinea(void* posicion){
     //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity), "\n", strlen("\n"));
     //strcat(writeBinary, "\n");
 
+    free(posX);
+    free(posY);
+    free(quantity);
     return (void*)writeBinary;
 }
 
@@ -479,6 +499,8 @@ void* concatenarStrings(void* str1, void* str2){
     strcpy(concatenacion,"");
     strcat(concatenacion, str1);
     strcat(concatenacion, str2); 
-
+    
+    free(str1);
+    free(str2);
     return (void*)concatenacion;
 }

@@ -24,36 +24,13 @@
 }*/
 
 void obtenerConfig(){
-    FILE* file; 
-    char buffer[25];
-    char BLOCKS[4];
-    char BLOCKSIZE[2];
-    uint32_t j=0;
 
-    file = fopen("./TALL_GRASS/Metadata/Metadata.bin","rb");
+    t_config* configMetadata = config_create("./TALL_GRASS/Metadata/Metadata.bin");
 
-    fread(buffer,sizeof(buffer),1,file);
+    configM.blockSize = config_get_int_value(configMetadata, "BLOCK_SIZE");
+    configM.blocks = config_get_int_value(configMetadata, "BLOCKS");
 
-    for(int i = 11; i<13; i++){
-        if(buffer[i] == "\n"){
-            break;
-        }
-        
-        BLOCKSIZE[j] = buffer[i];
-        j++;
-    }
-    configM.blockSize = atoi(BLOCKSIZE);
-    j=0;
-    for(int i = 21; i<25; i++){
-        if(buffer[i] == "\n"){
-            break;
-        }
-
-        BLOCKS[j] = buffer[i];
-        j++;
-    }
-    configM.blocks = atoi(BLOCKS);
-    fclose(file);
+    config_destroy(configMetadata);
 }
 
 void crearArchivoBitmap(){

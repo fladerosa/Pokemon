@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <commons/string.h>
 
 typedef struct{
     uint32_t blocks;
@@ -18,5 +19,6 @@ t_bitarray* bitmap;
 //void crearBloques();
 void obtenerConfig();
 void crearBitmap();
+void iniciarTallGrass();
 
 #endif

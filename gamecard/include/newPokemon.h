@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include "fileSystemTallGrass.h"
 #include <math.h>
+#include <commons/string.h>
+#include <ctype.h>
 
 char* crearBloque(new_pokemon* newPokemon);
 
@@ -29,5 +31,6 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques);
 bool coincidePosicion(void* elem, void* args);
 void* structALinea(void* posicion);
 void* concatenarStrings(void* str1, void* str2);
+void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques);
 
 #endif

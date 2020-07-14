@@ -3,7 +3,7 @@
 
 #include "common_utils.h"
 #include "fileSystemTallGrass.h"
-
+#include "newPokemon.h"
 typedef struct
 {
     uint32_t idCola;
@@ -26,6 +26,7 @@ threadSubscribe* structCatchPokemon;
 threadSubscribe* structGetPokemon;
 
 t_list* threadSubscribeList; 
+pthread_mutex_t mutexthreadSubscribeList;
 
 
 void iniciarGameCard();
