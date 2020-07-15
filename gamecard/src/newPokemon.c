@@ -327,7 +327,6 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
         }*/
 
         list_destroy_and_destroy_elements(lista,free);
-        free(posicionEncontrada);
         free(posY);
         free(posX);
         free(quantity);
