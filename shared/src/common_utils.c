@@ -446,7 +446,7 @@ subscribe* init_subscribe(uint32_t id_queue){
 }
 
 void free_new_pokemon(new_pokemon* pokemon){
-    free(pokemon->pokemon);
+    //if(pokemon->pokemon) free(pokemon->pokemon);
     free(pokemon);
 }
 
