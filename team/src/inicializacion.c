@@ -128,7 +128,7 @@ void assign_data_trainer() {
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
         }
     }
-     
+
    return;
 }
 
