@@ -297,7 +297,7 @@ new_connection* stream_to_new_connection(void* stream){
 }
 
 void* new_connection_to_stream(new_connection* newConnectionMessage){
-    void* stream = malloc(4); 
+    void* stream = malloc(sizeof(new_connection)); 
     return stream;
 }
 

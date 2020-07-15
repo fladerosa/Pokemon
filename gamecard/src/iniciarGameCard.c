@@ -97,10 +97,10 @@ void suscribirseATodo(){
     uint32_t socket_new_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
     crearSuscripcion(socket_new_pokemon, NEW_POKEMON, &suscripcionNewPokemon);
     
-    uint32_t socket_catch_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
+   // uint32_t socket_catch_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
     //crearSuscripcion(socket_catch_pokemon, CATCH_POKEMON, &suscripcionCatchPokemon);
 
-    uint32_t socket_get_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    //uint32_t socket_get_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
     //crearSuscripcion(socket_get_pokemon, GET_POKEMON, &suscripcionGetPokemon);
 }
 

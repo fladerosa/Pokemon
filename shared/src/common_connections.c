@@ -260,7 +260,7 @@ void send_new_connection(uint32_t socket_broker){
     paquete->buffer->size = sizeof(uint32_t); 
     paquete->buffer->stream = new_connection_to_stream(newConnection);
 
-    uint32_t bytes = paquete->buffer->size + 3*sizeof(uint32_t);
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
 
     void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
