@@ -53,6 +53,7 @@ typedef struct{
 } t_configuration;
 
 t_list* trainers; //List of type t_trainer
+t_list* pokemonNeededTeam; //List of total pokemon needed
 t_configuration config_values; //Values readed from tema.config
 
 //hilo por entrenador

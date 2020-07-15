@@ -14,9 +14,6 @@ void planificarProcesoFIFO(){};
 void planificarProcesoRR(){};
 void planificarProcesoSJF_SD(){};
 void planificarProcesoSJF_CD(){};
-void create_state_queue() {
-ready_queue = queue_create();
-finish_queue = queue_create();
 
-}
+
 

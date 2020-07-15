@@ -70,6 +70,7 @@ void assign_data_trainer() {
 
     trainers = list_create();
     t_trainer *data_trainer;
+
     char** init_position = config_get_array_value(config, "POSICIONES_ENTRENADORES");
     char** pokemonOwns = config_get_array_value(config, "POKEMON_ENTRENADORES");
     char** pokemonNeeds = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
@@ -114,7 +115,7 @@ void assign_data_trainer() {
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
         }
     }
-     
+
    return;
 }
 
