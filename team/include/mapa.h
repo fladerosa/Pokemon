@@ -8,13 +8,6 @@
 #include "inicializacion.h"
 
 typedef struct {
-            t_list* time_cpu_trainer;
-            uint32_t total_time_cpu_team;
-            uint32_t total_context_switch;
-
-}t_metrics;
-
-typedef struct {
             char* pokemon;
             t_position position;
 }t_pokemon_receive;

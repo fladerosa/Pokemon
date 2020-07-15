@@ -5,7 +5,7 @@
 #include <string.h>
 
 void initialize_team() { 
-    threadSubscribeList = list_create();   
+      
     read_config();
     create_obligatory_logger();
     create_optional_logger();
@@ -21,6 +21,7 @@ void initialize_team() {
     pthread_join(suscripcionCaughtPokemon,NULL);
     pthread_join(suscripcionLocalizedPokemon,NULL);
 
+    send_get_pokemon_global_team(socket_team, globalObjetive);
    
 }
 

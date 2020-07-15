@@ -43,13 +43,14 @@ void connection_broker_suscribe_to_localized_pokemon(op_code, pthread_t);
 args_pthread* thread_suscribe_arguments(op_code, uint32_t);
 void suscribeOnThreadList(args_pthread*);
 void listen_to_gameboy();
+void reception_message_gameboy(uint32_t, uint32_t, uint32_t);
 void reception_message_queue_subscription(uint32_t, uint32_t, uint32_t);
 bool compareSockets(void*, void*);
 void close_sockets();
 void retry_on_x_time();
 caught_pokemon* caught_default();
 uint32_t localized_default(char*);
-void send_message_queue_init(uint32_t, uint32_t, uint32_t);
+void send_get_pokemon_global_team(uint32_t, t_list*);
 
 
 

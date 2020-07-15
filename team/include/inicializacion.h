@@ -39,6 +39,7 @@ typedef struct
     enum_process_state state;
 } threadTrainer;*/
 
+//hilos de entrenador / metricas de algoritmos
 typedef struct {
     uint32_t idTrainer;
     enum_process_state state;

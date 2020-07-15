@@ -117,10 +117,24 @@ void suscribeOnThreadList(args_pthread* arguments){
 
 void listen_to_gameboy() { 
    start_server(config_values.ip_team, config_values.puerto_team, request);
-
    pthread_create(&listening_gameboy, NULL, (void*)listen_to_gameboy, NULL);
-   //pthread_join(server, NULL);
-   //mandar mensaje de confirmacion cuando el gameboy me mande appeared_pokemon()
+ 
+}
+
+void reception_message_gameboy(uint32_t code, uint32_t sizeofstruct, uint32_t client_fd) {
+    void* stream = malloc(sizeofstruct);
+    uint32_t* id_message = malloc(sizeof(uint32_t));
+    recv(client_fd, stream, sizeofstruct, MSG_WAITALL);
+    
+    if(code == APPEARED_POKEMON){  
+       appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, NULL, false); 
+       log_info(optional_logger, "Receiving Message Appeared pokemon by Gameboy.");
+       log_info(optional_logger, "Pokemon Appeared %s: ", appeared_pokemon_Message->pokemon);
+       log_info(optional_logger, "Position on x", appeared_pokemon_Message->position.posx); 
+       log_info(optional_logger, "Position on y", appeared_pokemon_Message->position.posy); 
+            send_ack(client_fd, *id_message);
+
+    }
 }
 
 void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, uint32_t client_fd) {
@@ -131,12 +145,18 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
     switch(code){
         case APPEARED_POKEMON:;
             appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, NULL, false); 
-            log_info(optional_logger, "Receiving Message Appeared pokemon %s in position %d.", appeared_pokemon_Message->pokemon, appeared_pokemon_Message->position); 
+            log_info(optional_logger, "Receiving Message Appeared pokemon by Broker.");
+            log_info(optional_logger, "Pokemon Appeared %s: ", appeared_pokemon_Message->pokemon);
+            log_info(optional_logger, "Position on x", appeared_pokemon_Message->position.posx); 
+             log_info(optional_logger, "Position on y", appeared_pokemon_Message->position.posy);
             send_ack(client_fd, *id_message);
             break;
         case CATCH_POKEMON:;
             catch_pokemon* catch_Pokemon_Message = stream_to_catch_pokemon(stream, id_message, false);
-            log_info(optional_logger, "Receiving Message Catch pokemon %s in position %d.", catch_Pokemon_Message->pokemon, catch_Pokemon_Message->position);
+            log_info(optional_logger, "Receiving Message Catch pokemon");
+            log_info(optional_logger, "Pokemon Catch %s:" , catch_Pokemon_Message->pokemon);
+            log_info(optional_logger, "Position on x: ", catch_Pokemon_Message->position.posx);
+            log_info(optional_logger, "Position on y: ", catch_Pokemon_Message->position.posy);
             send_ack(client_fd, *id_message);
             break;
         case CAUGHT_POKEMON:;
@@ -145,7 +165,8 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
                 caught_Pokemon_Message = caught_default();
                 log_info(optional_logger, "Using Caught pokemon default.");
             }
-            log_info(optional_logger, "Receiving Message Caught pokemon with result %d.", caught_Pokemon_Message->success);
+            log_info(optional_logger, "Receiving Message Caught pokemon");
+            log_info(optional_logger, "Result %d", caught_Pokemon_Message->success);
             send_ack(client_fd, *id_message);
             break;
 		case GET_POKEMON:;
@@ -160,12 +181,17 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
                 log_info(optional_logger, "Using Localized pokemon default.");
             }
             */
-            log_info(optional_logger, "Receiving Message Localized pokemon %s with position %d.", localized_Pokemon_Message->pokemon, localized_Pokemon_Message->positions);
-            send_ack(client_fd, *id_message); 
+            log_info(optional_logger, "Receiving Message Localized pokemon");
+            log_info(optional_logger, "Pokemon %s", localized_Pokemon_Message->pokemon);
+            
+            for(int i = 0; i<list_size(localized_Pokemon_Message->positions); i++) {
+                log_info(optional_logger,"Find on position xy:%d" , list_get(localized_Pokemon_Message->positions, i));
+                send_ack(client_fd, *id_message);
+            } 
             break;
          case CONNECTION:;
             connection* connectionMessage = stream_to_connection(stream);
-
+            threadSubscribeList = list_create(); 
             threadSubscribe* thread = list_find_with_args(threadSubscribeList, compareSockets, (void*)client_fd);
             thread->idConnection = connectionMessage->id_connection;
 
@@ -211,30 +237,19 @@ return  position_default;
 
 }
 
-//envio de mensaje en el inicio, cola get y catch
-//OJO ES UN GET POR CADA ESPECIE NECESARIA PARA CUMPLIR EL OBJETIVO DEL TEAM
-void send_message_queue_init(uint32_t code, uint32_t sizeofstruct, uint32_t client_fd) {
-    void* stream;
-    uint32_t* id_message = malloc(sizeof(uint32_t));
-    send(client_fd, stream, sizeofstruct, MSG_WAITALL);
-
-    switch(code) {
-        case GET_POKEMON:;
-        get_pokemon* getPokemonMessage = malloc(sizeof(get_pokemon));
-        stream =get_pokemon_to_stream(getPokemonMessage, id_message);
+void send_get_pokemon_global_team(uint32_t client_fd, t_list* globalObjetive){
+   //send for each pokemon needed by team
+   uint32_t* id_message = malloc(sizeof(uint32_t));
+   get_pokemon* getPokemonMessage = malloc(sizeof(get_pokemon));
+   void* stream =get_pokemon_to_stream(getPokemonMessage, id_message);
+   uint32_t total_global = list_size(globalObjetive);
+	
+   for(int i=0; i< total_global; i++) {
+	    char* pokemonToSend = (char*)list_get(globalObjetive, i);
+        send(client_fd, stream, sizeof(pokemonToSend), MSG_WAITALL);
         log_info(optional_logger, "Sending Message Get pokemon.");
-            send_ack(client_fd, *id_message);
-        break;
-
-        case CATCH_POKEMON:;
-        catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon));
-        stream =catch_pokemon_to_stream(catchPokemonMessage, id_message);
-        log_info(optional_logger, "Sending Message Catch pokemon.");
-            send_ack(client_fd, *id_message);
-        break;
-
-        default:
-        break;
+	    log_info(optional_logger, "Pokemon %s: ", pokemonToSend);
+      
     }
 
 }
