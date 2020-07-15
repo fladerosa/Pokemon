@@ -32,12 +32,22 @@ typedef struct{
     t_list* pokemonNeeded; //Pokemons that i must capture to accomplish the objetive
     enum_process_state state;
 } t_trainer;
-
+/*
 typedef struct
 {
     uint32_t idTrainer;
     enum_process_state state;
-} threadTrainer;
+} threadTrainer;*/
+
+typedef struct {
+    uint32_t idTrainer;
+    enum_process_state state;
+    pthread_t threadTrainer;
+    time_t incomingTime;
+    time_t previousIncomingTime; //Needed for SJF
+    uint32_t contextSwitchCount;
+    uint32_t cpuCycleCount;
+} t_threadTrainer;
 
 /* Estructura con los datos del archivo de configuración */
 typedef struct{
@@ -56,9 +66,15 @@ t_list* trainers; //List of type t_trainer
 t_configuration config_values; //Values readed from tema.config
 
 //hilo por entrenador
+/*
 pthread_t processTrainer;
 threadTrainer* structProcessTrainer;
 t_list* threadProcessTrainerList;
+*/
+
+t_list* threadsTrainers;
+t_list* globalObjetive;
+char* pokemonCompareGlobalObjetive; //Variable used ONLY to calculate global objetive
 
 //t_list* pokemon_toCaught;
 
@@ -74,6 +90,9 @@ uint32_t calculate_size_thread_list(t_list*);
 void release_resources();
 void destroy_trainer(t_trainer*);
 void destroy_lists_and_loaded_elements();
+
+void calculate_global_objetives();
+bool analyzePokemonInGlobal(void* );
 
 #endif
 

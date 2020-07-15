@@ -40,7 +40,8 @@ void planificarProcesoSJF_SD();
 void planificarProcesoSJF_CD();
 void create_state_queue();
 t_queue* ready_queue;
-t_queue** block_queue;
+t_queue* block_queue;
+t_list* blocked_trainers;
 t_queue* finish_queue;
 
 #endif

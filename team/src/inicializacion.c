@@ -11,6 +11,7 @@ void initialize_team() {
     create_optional_logger();
     load_values_config();
     assign_data_trainer();
+    calculate_global_objetives();
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO); 
     
     connection_broker_global_suscribe();
@@ -30,7 +31,7 @@ void read_config() {
         error_show("Error creating TEAM process config on %s\t", config_path);
         exit(CONFIG_FAIL);
     }    
-    log_info(optional_logger, "Creation TEAM config path on successfully/n");      
+    //log_info(optional_logger, "Creation TEAM config path on successfully/n");      
 }
 
 void create_obligatory_logger() {      
@@ -69,7 +70,9 @@ void load_values_config() {
 void assign_data_trainer() {
 
     trainers = list_create();
+    threadsTrainers = list_create();
     t_trainer *data_trainer;
+    t_threadTrainer* threadTrainerAux;
     char** init_position = config_get_array_value(config, "POSICIONES_ENTRENADORES");
     char** pokemonOwns = config_get_array_value(config, "POKEMON_ENTRENADORES");
     char** pokemonNeeds = config_get_array_value(config, "OBJETIVOS_ENTRENADORES");
@@ -109,6 +112,17 @@ void assign_data_trainer() {
 
             list_add(trainers, (void*)data_trainer);
 
+            //Creation of trainer thread
+            threadTrainerAux = malloc(sizeof(t_threadTrainer));
+            threadTrainerAux->idTrainer = data_trainer->id_trainer;
+            threadTrainerAux->state = NEW;
+            threadTrainerAux->incomingTime = time(NULL);
+            threadTrainerAux->previousIncomingTime = time(NULL); //Needed for SJF
+            threadTrainerAux->contextSwitchCount = 0;
+            threadTrainerAux->cpuCycleCount = 0;
+
+            list_add(threadsTrainers, (void*)threadTrainerAux);
+
             log_info(optional_logger, "Request malloc succesfully to TRAINER %d ", (int)i+1);   
         }else{
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
@@ -116,6 +130,45 @@ void assign_data_trainer() {
     }
      
    return;
+}
+
+void calculate_global_objetives(){
+    //Its the join of all needs of trainers, minus the pokemon that already have
+    globalObjetive = list_create();
+    uint32_t trainersCount = list_size(trainers);
+    t_trainer* trainerAux;
+    int i, j;
+    uint32_t pokemonsOwnedCount;
+    char* pokemonOwnedAux;
+
+    //Join all needs
+    for(i = 0; i < trainersCount; i++){
+        trainerAux = (t_trainer*)list_get(trainers, i);
+        list_add_all(globalObjetive, trainerAux->pokemonNeeded);
+    }
+
+    //rest already in stock
+    for(i = 0; i < trainersCount; i++){
+        trainerAux = (t_trainer*)list_get(trainers, i);
+
+        pokemonsOwnedCount = list_size(trainerAux->pokemonOwned);
+        for(j = 0; j < pokemonsOwnedCount; j++){
+            pokemonOwnedAux = (char*)list_get(trainerAux->pokemonOwned, j);
+            pokemonCompareGlobalObjetive = malloc(strlen(pokemonOwnedAux));
+            strcpy(pokemonCompareGlobalObjetive, pokemonOwnedAux);
+            list_remove_by_condition(globalObjetive, analyzePokemonInGlobal);
+            free(pokemonCompareGlobalObjetive);
+        }
+    }
+}
+
+bool analyzePokemonInGlobal(void* objetiveGlobal){
+    if(strcmp((char*)objetiveGlobal, pokemonCompareGlobalObjetive) == 0){
+        return 1;
+    }else{
+        return 0;
+    }
+    
 }
 
 void print_trainer_list() {
@@ -141,19 +194,20 @@ void print_trainer_list() {
 }
 
 void create_threadTrainer_list(t_list* trainers) {
+/*
+    structProcessTrainer = malloc(sizeof(threadTrainer));
+    uint32_t j = calculate_size_thread_list(trainers);
 
-structProcessTrainer = malloc(sizeof(threadTrainer));
-uint32_t j = calculate_size_thread_list(trainers);
-
-    for(uint32_t i = 0; i<j; i++) {
-        structProcessTrainer->idTrainer = i;
-        structProcessTrainer->state = READY;
-            list_add(threadProcessTrainerList, structProcessTrainer);
+        for(uint32_t i = 0; i<j; i++) {
+            structProcessTrainer->idTrainer = i;
+            structProcessTrainer->state = READY;
+                list_add(threadProcessTrainerList, structProcessTrainer);
+        }
     }
-}
-uint32_t calculate_size_thread_list(t_list* trainers)  {
+    uint32_t calculate_size_thread_list(t_list* trainers)  {
 
    return list_size(trainers);
+   */
 }
 
 void release_resources() { 
