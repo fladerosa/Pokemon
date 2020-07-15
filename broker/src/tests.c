@@ -147,6 +147,7 @@ void consolidacion_basico(){
 }
 
 void baseBroker(){
+    log_info(optional_logger, "Primera Parte Base:");
     initializeMemoryMockup("PARTICIONES", "FIFO", "FF", 4096, 4, 10);
 
     cargar_memoria_simple();
@@ -160,7 +161,7 @@ void baseBroker(){
         t_data* admStruct = list_get(memory.partitions,i);
         CU_ASSERT_EQUAL(admStruct->offset, expectedValues[i]);
     }
-
+    log_info(optional_logger, "Segunda Parte Base:");
     //Segunda parte
     initializeMemoryMockup("PARTICIONES", "FIFO", "FF", 4096, 16, 10);
 
@@ -177,6 +178,7 @@ void baseBroker(){
 }
 
 void consolidacionBroker(){
+    log_info(optional_logger, "Primera Parte Consolidacion:");
     initializeMemoryMockup("PARTICIONES", "FIFO", "FF", 64, 4, 10);
 
     consolidacion_basico();
@@ -190,6 +192,7 @@ void consolidacionBroker(){
         CU_ASSERT_EQUAL(admStruct->offset, offsets[i]);
     }
 
+    log_info(optional_logger, "Segunda Parte Consolidacion:");
     // Segunda parte
 
     initializeMemoryMockup("PARTICIONES", "LRU", "FF", 64, 4, 10);
@@ -206,12 +209,14 @@ void consolidacionBroker(){
 }
 
 void compactacionBroker(){
+    log_info(optional_logger, "Primera Parte Compactacion:");
     initializeMemoryMockup("PARTICIONES", "FIFO", "FF", 64, 4, 1);
 
     compactacion_basico();
 
     t_data* admStruct = list_get(memory.partitions, 2);
     CU_ASSERT_EQUAL(admStruct->offset, 36);
+    log_info(optional_logger, "Segunda Parte Compactacion:");
     //Segunda parte
     initializeMemoryMockup("PARTICIONES", "LRU", "FF", 64, 4, 1);
 
@@ -247,6 +252,7 @@ void buddy_basico(){
 }
 
 void buddySystemBroker(){
+    log_info(optional_logger, "Primera parte Buddy System:");
     initializeMemoryMockup("BS", "FIFO", "FF", 64, 4, 1);
 
     buddy_basico();
@@ -255,6 +261,7 @@ void buddySystemBroker(){
     CU_ASSERT_EQUAL(charmander->offset, 32);
     CU_ASSERT_EQUAL(charmander->size, 22);
     CU_ASSERT_EQUAL(charmander->state, USING);
+    log_info(optional_logger, "Segunda parte Buddy System:");
     // Segunda parte
     initializeMemoryMockup("BS", "LRU", "FF", 64, 4, 1);
 
