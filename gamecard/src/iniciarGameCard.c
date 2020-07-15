@@ -15,6 +15,7 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             newPokemonTallGrass(newPokemonMessage);
             //TODO SEND APPEARED
             
+            free(newPokemonMessage->pokemon);
             free_new_pokemon(newPokemonMessage);
             break;
         case CATCH_POKEMON:;
