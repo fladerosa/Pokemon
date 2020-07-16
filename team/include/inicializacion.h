@@ -40,6 +40,7 @@ typedef struct {
     pthread_t threadTrainer;
     time_t incomingTime;
     time_t previousIncomingTime; //Needed for SJF
+    uint32_t valueEstimator; //Needed for SJF 
     uint32_t contextSwitchCount;
     uint32_t cpuCycleCount;
     t_position positionTo;
@@ -53,6 +54,7 @@ typedef struct{
        uint32_t  retardo_ciclo_cpu; 
        char *algoritmo_planificacion;
        uint32_t quantum;
+       uint32_t alpha;
        uint32_t estimacion_inicial;
        char *ip_broker;
        char *puerto_broker;       
@@ -70,9 +72,6 @@ void create_optional_logger();
 void create_obligatory_logger();
 void load_values_config();
 void assign_data_trainer();
-void print_trainer_list();
-void create_threadTrainer_list(t_list*);
-uint32_t calculate_size_thread_list(t_list*);
 void release_resources();
 void destroy_trainer(t_trainer*);
 void destroy_lists_and_loaded_elements();

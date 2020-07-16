@@ -62,6 +62,7 @@ void load_values_config() {
     config_values.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
     config_values.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
     config_values.quantum = (uint32_t)config_get_int_value(config, "QUANTUM");
+    config_values.alpha = (uint32_t)config_get_int_value(config, "ALPHA");
     config_values.estimacion_inicial = (uint32_t)config_get_int_value(config, "ESTIMACION_INICIAL");
     config_values.ip_broker = config_get_string_value(config, "IP_BROKER");
     config_values.puerto_broker= config_get_string_value(config, "PUERTO_BROKER");
@@ -171,45 +172,6 @@ bool analyzePokemonInGlobal(void* objetiveGlobal){
         return 0;
     }
     
-}
-
-void print_trainer_list() {
-
-	t_list* aux = trainers;
-
-	log_info(optional_logger, "Trainers List: ");
-	int i = 0;
-	int quantityTrainer = list_size(aux);
-	while (i < quantityTrainer) {
-		t_trainer* data_trainer;
-		data_trainer = (t_trainer*) list_get(aux, i);
-
-		log_info(optional_logger, "Trainer %d: '%c'", i, data_trainer->id_trainer);
-
-		i++;
-	}
-	if (i == 0)
-		log_warning(optional_logger, "Empty list");
-
-	if (aux == NULL)
-		log_info(optional_logger, "End list");
-}
-
-void create_threadTrainer_list(t_list* trainers) {
-/*
-    structProcessTrainer = malloc(sizeof(threadTrainer));
-    uint32_t j = calculate_size_thread_list(trainers);
-
-        for(uint32_t i = 0; i<j; i++) {
-            structProcessTrainer->idTrainer = i;
-            structProcessTrainer->state = READY;
-                list_add(threadProcessTrainerList, structProcessTrainer);
-        }
-    }
-    uint32_t calculate_size_thread_list(t_list* trainers)  {
-
-   return list_size(trainers);
-   */
 }
 
 void release_resources() { 

@@ -3,10 +3,8 @@
 int main(int argc, char ** argv){
 
     initialize_team();
-    
-    create_threadTrainer_list(trainers);
 
-    release_resources();    
+    //release_resources();    
     return 0;
 }
 
@@ -112,6 +110,29 @@ void setTrainerToExec_FirstCome(){
 
 void setTrainerToExec_SJF(){
     //SJF
+    //Estimador = Ti-1*alpha + Ri-1*(1-alpha)
+    //previousIncomingTime-1*config_values.alpha + incomingTime-1*(1-config_values.alpha)
+    //revisar
+    uint32_t indexFirstTrainer = -1;
+    uint32_t estimator;
+    uint32_t trainersCount = list_size(trainers);
+    t_threadTrainer* threadTrainerAux;
+
+    for(int i=0; i < trainersCount; i++){
+        threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+        uint32_t previusEstimator = config_values.estimacion_inicial-config_values.alpha;
+        uint32_t incomingEstimator = threadTrainerAux->incomingTime-(1-config_values.alpha);
+        estimator =  previusEstimator + incomingEstimator;
+        threadTrainerAux->valueEstimator = estimator;
+    
+        if(threadTrainerAux->valueEstimator <= estimator){
+            indexFirstTrainer = i;
+        }
+        
+    }
+
+    threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
+    threadTrainerAux->state = EXEC;
 }
 
 //Called when a pokemon appear, on deadlock thread, and on message "caught pokemon"
@@ -223,4 +244,5 @@ void writeTeamMetrics(){
 
 void finishTeam(){
     //finish team
+    release_resources();
 }
