@@ -161,10 +161,6 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             break;
         case CAUGHT_POKEMON:;
 			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, id_message, NULL, false);
-            if(caught_Pokemon_Message == NULL) {
-                caught_Pokemon_Message = caught_default();
-                log_info(optional_logger, "Using Caught pokemon default.");
-            }
             log_info(optional_logger, "Receiving Message Caught pokemon");
             log_info(optional_logger, "Result %d", caught_Pokemon_Message->success);
             send_ack(client_fd, *id_message);
@@ -176,11 +172,6 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             break;
         case LOCALIZED_POKEMON:;
             localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, id_message, NULL, false);
-          /*  if(localized_Pokemon_Message == NULL) {
-                localized_Pokemon_Message = localized_default();
-                log_info(optional_logger, "Using Localized pokemon default.");
-            }
-            */
             log_info(optional_logger, "Receiving Message Localized pokemon");
             log_info(optional_logger, "Pokemon %s", localized_Pokemon_Message->pokemon);
             
@@ -222,10 +213,10 @@ void retry_on_x_time() {
         time_in--;        
 }
 
-caught_pokemon* caught_default() { 
+uint32_t caught_default() { 
 
-    bool success = 0;
-    return init_caught_pokemon(success);
+    uint32_t success = 0;
+    return success;
 }
 
 uint32_t localized_default(char* pokemon) {

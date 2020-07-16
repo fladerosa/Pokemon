@@ -5,8 +5,7 @@ int main(int argc, char ** argv){
     initialize_team();
     
     create_threadTrainer_list(trainers);
-    planificarProceso();
-    
+
     release_resources();    
     return 0;
 }
@@ -63,7 +62,7 @@ t_threadTrainer* getClosestTrainer(t_position position, enum_process_state threa
     }
     return (t_threadTrainer*)list_get(threadsTrainers, indexClosestThreadTrainer);
 }
-
+/*
 uint32_t calculateDistance(t_position positionFrom, t_position positionTo){
     uint32_t posX = positionTo.posx - positionFrom.posx;
     uint32_t posY = positionTo.posy - positionFrom.posy;
@@ -71,7 +70,7 @@ uint32_t calculateDistance(t_position positionFrom, t_position positionTo){
     if(posY < 0) posY = posY * -1;
     return posX + posY;
 }
-
+*/
 //Called always that a trainer its ready
 void calculateTrainerFromReadyToExec(){
     if(list_any_satisfy(threadsTrainers, existsThreadTrainerInExec)){

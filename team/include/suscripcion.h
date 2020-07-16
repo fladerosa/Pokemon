@@ -48,7 +48,7 @@ void reception_message_queue_subscription(uint32_t, uint32_t, uint32_t);
 bool compareSockets(void*, void*);
 void close_sockets();
 void retry_on_x_time();
-caught_pokemon* caught_default();
+uint32_t caught_default();
 uint32_t localized_default(char*);
 void send_get_pokemon_global_team(uint32_t, t_list*);
 

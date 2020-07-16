@@ -8,7 +8,7 @@
 void calculateTrainerFromNewToReady();
 void calculateTrainerToReady(enum_process_state threadTrainerState);
 t_threadTrainer* getClosestTrainer(t_position position, enum_process_state threadTrainerState);
-uint32_t calculateDistance(t_position positionFrom, t_position positionTo);
+//uint32_t calculateDistance(t_position positionFrom, t_position positionTo);
 //Called always that a trainer its ready
 void calculateTrainerFromReadyToExec();
 bool existsThreadTrainerInExec(void* threadTrainer);
