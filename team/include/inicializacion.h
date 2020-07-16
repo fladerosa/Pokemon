@@ -32,12 +32,6 @@ typedef struct{
     t_list* pokemonNeeded; //Pokemons that i must capture to accomplish the objetive
     enum_process_state state;
 } t_trainer;
-/*
-typedef struct
-{
-    uint32_t idTrainer;
-    enum_process_state state;
-} threadTrainer;*/
 
 //hilos de entrenador / metricas de algoritmos
 typedef struct {
@@ -66,19 +60,9 @@ typedef struct{
 
 t_list* trainers; //List of type t_trainer
 t_configuration config_values; //Values readed from tema.config
-
-//hilo por entrenador
-/*
-pthread_t processTrainer;
-threadTrainer* structProcessTrainer;
-t_list* threadProcessTrainerList;
-*/
-
 t_list* threadsTrainers;
 t_list* globalObjetive;
 char* pokemonCompareGlobalObjetive; //Variable used ONLY to calculate global objetive
-
-//t_list* pokemon_toCaught;
 
 void initialize_team();
 void read_config();

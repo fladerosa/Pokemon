@@ -185,6 +185,19 @@ void calculateTrainerInExit(uint32_t idTrainer){
 
 void writeTrainerMetrics(uint32_t idTrainer){
     //write trainer metrics
+    t_threadTrainer* threadTrainerAux;
+
+    for(int i = 0; i<list_size(threadsTrainers); i++){
+        threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+
+        if(threadTrainerAux->idTrainer == idTrainer) {
+            log_info(obligatory_logger, "Trainer %d", idTrainer);
+            log_info(obligatory_logger, "Total Cycle CPU by Trainer", threadTrainerAux->cpuCycleCount);
+        }
+        else{
+            log_info(obligatory_logger, "Trainer %d not valid", idTrainer);
+        }
+    }
 }
 
 bool trainerStateIsExit(void* threadTrainer){
@@ -193,6 +206,19 @@ bool trainerStateIsExit(void* threadTrainer){
 
 void writeTeamMetrics(){
     //write team metrics
+    t_threadTrainer* threadTrainerAux;
+    uint32_t totalCycleCpuTeam;
+    uint32_t totalContextSwitch;
+
+    for(int i = 0; i<list_size(threadsTrainers); i++){
+        threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+        totalCycleCpuTeam += threadTrainerAux->cpuCycleCount;
+        totalContextSwitch += threadTrainerAux->contextSwitchCount;
+               
+    }
+      log_info(obligatory_logger, "Algorithm %s ", config_values.algoritmo_planificacion); 
+      log_info(obligatory_logger, "Total Cycle CPU by TEAM %d", totalCycleCpuTeam);
+      log_info(obligatory_logger, "Total Context Switch by Team %d", totalContextSwitch);
 }
 
 void finishTeam(){
