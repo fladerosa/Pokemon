@@ -12,6 +12,7 @@ void initialize_team() {
     load_values_config();
     assign_data_trainer();
     calculate_global_objetives();
+    pokemonsOnMap = list_create();
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO); 
     
     connection_broker_global_suscribe();
@@ -88,8 +89,8 @@ void assign_data_trainer() {
             data_trainer->pokemonNeeded = list_create();
 
             valorAux = string_split(init_position[i], "|");
-            data_trainer->position.posix = (uint32_t)atoi(valorAux[0]);
-            data_trainer->position.posiy = (uint32_t)atoi(valorAux[1]);
+            data_trainer->position.posx = (uint32_t)atoi(valorAux[0]);
+            data_trainer->position.posy = (uint32_t)atoi(valorAux[1]);
             
             valorAux = string_split(pokemonOwns[i], "|");
 

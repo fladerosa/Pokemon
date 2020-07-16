@@ -21,13 +21,13 @@ typedef struct{
 
 typedef struct{
     char *pokemon; 
-    t_position_to_map position;
+    t_position position;
 } t_pokemon;
 
 /* Estructura basica de un entrenador*/
 typedef struct{
     uint32_t id_trainer;
-    t_position_to_map position;
+    t_position position;
     t_list* pokemonOwned; ///Pokemons that i captured 
     t_list* pokemonNeeded; //Pokemons that i must capture to accomplish the objetive
     enum_process_state state;
@@ -48,6 +48,7 @@ typedef struct {
     time_t previousIncomingTime; //Needed for SJF
     uint32_t contextSwitchCount;
     uint32_t cpuCycleCount;
+    t_position positionTo;
 } t_threadTrainer;
 
 /* Estructura con los datos del archivo de configuración */

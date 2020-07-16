@@ -7,11 +7,24 @@
 #include "common_utils.h"
 #include "inicializacion.h"
 
-typedef struct {
-            char* pokemon;
-            t_position position;
-}t_pokemon_receive;
+typedef enum{
+	P_FREE = 0,
+    P_CHASING,
+    P_CATCHED
+} e_pokemon_catch_state;
 
+typedef struct {
+    char* pokemon;
+    t_position position;
+} t_pokemon_receive;
+
+typedef struct {
+    char* pokemon;
+    t_position position;
+    e_pokemon_catch_state state;
+} t_pokemon_on_map;
+
+t_list* pokemonsOnMap;
 // se verifica que su estado sea NEW o BLOCKED, si hay mas de uno, el que este mas cerca
 //determina cual entrenador de la lista esta mas cerca de la posicion del pokemon localizado, pasada por parametro. 
 // calcular los ciclos de cpu a ejecutar el movimiento total (posicionXpokemon - posicionXentrenador, posicionYpokemon - posicionYEntrenador)
