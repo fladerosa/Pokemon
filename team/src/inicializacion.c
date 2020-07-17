@@ -3,9 +3,10 @@
 #include "suscripcion.h"
 #include "mapa.h"
 #include <string.h>
+#include "deadlock.h"
 
 void initialize_team() { 
-      
+    testDeadlock();
     read_config();
     create_obligatory_logger();
     create_optional_logger();
