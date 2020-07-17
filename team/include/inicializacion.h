@@ -39,6 +39,7 @@ typedef struct {
     enum_process_state state;
     pthread_t threadTrainer;
     time_t incomingTime;
+    uint32_t remainingDistance; //Needed to RR y para SJF CD
     time_t previousIncomingTime; //Needed for SJF
     uint32_t valueEstimator; //Needed for SJF 
     uint32_t contextSwitchCount;

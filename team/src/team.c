@@ -120,17 +120,15 @@ void setTrainerToExec_SJF(){
 
     for(int i=0; i < trainersCount; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
-        uint32_t previusEstimator = config_values.estimacion_inicial-config_values.alpha;
+        uint32_t previusEstimator = threadTrainerAux->previousIncomingTime -config_values.alpha;
         uint32_t incomingEstimator = threadTrainerAux->incomingTime-(1-config_values.alpha);
         estimator =  previusEstimator + incomingEstimator;
         threadTrainerAux->valueEstimator = estimator;
     
-        if(threadTrainerAux->valueEstimator <= estimator){
+        if(threadTrainerAux->valueEstimator <= config_values.estimacion_inicial){
             indexFirstTrainer = i;
-        }
-        
+        }       
     }
-
     threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
     threadTrainerAux->state = EXEC;
 }
