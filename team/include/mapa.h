@@ -26,18 +26,6 @@ typedef struct {
 // a medida que se reciban apariciones / localizaciones de pokemones se agregan a la lista de pokemon_on_map
 t_list* pokemonsOnMap;
 
-void execThreadTrainerSetedFCFS(t_threadTrainer*, t_pokemon_on_map);
-void execThreadTrainerSetedRR(t_threadTrainer*, t_pokemon_on_map);
-void execThreadTrainerSetedSJF_SD(t_threadTrainer*, t_pokemon_on_map);
-void execThreadTrainerSetedSJF_CD(t_threadTrainer*, t_pokemon_on_map);
-uint32_t calculateDistance(t_position positionFrom, t_position positionTo);
-void calculate_cpu_burst_threadTrainerOnExec(t_threadTrainer*, uint32_t);
-void move_to_objetive_FCFS(t_threadTrainer*, t_pokemon_on_map);
-void move_to_objetive_RR(t_threadTrainer*, t_pokemon_on_map, uint32_t);
-void move_to_objetive_SJF_CD(t_threadTrainer*, t_pokemon_on_map, uint32_t);
-bool isPokemonOnMapFree(void *);
-bool isPokemonOnMapChasing(void *);
-void send_catch_pokemon(uint32_t, t_pokemon_on_map);
 
 
 #endif
