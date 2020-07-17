@@ -17,4 +17,9 @@ void internalStringData(uint32_t id, char* text);
 bool testCompactDP();
 bool testCompactBS();
 bool testDump();
+void baseBroker();
+void consolidacionBroker();
+void compactacionBroker();
+void buddySystemBroker();
+
 #endif

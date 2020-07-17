@@ -140,7 +140,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
     switch(cod_op){
         case NEW_POKEMON:;
             new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream, id_message, false);
-            
+            log_info(obligatory_logger, "Llego un nuevo mensaje de la cola %d", cod_op);
             log_info(optional_logger, "New pokemon!");
             log_info(optional_logger, "This is the pokemon: %.*s",newPokemonMessage->sizePokemon, newPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", newPokemonMessage->position.posx);
@@ -150,7 +150,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
             break;
         case APPEARED_POKEMON:;
             appeared_pokemon* appearedPokemonMessage = stream_to_appeared_pokemon(stream, id_message, id_correlational, false);
-
+            log_info(obligatory_logger, "Llego un nuevo mensaje de la cola %d", cod_op);
             log_info(optional_logger, "Appeared pokemon!");
             log_info(optional_logger, "This is the pokemon: %.*s", appearedPokemonMessage->sizePokemon, appearedPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", appearedPokemonMessage->position.posx);
@@ -160,7 +160,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case CATCH_POKEMON:;
 
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream, id_message, false);
-
+            log_info(obligatory_logger, "Llego un nuevo mensaje de la cola %d", cod_op);
             log_info(optional_logger, "Catch pokemon!");
             log_info(optional_logger, "This is the pokemon: %.*s", catchPokemonMessage->sizePokemon, catchPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the position x: %d", catchPokemonMessage->position.posx);
@@ -170,7 +170,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case CAUGHT_POKEMON:;
 
             caught_pokemon* caughtPokemonMessage = stream_to_caught_pokemon(stream, id_message, id_correlational, false);
-
+            log_info(obligatory_logger, "Llego un nuevo mensaje de la cola %d", cod_op);
             log_info(optional_logger, "Caught pokemon!");
             log_info(optional_logger, "Was the pokemon caught?: %s", caughtPokemonMessage->success ? "OK" : "FAIL");
             send_ack(socketfd, *id_message);
@@ -178,7 +178,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case GET_POKEMON:;
 
             get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream, id_message, false); 
-
+            log_info(obligatory_logger, "Llego un nuevo mensaje de la cola %d", cod_op);
             log_info(optional_logger, "Get pokemon!");
             log_info(optional_logger, "This is the pokemon: %s", getPokemonMessage->pokemon); 
             send_ack(socketfd, *id_message);
@@ -186,7 +186,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case LOCALIZED_POKEMON:;
 
             localized_pokemon* localizedPokemonMessage = stream_to_localized_pokemon(stream, id_message, id_correlational, false);
-
+            log_info(obligatory_logger, "Llego un nuevo mensaje de la cola %d", cod_op);
             log_info(optional_logger, "Localized pokemon!");
             log_info(optional_logger, "This is the pokemon: %.*s", localizedPokemonMessage->sizePokemon,localizedPokemonMessage->pokemon); 
             log_info(optional_logger, "This is the size of the list of positions: %d", (*localizedPokemonMessage->positions).elements_count);
@@ -195,7 +195,7 @@ void receiveMessageSubscriptor(uint32_t cod_op, uint32_t sizeofstruct, uint32_t 
         case SUSCRIPTOR:; 
 
             subscribe* subscribeMessage = stream_to_subscribe(stream);
-
+            
             log_info(optional_logger, "Subscribe!");
             log_info(optional_logger, "This is the queue: %d", subscribeMessage->colaMensajes);            
             break;

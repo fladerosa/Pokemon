@@ -77,6 +77,7 @@ void receive_new_connections(uint32_t socket_escucha, on_request request_receive
         log_info(optional_logger, "Server accept failed..."); 
     } else {
         log_info(optional_logger, "Server accepted a new client on socket: %d", connfd);
+        log_info(obligatory_logger, "Se conectó un proceso en el socket %d", connfd);
         t_process_request* processor = malloc(sizeof(t_process_request));
         processor->socket = malloc(sizeof(uint32_t));
         *processor->socket = connfd;
@@ -110,6 +111,7 @@ void serve_client(void* processor){
         t_connection* conn = list_find_with_args(connections, has_socket_fd, (void*) socket);
         if (conn){
             conn->is_connected = false;
+            conn->socket = 0;
         }
         pthread_mutex_unlock(&m_connections);     
     }
@@ -180,7 +182,7 @@ uint32_t crear_conexion(char *ip, char* puerto){
     }
 
 	log_info(optional_logger, "Connected successfully with %s:%s.", ip, puerto);
-		
+	log_info(obligatory_logger, "Conectado con exito con el proceso en %s:%s", ip, puerto);
 	freeaddrinfo(server_info);
 
 	return socketfd;

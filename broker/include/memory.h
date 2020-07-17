@@ -13,6 +13,7 @@ typedef enum {
 
 typedef struct t_data{
     uint32_t size;
+    uint32_t partition_size;
     uint32_t offset;
     uint32_t idQueue;
     uint32_t id;
@@ -20,8 +21,8 @@ typedef struct t_data{
     t_list* receivers;
     pthread_mutex_t* m_receivers_modify;
     e_dataState state;
-    time_t lastTimeUsed;
-    time_t creationTime;
+    uint64_t lastTimeUsed;
+    uint64_t creationTime;
 } t_data;
 
 typedef struct t_memory_configuration{
@@ -30,7 +31,7 @@ typedef struct t_memory_configuration{
     char* freePartitionAlgorithm;
     uint32_t size;
     uint32_t minimunPartitionSize;
-    uint32_t countFailedSearchForCompact;
+    int countFailedSearchForCompact;
 } t_memory_configuration;
 
 typedef struct t_memory{
@@ -76,5 +77,7 @@ void dumpMemory();
 void dump_write_time(FILE* file);
 void dump_partitions(FILE* file);
 
+void condense(int index);
+void send_all_messages(t_connection* conn, uint32_t id_queue);
 t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream);
 #endif
