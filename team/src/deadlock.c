@@ -41,9 +41,9 @@ void testDeadlock(){
     trainer1->pokemonOwned = list_create();
     trainer1->pokemonNeeded = list_create();
     list_add(trainer1->pokemonOwned, (void*)"Squirtle");
-    list_add(trainer1->pokemonOwned, (void*)"Squirtle");
-    list_add(trainer1->pokemonNeeded, (void*)"Squirtle");
-    list_add(trainer1->pokemonNeeded, (void*)"Squirtle");
+    list_add(trainer1->pokemonOwned, (void*)"Tortoise");
+    list_add(trainer1->pokemonNeeded, (void*)"Vulpix");
+    list_add(trainer1->pokemonNeeded, (void*)"Charmander");
     list_add(trainers, trainer1);
 
     trainer2->id_trainer = 2;
@@ -53,7 +53,7 @@ void testDeadlock(){
     trainer2->pokemonNeeded = list_create();
     list_add(trainer2->pokemonOwned, (void*)"Pikachu");
     list_add(trainer2->pokemonOwned, (void*)"Charmander");
-    list_add(trainer2->pokemonNeeded, (void*)"Vulpix");
+    list_add(trainer2->pokemonNeeded, (void*)"Squirtle");
     list_add(trainer2->pokemonNeeded, (void*)"Tortoise");
     list_add(trainers, trainer2);
 
