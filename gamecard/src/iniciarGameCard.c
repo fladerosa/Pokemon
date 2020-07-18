@@ -61,33 +61,6 @@ bool compareSockets(void* element, void* args){
     return thread->socket == (uint32_t) args;
 }
 
-void iniciarMutex(){
-    pthread_mutex_init(&mutexListOfMutex, NULL);
-    mutexListDirectory = list_create();
-
-    DIR* dirp; 
-    struct dirent *direntp; 
-
-    dirp = opendir("./TALL_GRASS/Files");
-    
-    while((direntp = readdir(dirp)) != NULL){
-        if(direntp->d_type == DT_DIR){
-            mutexDirectory* mutexDirectoryRead = malloc(sizeof(mutexDirectory));
-
-            char* directory = malloc(strlen(direntp->d_name) + 1);
-            memcpy(directory, direntp->d_name, strlen(direntp->d_name)); 
-            directory[strlen(direntp->d_name) + 1] = '\0';
-
-            mutexDirectoryRead->nombreDirectorio = directory;
-            pthread_mutex_init(&mutexDirectoryRead->mutex, NULL);
-            
-            pthread_mutex_lock(&mutexListOfMutex); 
-            list_add(mutexListDirectory, mutexDirectoryRead);
-            pthread_mutex_unlock(&mutexListOfMutex);
-        }
-    }
-}
-
 void iniciarGameCard(){
 
     config = config_create("./cfg/gamecard.config");
@@ -98,9 +71,6 @@ void iniciarGameCard(){
     char* PUERTO_GAMECARD = config_get_string_value(config,"PUERTO_GAMECARD");
     PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
     IP_BROKER = config_get_string_value(config,"IP_BROKER");
-    
-    iniciarMutex();
-
 
     request = &receiveMessage; 
     iniciarTallGrass();
@@ -108,6 +78,8 @@ void iniciarGameCard(){
     //TODO
     pthread_mutex_init(&mutexthreadSubscribeList, NULL);
     
+    pthread_mutex_init(&mutexBitmap, NULL);
+
     threadSubscribeList = list_create();
 
 

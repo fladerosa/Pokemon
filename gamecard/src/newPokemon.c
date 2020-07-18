@@ -25,14 +25,6 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
     memcpy(directory + strlen(directorio) + newPokemon->sizePokemon + 1, "\0", sizeof(char));
 
     int created = mkdir(directory, ACCESSPERMS);
-    if(created != -1){
-        pthread_mutex_lock(&mutexListOfMutex);
-        mutexDirectory* mutex = malloc(sizeof(mutexDirectory));
-        mutex->nombreDirectorio = stream;
-        pthread_mutex_init(&mutex->mutex, NULL);
-        list_add(mutexListDirectory, mutex); //Asi solo tiene el nombre del pokemon 
-        pthread_mutex_unlock(&mutexListOfMutex);
-    }
     
     createMetadataPokemon(directory, newPokemon);
     free(directory);
@@ -49,26 +41,40 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     strcat(directorioMetadata, metadata);
 
     FILE* file = fopen(directorioMetadata,"ab+");
-
+    flock(fileno(file), LOCK_EX);
+    
     fseek(file, 0, SEEK_END);
     int sizeFile = ftell(file);
     fseek(file, 0, SEEK_SET);
+    
+    flock(fileno(file), LOCK_UN);
     fclose(file);
-
-    if(sizeFile == 0){
-        configMetadataCreate(directorioMetadata);
-    }
 
     char* stream = malloc(newPokemon->sizePokemon + 1);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
-    stream[newPokemon->sizePokemon + 1] = '\0';
+    stream[newPokemon->sizePokemon] = '\0';
+
+    if(sizeFile == 0){
+        configMetadataCreate(directorioMetadata, stream);
+    }
 
     if(metadataBlocks(directorioMetadata, stream) == 0){
-        addBlockMetadata(directorioMetadata, newPokemon);
+        abrirMetadata(directorioMetadata, stream);
+        char* block = crearBloque(newPokemon);
+        addBlockMetadata(directorioMetadata, block, newPokemon);
+        cerrarMetadata(directorioMetadata, stream);
+        free(block);
     }else{
         agregarDatosYOrdenarBloques(directorioMetadata, newPokemon);
     }
+
+    //{
+        
+    //}else{
+        
+    //}
     
+    free(stream);
     free(directorioMetadata);
 }
 
@@ -116,8 +122,11 @@ char* crearBloque(new_pokemon* newPokemon){
             strcat(writeBinary, "\n");
 
             fwrite(writeBinary, strlen(writeBinary) + 1, 1, binary);
+
             fclose(binary);
+            pthread_mutex_lock(&mutexBitmap);
             bitarray_set_bit(bitmap, bin-1);
+            pthread_mutex_unlock(&mutexBitmap);
             free(posX);
             free(posY);
             free(quantity);
@@ -134,29 +143,28 @@ char* crearBloque(new_pokemon* newPokemon){
 }
 
 
-void configMetadataCreate(char* metadata){
-    t_config* configMetadataTallGrass = config_create("./cfg/tall_grass_metadata.config");
+void configMetadataCreate(char* metadata, char* pokemon){
+    //abrirMetadata(metadata, pokemon);
+    t_config* configMetadataTallGrass = config_create_metadata("./cfg/tall_grass_metadata.config");
 
-    config_save_in_file(configMetadataTallGrass, metadata);
+    config_save_in_file_metadata(configMetadataTallGrass, metadata);
     config_destroy(configMetadataTallGrass);
+    //cerrarMetadata(metadata, pokemon);
 }
 
-void addBlockMetadata(char* metadata, new_pokemon* newPokemon){
+void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     char* stream = malloc(newPokemon->sizePokemon + 1);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
     stream[newPokemon->sizePokemon] = '\0';
 
-    abrirMetadata(metadata, stream);
-    char* block = crearBloque(newPokemon);
     t_config* configMetadataTallGrass = config_create(metadata);
 
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
     int cantidadBloques = ceil((float)size / configM.blockSize);
-    int cantidadBloquesMasUno = cantidadBloques + 1;
     
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
 
-    char* bloquesConfig = malloc(sizeof(char)*2*(cantidadBloques + 1) + 1);
+    char* bloquesConfig = malloc(sizeof(char)*3*(cantidadBloques + 1) + 1);
     strcpy(bloquesConfig,"");
     strcat(bloquesConfig,"[");
     for(int i = 0; i < cantidadBloques; i++){
@@ -195,46 +203,44 @@ void addBlockMetadata(char* metadata, new_pokemon* newPokemon){
     config_save(configMetadataTallGrass);
 
     config_destroy(configMetadataTallGrass);
-    cerrarMetadata(metadata, stream);
+    //cerrarMetadata(metadata, stream);
     free(stream);
     free(bloque);
     free(bloquesConfig);
-    free(bloques);
+    //for(int i = 0; i<cantidadBloques; i++){
+        //free(bloques[i]);
+    //}
+    
     free(sizeChar);
-    free(block);
 }
 
 void abrirMetadata(char* metadata, char* pokemon){
 
-    uint32_t timeConfig = config_get_int_value(config,"TIEMPO_DE_REINTENTO_OPERACION");
+    t_config* configMetadataTallGrass = config_create_metadata(metadata);
+    char* valorOpen = config_get_string_value(configMetadataTallGrass, "OPEN");
+    uint32_t tiempoReintento = config_get_int_value(config, "TIEMPO_DE_REINTENTO_OPERACION");
+   
+    while(!strcmp(valorOpen, "Y")){
+        sleep(tiempoReintento);
+        configMetadataTallGrass = config_create_metadata(metadata);
+        valorOpen = config_get_string_value(configMetadataTallGrass, "OPEN");
+    }
     
-    pthread_mutex_lock(&mutexListOfMutex);
-    mutexDirectory* mutexPokemon = list_find_with_args(mutexListDirectory, esPokemon, pokemon);
-    pthread_mutex_unlock(&mutexListOfMutex);
-
-    pthread_mutex_lock(&mutexPokemon->mutex);
-    t_config* configMetadataTallGrass = config_create(metadata);
     config_set_value(configMetadataTallGrass, "OPEN", "Y");
-    config_save(configMetadataTallGrass);
-
+    config_save_in_file_metadata(configMetadataTallGrass, metadata);
+    
     config_destroy(configMetadataTallGrass);
 }
 
 void cerrarMetadata(char* metadata, char* pokemon){
-    t_config* configMetadataTallGrass = config_create(metadata);
-    
-    uint32_t timeRetardo = config_get_int_value(config,"TIEMPO_RETARDO_OPERACION");
-    sleep(timeRetardo);
+    t_config* configMetadataTallGrass = config_create_metadata(metadata);
 
-    pthread_mutex_lock(&mutexListOfMutex);
-    mutexDirectory* mutexPokemon = list_find_with_args(mutexListDirectory, esPokemon, pokemon);
-    pthread_mutex_unlock(&mutexListOfMutex);
-
+    int time = config_get_int_value(config, "TIEMPO_RETARDO_OPERACION");
+    sleep(time);
     config_set_value(configMetadataTallGrass, "OPEN", "N");
-    config_save(configMetadataTallGrass);
+    config_save_in_file_metadata(configMetadataTallGrass, metadata);
 
     config_destroy(configMetadataTallGrass);
-    pthread_mutex_unlock(&mutexPokemon->mutex);
 }
 
 int metadataBlocks(char* metadata, char* pokemon){
@@ -255,6 +261,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     stream[newPokemon->sizePokemon] = '\0';
 
     abrirMetadata(metadata, stream);
+
     t_config* configMetadataTallGrass = config_create(metadata);
 
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
@@ -262,7 +269,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     int cantidadBloques = ceil((float)size / configM.blockSize);
 
     config_destroy(configMetadataTallGrass);
-    cerrarMetadata(metadata, stream);
+    //cerrarMetadata(metadata, stream);
     char* ultimoBloque = bloques[cantidadBloques-1]; 
 
     char* directorio = "./TALL_GRASS/Blocks/";
@@ -275,12 +282,17 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     strcat(bloque, extension);
 
     FILE* file = fopen(bloque,"ab+");
+
     fseek(file, 0, SEEK_END);
     int sizeFile = ftell(file);
     fseek(file,0,SEEK_SET);
 
     if(sizeFile >= configM.blockSize){
-        addBlockMetadata(metadata, newPokemon);
+        //abrirMetadata(metadata, stream);
+        char* block = crearBloque(newPokemon);
+        addBlockMetadata(metadata, block, newPokemon);
+        //cerrarMetadata(metadata, stream);
+        free(block);
     }else{
 
         char* posX = malloc(10);
@@ -312,11 +324,10 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
         }
 
         char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, newPokemon->pokemon, newPokemon->position.posx, newPokemon->position.posy, newPokemon->quantity, metadata);
-        abrirMetadata(metadata, stream); 
+        //abrirMetadata(metadata, stream); 
         t_config* configMetadataUpdated = config_create(metadata);
         config_set_value(configMetadataUpdated, "SIZE", sizeMetadata);
         config_save(configMetadataUpdated); 
-        cerrarMetadata(metadata, stream);
 
         list_destroy_and_destroy_elements(lista,free);
         free(posY);
@@ -324,11 +335,14 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
         free(quantity);
         free(sizeMetadata);
         free(configMetadataUpdated);
+        config_destroy(configMetadataUpdated);
     }
-
+    cerrarMetadata(metadata, stream);
+    
     fclose(file);
     free(bloque);
     free(bloques);
+    free(stream);
 }
 
 t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
@@ -397,6 +411,7 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
                 } 
             }
         }
+
         fclose(fileBloque);
         free(direccionBinario);
     }
@@ -423,6 +438,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     int j=0;
     char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
+
     for(int i = 0; i<cantidadBloques; i++){
         char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension) + 1);
 
@@ -432,7 +448,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
         strcat(direccionBinario,extension);
 
         FILE* fileBloque = fopen(direccionBinario, "wb");
-        
+
         int sizeArchivo = 0; 
 
         while(sizeArchivo < configM.blockSize){
@@ -443,16 +459,21 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
             j++;
             sizeArchivo++;
         }
+
         fclose(fileBloque);
 
         if(sizeTotal > sizeArchivo && sizeArchivo >= configM.blockSize && bloques[i] == bloques[cantidadBloques - 1]){
             new_pokemon* newPokemon = malloc(sizeof(new_pokemon));
-            newPokemon->sizePokemon = strlen(nombrePokemon); 
+            newPokemon->sizePokemon = strlen(nombrePokemon) + 1; 
             newPokemon->pokemon = nombrePokemon;
             newPokemon->position.posx = posx;
             newPokemon->position.posy = posy; 
             newPokemon->quantity = quantity;
-            addBlockMetadata(metadata, newPokemon);
+            abrirMetadata(metadata, nombrePokemon);
+            char* block = crearBloque(newPokemon);
+            addBlockMetadata(metadata, block, newPokemon);
+            cerrarMetadata(metadata, nombrePokemon);
+            free(block);
             cantidadBloques++;
             t_config* configMetadataTallGrass = config_create(metadata);
             bloques = config_get_array_value(configMetadataTallGrass, "BLOCKS");
@@ -520,12 +541,70 @@ char* concatenarStrings(t_list* lista){
     return concatenacion;
 }
 
-bool esPokemon(void* elem, void* args){
-    mutexDirectory* directorio = (mutexDirectory*) elem; 
-    char* pokemon = (char*) args; 
+t_config *config_create_metadata(char *path) {
+	FILE* file = fopen(path, "r");
+    int locked = EWOULDBLOCK;
 
-    if(!strcmp(directorio->nombreDirectorio,pokemon)){
-        return true;
-    }
-    return false;
+    locked = flock(fileno(file), LOCK_EX); 
+
+	if (file == NULL) {
+		return NULL;
+	}
+
+	struct stat stat_file;
+	stat(path, &stat_file);
+
+	t_config *config = malloc(sizeof(t_config));
+
+	config->path = strdup(path);
+	config->properties = dictionary_create();
+
+	char* buffer = calloc(1, stat_file.st_size + 1);
+	fread(buffer, stat_file.st_size, 1, file);
+
+	if (strstr(buffer, "\r\n")) {
+		printf("\n\nconfig_create - WARNING: the file %s contains a \\r\\n sequence "
+		 "- the Windows new line sequence. The \\r characters will remain as part "
+		 "of the value, as Unix newlines consist of a single \\n. You can install "
+		 "and use `dos2unix` program to convert your files to Unix style.\n\n", path);
+	}
+
+	char** lines = string_split(buffer, "\n");
+
+	void add_cofiguration(char *line) {
+		if (!string_starts_with(line, "#")) {
+			char** keyAndValue = string_n_split(line, 2, "=");
+			dictionary_put(config->properties, keyAndValue[0], keyAndValue[1]);
+			free(keyAndValue[0]);
+			free(keyAndValue);
+		}
+	}
+	string_iterate_lines(lines, add_cofiguration);
+	string_iterate_lines(lines, (void*) free);
+
+	free(lines);
+	free(buffer);
+	fclose(file);
+
+	return config;
+}
+
+int config_save_in_file_metadata(t_config *self, char* path) {
+	FILE* file = fopen(path, "wb+");
+
+	if (file == NULL) {
+			return -1;
+	}
+
+	char* lines = string_new();
+	void add_line(char* key, void* value) {
+		string_append_with_format(&lines, "%s=%s\n", key, value);
+	}
+
+	dictionary_iterator(self->properties, add_line);
+	int result = fwrite(lines, strlen(lines), 1, file);
+    flock(fileno(file), LOCK_UN);
+	fclose(file);
+	free(lines);
+	return result;
 }
