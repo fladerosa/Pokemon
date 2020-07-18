@@ -12,11 +12,10 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             log_info(optional_logger, "New pokemon!");
             
             send_ack(client_fd, *id_message);
-            newPokemonTallGrass(newPokemonMessage);
+
+            pthread_create_and_detach(newPokemonTallGrass, newPokemonMessage);
+            //newPokemonTallGrass(newPokemonMessage);
             //TODO SEND APPEARED
-            
-            free(newPokemonMessage->pokemon);
-            free_new_pokemon(newPokemonMessage);
             break;
         case CATCH_POKEMON:;
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream,id_message,false);
@@ -62,6 +61,33 @@ bool compareSockets(void* element, void* args){
     return thread->socket == (uint32_t) args;
 }
 
+void iniciarMutex(){
+    pthread_mutex_init(&mutexListOfMutex, NULL);
+    mutexListDirectory = list_create();
+
+    DIR* dirp; 
+    struct dirent *direntp; 
+
+    dirp = opendir("./TALL_GRASS/Files");
+    
+    while((direntp = readdir(dirp)) != NULL){
+        if(direntp->d_type == DT_DIR){
+            mutexDirectory* mutexDirectoryRead = malloc(sizeof(mutexDirectory));
+
+            char* directory = malloc(strlen(direntp->d_name) + 1);
+            memcpy(directory, direntp->d_name, strlen(direntp->d_name)); 
+            directory[strlen(direntp->d_name) + 1] = '\0';
+
+            mutexDirectoryRead->nombreDirectorio = directory;
+            pthread_mutex_init(&mutexDirectoryRead->mutex, NULL);
+            
+            pthread_mutex_lock(&mutexListOfMutex); 
+            list_add(mutexListDirectory, mutexDirectoryRead);
+            pthread_mutex_unlock(&mutexListOfMutex);
+        }
+    }
+}
+
 void iniciarGameCard(){
 
     config = config_create("./cfg/gamecard.config");
@@ -72,6 +98,9 @@ void iniciarGameCard(){
     char* PUERTO_GAMECARD = config_get_string_value(config,"PUERTO_GAMECARD");
     PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
     IP_BROKER = config_get_string_value(config,"IP_BROKER");
+    
+    iniciarMutex();
+
 
     request = &receiveMessage; 
     iniciarTallGrass();
@@ -98,7 +127,7 @@ void suscribirseATodo(){
     uint32_t socket_new_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
     crearSuscripcion(socket_new_pokemon, NEW_POKEMON, &suscripcionNewPokemon);
     
-   // uint32_t socket_catch_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    //uint32_t socket_catch_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
     //crearSuscripcion(socket_catch_pokemon, CATCH_POKEMON, &suscripcionCatchPokemon);
 
     //uint32_t socket_get_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);

@@ -12,7 +12,7 @@
 void newPokemonTallGrass(new_pokemon* newPokemon){
     char* directorio = "./TALL_GRASS/Files/";
     char buffer[50];   
-    char* stream = malloc(newPokemon->sizePokemon + 1); //Ver que va adentro del sizeof
+    char* stream = malloc(newPokemon->sizePokemon + 1);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
     stream[newPokemon->sizePokemon] = '\0';
 
@@ -20,58 +20,51 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
     strcat(buffer, directorio);
     strcat(buffer, stream);
 
-    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon + 2); //revisar 
+    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon + 2);
     memcpy(directory, buffer, strlen(directorio) + newPokemon->sizePokemon + 1);
     memcpy(directory + strlen(directorio) + newPokemon->sizePokemon + 1, "\0", sizeof(char));
-    //directory[strlen(directorio) + newPokemon->sizePokemon + 1] = '\0';
 
     int created = mkdir(directory, ACCESSPERMS);
-    if(created == -1){
-        printf("%d",errno);
-        printf("No se pudo crear el directorio.\n");
-    }else{
-        printf("Directorio creado o abierto.\n");
+    if(created != -1){
+        pthread_mutex_lock(&mutexListOfMutex);
+        mutexDirectory* mutex = malloc(sizeof(mutexDirectory));
+        mutex->nombreDirectorio = stream;
+        pthread_mutex_init(&mutex->mutex, NULL);
+        list_add(mutexListDirectory, mutex); //Asi solo tiene el nombre del pokemon 
+        pthread_mutex_unlock(&mutexListOfMutex);
     }
     
     createMetadataPokemon(directory, newPokemon);
     free(directory);
     free(stream);
+    free(newPokemon->pokemon);
+    free_new_pokemon(newPokemon);
 }
 
 void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     char* metadata = "/Metadata.bin";
-    char* directorioMetadata = malloc(strlen(directory) + strlen(metadata) + 1); //Ver que va adentro del sizeof
+    char* directorioMetadata = malloc(strlen(directory) + strlen(metadata) + 1);
     strcpy(directorioMetadata,"");
     strcat(directorioMetadata,directory);
-    //memcpy(directorioMetadata, directory, strlen(directory));
     strcat(directorioMetadata, metadata);
 
     FILE* file = fopen(directorioMetadata,"ab+");
 
-    //fseek(file, 0, SEEK_SET);
-
-    //struct stat st;
-    //stat(directorioMetadata,&st);
-    //int sizeFile = st.st_size;
     fseek(file, 0, SEEK_END);
-    int sizeFile = ftell(file); //fileno(file);
+    int sizeFile = ftell(file);
     fseek(file, 0, SEEK_SET);
     fclose(file);
 
     if(sizeFile == 0){
         configMetadataCreate(directorioMetadata);
-        
-        //char* metadataInfo = "DIRECTORY=N\nSIZE=0\nBLOCKS=[]\nOPEN=Y";
-        //fwrite(metadataInfo, strlen(metadataInfo), 1, file);      
-       /* 
-        fseek(file, 27, SEEK_SET);
-        fwrite(bin, strlen(bin), 1,file); //NO esta funcionando*/
     }
 
-    if(metadataBlocks(directorioMetadata) == 0){
-        char* bin = crearBloque(newPokemon);
-        addBlockMetadata(directorioMetadata,bin);
-        free(bin);
+    char* stream = malloc(newPokemon->sizePokemon + 1);
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon + 1] = '\0';
+
+    if(metadataBlocks(directorioMetadata, stream) == 0){
+        addBlockMetadata(directorioMetadata, newPokemon);
     }else{
         agregarDatosYOrdenarBloques(directorioMetadata, newPokemon);
     }
@@ -86,11 +79,11 @@ char* crearBloque(new_pokemon* newPokemon){
     size_t sizeBitmap = bitarray_get_max_bit(bitmap);
     int bin = 1;  
     while(bin <= (int)sizeBitmap + 1){
-        //if(ch = "0"){
+        
         bool testBit = bitarray_test_bit(bitmap, bin - 1);
         if(testBit == 0){
             char* binChar = malloc(10);
-            //char binTochar = (char) bin;
+            
             strcpy(binChar,"");
             sprintf(binChar, "%d", bin);
             char* directorioBloques = malloc(strlen(directorio) + strlen(binChar) + strlen(extension)+1); //ver de cambiarlo 
@@ -98,10 +91,6 @@ char* crearBloque(new_pokemon* newPokemon){
             strcat(directorioBloques,directorio);
             strcat(directorioBloques,binChar);
             strcat(directorioBloques,extension);
-            
-            //memcpy(directorioBloques, directorio, strlen(directorio));
-            //memcpy(directorioBloques + strlen(directorio), binChar, sizeof(char));
-            //memcpy(directorioBloques +  strlen(directorio) + sizeof(char), extension, strlen(extension));
             
             FILE* binary = fopen(directorioBloques,"wb"); 
 
@@ -117,17 +106,16 @@ char* crearBloque(new_pokemon* newPokemon){
             strcpy(quantity,"");
             sprintf(quantity,"%d",newPokemon->quantity);//(char); 
 
-            char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + 1); 
+            char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen("\n") + 3); 
             strcpy(writeBinary,"");
-            memcpy(writeBinary, posX, strlen(posX)); 
-            memcpy(writeBinary + strlen(posX), "-", strlen("-")); 
-            memcpy(writeBinary + strlen(posX) + strlen("-"), posY, strlen(posY));
-            memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY), "=", strlen("="));
-            memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("="), quantity, strlen(quantity));
-            //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity), "\n", strlen("\n"));
+            strcat(writeBinary,posX);
+            strcat(writeBinary,"-");
+            strcat(writeBinary,posY);
+            strcat(writeBinary, "=");
+            strcat(writeBinary,quantity);
             strcat(writeBinary, "\n");
 
-            fwrite(writeBinary, strlen(writeBinary), 1, binary);
+            fwrite(writeBinary, strlen(writeBinary) + 1, 1, binary);
             fclose(binary);
             bitarray_set_bit(bitmap, bin-1);
             free(posX);
@@ -137,13 +125,11 @@ char* crearBloque(new_pokemon* newPokemon){
             free(writeBinary);
             //imprimirBITARRAY(bitmap);
             return binChar;
-            break; 
         }else{
             bin++;
         }
     }
 
-    //fclose(bitmap);
     return NULL;
 }
 
@@ -155,29 +141,27 @@ void configMetadataCreate(char* metadata){
     config_destroy(configMetadataTallGrass);
 }
 
-void addBlockMetadata(char* metadata, char* block){
+void addBlockMetadata(char* metadata, new_pokemon* newPokemon){
+    char* stream = malloc(newPokemon->sizePokemon + 1);
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon] = '\0';
+
+    abrirMetadata(metadata, stream);
+    char* block = crearBloque(newPokemon);
     t_config* configMetadataTallGrass = config_create(metadata);
 
-    abrirMetadata(metadata);
-
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil(size / configM.blockSize);
+    int cantidadBloques = ceil((float)size / configM.blockSize);
     int cantidadBloquesMasUno = cantidadBloques + 1;
     
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
 
-    char* bloquesConfig = malloc((cantidadBloquesMasUno*2 + 2)*sizeof(char) + 1);
+    char* bloquesConfig = malloc(sizeof(char)*2*(cantidadBloques + 1) + 1);
     strcpy(bloquesConfig,"");
-    //bloques = realloc(bloques, sizeof(char*)*(size+1));
-    //bloques[size] = block;
-
     strcat(bloquesConfig,"[");
-    for(int i = 0; i < (cantidadBloques*2); (i = i + 2)){
+    for(int i = 0; i < cantidadBloques; i++){
         strcat(bloquesConfig,bloques[i]);
         strcat(bloquesConfig,",");
-        //bloquesConfig[i]=*bloques[i];
-        //bloquesConfig[i++]=",";
-        //i++;
     }
     strcat(bloquesConfig,block); 
     strcat(bloquesConfig,"]");
@@ -185,16 +169,12 @@ void addBlockMetadata(char* metadata, char* block){
     char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
 
-    char* bloque = malloc(strlen(directorio) + sizeof(char) + strlen(extension));
+    char* bloque = malloc(strlen(directorio) + strlen(block) + strlen(extension) + 1);
     strcpy(bloque,"");
     strcat(bloque, directorio); 
     strcat(bloque, block); 
     strcat(bloque, extension);
     
-    //memcpy(bloque, directorio, strlen(directorio));
-    //memcpy(bloque + strlen(directorio), block, sizeof(char));
-    //memcpy(bloque + strlen(directorio) + sizeof(char), extension, strlen(extension));
-    //memcpy(bloque + strlen(directorio) + strlen(block) + strlen(extension), "\0", strlen("\0"));
     FILE* file = fopen(bloque,"rb");
 
     fseek(file, 0, SEEK_END);
@@ -213,54 +193,76 @@ void addBlockMetadata(char* metadata, char* block){
     config_set_value(configMetadataTallGrass,"BLOCKS", bloquesConfig);
 
     config_save(configMetadataTallGrass);
-    //bloques[size - 1] = block;
-    //char** bloquesMasBloqueNuevo = malloc()
+
     config_destroy(configMetadataTallGrass);
-    cerrarMetadata(metadata);
+    cerrarMetadata(metadata, stream);
+    free(stream);
     free(bloque);
     free(bloquesConfig);
     free(bloques);
+    free(sizeChar);
+    free(block);
 }
 
-void abrirMetadata(char* metadata){
-    t_config* configMetadataTallGrass = config_create(metadata);
+void abrirMetadata(char* metadata, char* pokemon){
+
+    uint32_t timeConfig = config_get_int_value(config,"TIEMPO_DE_REINTENTO_OPERACION");
     
+    pthread_mutex_lock(&mutexListOfMutex);
+    mutexDirectory* mutexPokemon = list_find_with_args(mutexListDirectory, esPokemon, pokemon);
+    pthread_mutex_unlock(&mutexListOfMutex);
+
+    pthread_mutex_lock(&mutexPokemon->mutex);
+    t_config* configMetadataTallGrass = config_create(metadata);
     config_set_value(configMetadataTallGrass, "OPEN", "Y");
-
     config_save(configMetadataTallGrass);
 
     config_destroy(configMetadataTallGrass);
 }
 
-void cerrarMetadata(char* metadata){
+void cerrarMetadata(char* metadata, char* pokemon){
     t_config* configMetadataTallGrass = config_create(metadata);
     
-    config_set_value(configMetadataTallGrass, "OPEN", "N");
+    uint32_t timeRetardo = config_get_int_value(config,"TIEMPO_RETARDO_OPERACION");
+    sleep(timeRetardo);
 
+    pthread_mutex_lock(&mutexListOfMutex);
+    mutexDirectory* mutexPokemon = list_find_with_args(mutexListDirectory, esPokemon, pokemon);
+    pthread_mutex_unlock(&mutexListOfMutex);
+
+    config_set_value(configMetadataTallGrass, "OPEN", "N");
     config_save(configMetadataTallGrass);
 
     config_destroy(configMetadataTallGrass);
+    pthread_mutex_unlock(&mutexPokemon->mutex);
 }
 
-int metadataBlocks(char* metadata){
+int metadataBlocks(char* metadata, char* pokemon){
+    abrirMetadata(metadata, pokemon);
     t_config* configMetadataTallGrass = config_create(metadata);
-
-    //char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
 
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
     int cantidadBloques = ceil((float)size / configM.blockSize);
 
     config_destroy(configMetadataTallGrass);
+    cerrarMetadata(metadata,pokemon);
     return cantidadBloques;
 }
 
 void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
+    char* stream = malloc(newPokemon->sizePokemon + 1);
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon] = '\0';
+
+    abrirMetadata(metadata, stream);
     t_config* configMetadataTallGrass = config_create(metadata);
 
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
     int cantidadBloques = ceil((float)size / configM.blockSize);
 
+    config_destroy(configMetadataTallGrass);
+    cerrarMetadata(metadata, stream);
     char* ultimoBloque = bloques[cantidadBloques-1]; 
 
     char* directorio = "./TALL_GRASS/Blocks/";
@@ -278,8 +280,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     fseek(file,0,SEEK_SET);
 
     if(sizeFile >= configM.blockSize){
-        char* bin = crearBloque(newPokemon);
-        addBlockMetadata(metadata,bin);
+        addBlockMetadata(metadata, newPokemon);
     }else{
 
         char* posX = malloc(10);
@@ -310,36 +311,24 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
             list_add(lista, posicionNewPokemon);
         }
 
-        bajarBloquesADisco(lista, bloques, cantidadBloques);
- /*       if(posicionEncontrada == NULL){
-            char* writeBinary = malloc(sizeof(char)); 
-            strcpy(writeBinary,"");
-            memcpy(writeBinary, posX, strlen(posX)); 
-            memcpy(writeBinary + strlen(posX), "-", strlen("-")); 
-            memcpy(writeBinary + strlen(posX) + strlen("-"), posY, strlen(posY));
-            memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY), "=", strlen("="));
-            memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("="), quantity, strlen(quantity));
-            //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity), "\n", strlen("\n"));
-            strcat(writeBinary, "\n");
-
-            fseek(file, 0, SEEK_END);
-            fwrite(writeBinary, strlen(writeBinary), 1, file);
-        }*/
+        char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, newPokemon->pokemon, newPokemon->position.posx, newPokemon->position.posy, newPokemon->quantity, metadata);
+        abrirMetadata(metadata, stream); 
+        t_config* configMetadataUpdated = config_create(metadata);
+        config_set_value(configMetadataUpdated, "SIZE", sizeMetadata);
+        config_save(configMetadataUpdated); 
+        cerrarMetadata(metadata, stream);
 
         list_destroy_and_destroy_elements(lista,free);
         free(posY);
         free(posX);
         free(quantity);
+        free(sizeMetadata);
+        free(configMetadataUpdated);
     }
 
     fclose(file);
-    config_destroy(configMetadataTallGrass);
     free(bloque);
     free(bloques);
-}
-
-void actualizarBitmap(char* bloque){
-    //bitarray_set_bit(bitmap, bin-1);
 }
 
 t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
@@ -363,7 +352,6 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
         strcat(direccionBinario,extension);
 
         FILE* fileBloque = fopen(direccionBinario, "rb");
-        //fseek(fileBloque, 0, SEEK_SET);
 
         int c; 
         
@@ -372,7 +360,7 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
             if(posx){
                 if(isdigit(position)){
                     buffer[caracterActual] = position;
-                    caracterActual++; //revisar
+                    caracterActual++;
                 }else{
                     lineaBloque->posicionX = atoi(buffer);
                     posx = false;
@@ -384,7 +372,7 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
             }else if(posy){
                 if(isdigit(position)){
                     buffer[caracterActual] = position;
-                    caracterActual++; //revisar
+                    caracterActual++; 
                 }else{
                     lineaBloque->posicionY = atoi(buffer);
                     posy = false;
@@ -396,7 +384,7 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
             }else if(cant){
                 if(isdigit(position)){
                     buffer[caracterActual] = position;
-                    caracterActual++; //revisar
+                    caracterActual++; 
                 }else{
                     lineaBloque->cantidad = atoi(buffer);
                     posx = true;
@@ -428,9 +416,10 @@ bool coincidePosicion(void* elem, void* args){
     return false; 
 }
 
-void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
+char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, char* nombrePokemon, uint32_t posx, uint32_t posy, uint32_t quantity, char* metadata){
     t_list* writeListBinary = list_map(lista, structALinea);
     char* listaConcatenada = concatenarStrings(writeListBinary);
+    uint32_t sizeTotal = strlen(listaConcatenada) + 1;  //revisar \0
     int j=0;
     char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
@@ -443,7 +432,7 @@ void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
         strcat(direccionBinario,extension);
 
         FILE* fileBloque = fopen(direccionBinario, "wb");
-
+        
         int sizeArchivo = 0; 
 
         while(sizeArchivo < configM.blockSize){
@@ -454,16 +443,34 @@ void bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques){
             j++;
             sizeArchivo++;
         }
-
         fclose(fileBloque);
+
+        if(sizeTotal > sizeArchivo && sizeArchivo >= configM.blockSize && bloques[i] == bloques[cantidadBloques - 1]){
+            new_pokemon* newPokemon = malloc(sizeof(new_pokemon));
+            newPokemon->sizePokemon = strlen(nombrePokemon); 
+            newPokemon->pokemon = nombrePokemon;
+            newPokemon->position.posx = posx;
+            newPokemon->position.posy = posy; 
+            newPokemon->quantity = quantity;
+            addBlockMetadata(metadata, newPokemon);
+            cantidadBloques++;
+            t_config* configMetadataTallGrass = config_create(metadata);
+            bloques = config_get_array_value(configMetadataTallGrass, "BLOCKS");
+            free(newPokemon);
+            config_destroy(configMetadataTallGrass);
+        }
+        
         free(direccionBinario);
     }
 
-    //list_destroy_and_destroy_elements(lista,free);
     list_destroy_and_destroy_elements(writeListBinary, free);
-    //free(directorio);
-    //free(extension);
     free(listaConcatenada);
+
+    char* sizeTotalChar = malloc(20);
+    strcpy(sizeTotalChar, "");
+    sprintf(sizeTotalChar, "%d", sizeTotal);
+
+    return sizeTotalChar; 
 }
 
 void* structALinea(void* posicion){
@@ -471,15 +478,15 @@ void* structALinea(void* posicion){
 
     char* posX = malloc(10);
     strcpy(posX,"");
-    sprintf(posX,"%d",lineaStruct->posicionX);//(char); 
+    sprintf(posX,"%d",lineaStruct->posicionX);
 
     char* posY = malloc(10);
     strcpy(posY,"");
-    sprintf(posY,"%d",lineaStruct->posicionY);//(char); 
+    sprintf(posY,"%d",lineaStruct->posicionY);
 
     char* quantity = malloc(10);
     strcpy(quantity,"");
-    sprintf(quantity,"%d",lineaStruct->cantidad);//(char); 
+    sprintf(quantity,"%d",lineaStruct->cantidad); 
 
     char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity) + 3); 
     strcpy(writeBinary,"");
@@ -489,17 +496,11 @@ void* structALinea(void* posicion){
     strcat(writeBinary, "=");
     strcat(writeBinary,quantity);
     strcat(writeBinary, "\n");
-    //memcpy(writeBinary, posX, strlen(posX)); 
-    //memcpy(writeBinary + strlen(posX), "-", strlen("-")); 
-    //memcpy(writeBinary + strlen(posX) + strlen("-"), posY, strlen(posY));
-    //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY), "=", strlen("="));
-    //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("="), quantity, strlen(quantity));
-    //memcpy(writeBinary + strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen(quantity), "\n", strlen("\n"));
-    //strcat(writeBinary, "\n");
 
     free(posX);
     free(posY);
     free(quantity);
+
     return (void*)writeBinary;
 }
 
@@ -510,10 +511,21 @@ char* concatenarStrings(t_list* lista){
     }
     tamano++;
     char* concatenacion = malloc(tamano);
+    strcpy(concatenacion,"");
 
     for(int i = 0; i<list_size(lista); i++){
         strcat(concatenacion, (char*)list_get(lista,i));
     }
 
     return concatenacion;
+}
+
+bool esPokemon(void* elem, void* args){
+    mutexDirectory* directorio = (mutexDirectory*) elem; 
+    char* pokemon = (char*) args; 
+
+    if(!strcmp(directorio->nombreDirectorio,pokemon)){
+        return true;
+    }
+    return false;
 }
