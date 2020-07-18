@@ -122,7 +122,7 @@ void assign_data_trainer() {
 
             list_add(threadsTrainers, (void*)threadTrainerAux);
 
-            log_info(optional_logger, "Request malloc succesfully to TRAINER %d ", (int)i+1);   
+            log_info(optional_logger, "Request malloc succesfully to TRAINER %d, position: (%d,%d) ", data_trainer->id_trainer, data_trainer->position.posx, data_trainer->position.posy);
         }else{
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
         }

@@ -29,7 +29,9 @@ void calculateTrainerToReady(enum_process_state threadTrainerState){
                 threadTrainerAux->state = READY;
 				threadTrainerAux->positionTo.posx = pokemonOnMapAux->position.posx;
 				threadTrainerAux->positionTo.posy = pokemonOnMapAux->position.posy;
+				pokemonOnMapAux->state = P_CHASING;
                 existNewReady = true;
+				threadTrainerAux->incomingTime = time(NULL);
 				if(threadTrainerState == NEW){
 					log_info(obligatory_logger, "Entrenador %d, cambia de NEW a READY, porque es el más cercano para realizar la captura", threadTrainerAux->idTrainer);
 				}else{
@@ -48,15 +50,15 @@ void calculateTrainerToReady(enum_process_state threadTrainerState){
 t_threadTrainer* getClosestTrainer(t_position position, enum_process_state threadTrainerState){
     uint32_t threadsTrainersCount = list_size(threadsTrainers);
     t_threadTrainer* threadTrainerAux;
-    uint32_t minimunDistance = -1;
-    uint32_t indexClosestThreadTrainer = -1;
+    int32_t minimunDistance = -1;
+    int32_t indexClosestThreadTrainer = -1;
     t_trainer* trainerAux;
 
     for(int i=0; i < threadsTrainersCount; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
         if(threadTrainerAux->state == threadTrainerState){
             trainerAux = (t_trainer*)list_get(trainers, threadTrainerAux->idTrainer - 1);
-            if(minimunDistance == -1 || minimunDistance < calculateDistance(trainerAux->position, position)){
+            if(minimunDistance == -1 || minimunDistance > calculateDistance(trainerAux->position, position)){
                 minimunDistance = calculateDistance(trainerAux->position, position);
                 indexClosestThreadTrainer = i;
             }
@@ -70,8 +72,8 @@ t_threadTrainer* getClosestTrainer(t_position position, enum_process_state threa
 }
 
 uint32_t calculateDistance(t_position positionFrom, t_position positionTo){
-    uint32_t posX = positionTo.posx - positionFrom.posx;
-    uint32_t posY = positionTo.posy - positionFrom.posy;
+    int32_t posX = positionTo.posx - positionFrom.posx;
+    int32_t posY = positionTo.posy - positionFrom.posy;
     if(posX < 0) posX = posX * -1;
     if(posY < 0) posY = posY * -1;
     return posX + posY;
@@ -101,22 +103,24 @@ void setTrainerToExec(){
 }
 
 void setTrainerToExec_FirstCome(){
-    uint32_t indexFirstTrainer = -1;
+    int32_t indexFirstTrainer = -1;
     time_t lowestTime = time(NULL);
     uint32_t trainersCount = list_size(trainers);
     t_threadTrainer* threadTrainerAux;
 
     for(int i=0; i < trainersCount; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
-        if(threadTrainerAux->incomingTime < lowestTime){
+        if(threadTrainerAux->incomingTime <= lowestTime && threadTrainerAux->state == READY){
             lowestTime = threadTrainerAux->incomingTime;
             indexFirstTrainer = i;
         }
     }
 
-    threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
-    threadTrainerAux->state = EXEC;
-	log_info(obligatory_logger, "Entrenador %d, cambia de READY a EXEC, porque es el siguiente a ejecutar", threadTrainerAux->idTrainer);
+	if(indexFirstTrainer != -1){
+		threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
+		threadTrainerAux->state = EXEC;
+		log_info(obligatory_logger, "Entrenador %d, cambia de READY a EXEC, porque es el siguiente a ejecutar", threadTrainerAux->idTrainer);
+	}
 }
 
 void setTrainerToExec_SJF(){
@@ -124,7 +128,7 @@ void setTrainerToExec_SJF(){
     //Estimador = Ti-1*alpha + Ri-1*(1-alpha)
     //previousIncomingTime-1*config_values.alpha + incomingTime-1*(1-config_values.alpha)
     //revisar
-    uint32_t indexFirstTrainer = -1;
+    int32_t indexFirstTrainer = -1;
     double estimator = -1;
     uint32_t trainersCount = list_size(trainers);
 	uint32_t cyclesNeeded;
@@ -135,15 +139,18 @@ void setTrainerToExec_SJF(){
     for(int i=0; i < trainersCount; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
 		trainerAux = (t_trainer*)list_get(trainers, i);
-        previusEstimator = threadTrainerAux->valueEstimator;
-		cyclesNeeded = calculateDistance(trainerAux->position, threadTrainerAux->positionTo);
+		if(threadTrainerAux->state == READY){	
+			previusEstimator = threadTrainerAux->valueEstimator;
+			cyclesNeeded = calculateDistance(trainerAux->position, threadTrainerAux->positionTo);
 
-        threadTrainerAux->valueEstimator = previusEstimator * config_values.alpha + cyclesNeeded * (1 - config_values.alpha);
-    
-        if(estimator == -1 || estimator > threadTrainerAux->valueEstimator){
-			estimator = threadTrainerAux->valueEstimator;
-            indexFirstTrainer = i;
-        }       
+			threadTrainerAux->valueEstimator = previusEstimator * config_values.alpha + cyclesNeeded * (1 - config_values.alpha);
+			log_info(optional_logger, "Previous estimator: %f, new estimator: %f", previusEstimator, threadTrainerAux->valueEstimator);
+		
+			if((estimator == -1 || estimator > threadTrainerAux->valueEstimator) && threadTrainerAux->state == READY){
+				estimator = threadTrainerAux->valueEstimator;
+				indexFirstTrainer = i;
+			}
+		}
     }
     threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
     threadTrainerAux->state = EXEC;
@@ -167,6 +174,7 @@ void calculateLeaveBlockedFromDeadlock(uint32_t idTrainer, t_position positionTo
             threadTrainerAux->positionTo.posx = positionTo.posx;
             threadTrainerAux->positionTo.posy = positionTo.posy;
             threadTrainerAux->state = READY;
+			threadTrainerAux->incomingTime = time(NULL);
 			log_info(obligatory_logger, "Entrenador %d, cambia de BLOCKED a READY, porque intercambiará por deadlock", threadTrainerAux->idTrainer);
             calculateTrainerFromReadyToExec(READY);
         }
@@ -224,23 +232,18 @@ void calculateTrainerInExit(uint32_t idTrainer){
         writeTeamMetrics();
         finishTeam();
     }
+	calculateTrainerFromReadyToExec();
 }
 
 void writeTrainerMetrics(uint32_t idTrainer){
     //write trainer metrics
     t_threadTrainer* threadTrainerAux;
 
-    for(int i = 0; i<list_size(threadsTrainers); i++){
-        threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+	threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, idTrainer-1);
 
-        if(threadTrainerAux->idTrainer == idTrainer) {
-            log_info(obligatory_logger, "Trainer: %d", idTrainer);
-            log_info(obligatory_logger, "Total Cycle CPU by Trainer: %d", threadTrainerAux->cpuCycleCount);
-        }
-        else{
-            log_info(obligatory_logger, "Trainer %d not valid", idTrainer);
-        }
-    }
+	log_info(obligatory_logger, "Trainer: %d", idTrainer);
+	log_info(obligatory_logger, "Total Cycle CPU by Trainer: %d", threadTrainerAux->cpuCycleCount);
+	log_info(optional_logger, "Total context switch by Trainer: %d", threadTrainerAux->contextSwitchCount);
 }
 
 bool trainerStateIsExit(void* threadTrainer){
@@ -387,6 +390,7 @@ void execThreadTrainerSetedRR(t_threadTrainer* threadTrainerChosen){
 	
 	threadTrainerChosen->contextSwitchCount++;
 	for(int i=0; i<distanceToMove && continueMoving; i++){
+		usedCycle++;
 		move_to_objetive(trainerAux, threadTrainerChosen->positionTo);
 		threadTrainerChosen->cpuCycleCount++;
 
@@ -401,12 +405,12 @@ void execThreadTrainerSetedRR(t_threadTrainer* threadTrainerChosen){
 			if(usedCycle == config_values.quantum){
 				threadTrainerChosen->state = READY;
 				threadTrainerChosen->contextSwitchCount++;
+				threadTrainerChosen->incomingTime = time(NULL);
 				log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a READY, porque se le acabó el QUANTUM", threadTrainerChosen->idTrainer);
 				calculateTrainerFromReadyToExec();
 				continueMoving = false;
 			}
 		}
-		usedCycle++;
 	}
 }
 void execThreadTrainerSetedSJF_SD(t_threadTrainer* threadTrainerChosen){
@@ -434,6 +438,7 @@ void execThreadTrainerSetedSJF_CD(t_threadTrainer* threadTrainerChosen){
 	t_pokemon_on_map* pokemonOnMap = getPokemonByPosition(threadTrainerChosen->positionTo);
 	pokemonOnMap->state = P_CHASING;
 	int countPokemonOnReady = calculatePokemonsOnReady();
+	log_info(optional_logger, "Cantidad de readies: %d", countPokemonOnReady);
 	
 	threadTrainerChosen->contextSwitchCount++;
 	for(int i=0; i<distanceToMove; i++){
@@ -450,6 +455,7 @@ void execThreadTrainerSetedSJF_CD(t_threadTrainer* threadTrainerChosen){
 			if(countPokemonOnReady != calculatePokemonsOnReady()){
 				threadTrainerChosen->state = READY;
 				threadTrainerChosen->contextSwitchCount++;
+				threadTrainerChosen->incomingTime = time(NULL);
 				log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a READY, porque apareció un entrenador con estimador menor que está en READY", threadTrainerChosen->idTrainer);
 				calculateTrainerFromReadyToExec();
 			}
