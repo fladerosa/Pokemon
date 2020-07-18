@@ -27,7 +27,15 @@ void calculateTrainerToReady(enum_process_state threadTrainerState){
             threadTrainerAux = getClosestTrainer(pokemonOnMapAux->position, threadTrainerState);
             if(threadTrainerAux != NULL){
                 threadTrainerAux->state = READY;
+				threadTrainerAux->positionTo.posx = pokemonOnMapAux->position.posx;
+				threadTrainerAux->positionTo.posy = pokemonOnMapAux->position.posy;
                 existNewReady = true;
+				if(threadTrainerState == NEW){
+					log_info(obligatory_logger, "Entrenador %d, cambia de NEW a READY, porque es el más cercano para realizar la captura", threadTrainerAux->idTrainer);
+				}else{
+					//TODO verificar que hacer con deadlock
+					log_info(obligatory_logger, "Entrenador %d, cambia de BLOCKED a READY, porque es el más cercano para realizar la captura", threadTrainerAux->idTrainer);
+				}
             }
         }
     }
@@ -88,6 +96,8 @@ void setTrainerToExec(){
     else if (strcmp(config_values.algoritmo_planificacion, "RR") == 0) setTrainerToExec_FirstCome();
     else if (strcmp(config_values.algoritmo_planificacion, "SJF-SD") == 0) setTrainerToExec_SJF();
     else if (strcmp(config_values.algoritmo_planificacion, "SJF-CD") == 0) setTrainerToExec_SJF();
+
+	executeAlgorithm();
 }
 
 void setTrainerToExec_FirstCome(){
@@ -106,6 +116,7 @@ void setTrainerToExec_FirstCome(){
 
     threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
     threadTrainerAux->state = EXEC;
+	log_info(obligatory_logger, "Entrenador %d, cambia de READY a EXEC, porque es el siguiente a ejecutar", threadTrainerAux->idTrainer);
 }
 
 void setTrainerToExec_SJF(){
@@ -114,23 +125,29 @@ void setTrainerToExec_SJF(){
     //previousIncomingTime-1*config_values.alpha + incomingTime-1*(1-config_values.alpha)
     //revisar
     uint32_t indexFirstTrainer = -1;
-    uint32_t estimator;
+    double estimator = -1;
     uint32_t trainersCount = list_size(trainers);
+	uint32_t cyclesNeeded;
+	double previusEstimator;
     t_threadTrainer* threadTrainerAux;
+	t_trainer* trainerAux;
 
     for(int i=0; i < trainersCount; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
-        uint32_t previusEstimator = threadTrainerAux->previousIncomingTime -config_values.alpha;
-        uint32_t incomingEstimator = threadTrainerAux->incomingTime-(1-config_values.alpha);
-        estimator =  previusEstimator + incomingEstimator;
-        threadTrainerAux->valueEstimator = estimator;
+		trainerAux = (t_trainer*)list_get(trainers, i);
+        previusEstimator = threadTrainerAux->valueEstimator;
+		cyclesNeeded = calculateDistance(trainerAux->position, threadTrainerAux->positionTo);
+
+        threadTrainerAux->valueEstimator = previusEstimator * config_values.alpha + cyclesNeeded * (1 - config_values.alpha);
     
-        if(threadTrainerAux->valueEstimator <= config_values.estimacion_inicial){
+        if(estimator == -1 || estimator > threadTrainerAux->valueEstimator){
+			estimator = threadTrainerAux->valueEstimator;
             indexFirstTrainer = i;
         }       
     }
     threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
     threadTrainerAux->state = EXEC;
+	log_info(obligatory_logger, "Entrenador %d, cambia de READY a EXEC, porque es el siguiente a ejecutar", threadTrainerAux->idTrainer);
 }
 
 //Called when a pokemon appear, on deadlock thread, and on message "caught pokemon"
@@ -150,7 +167,8 @@ void calculateLeaveBlockedFromDeadlock(uint32_t idTrainer, t_position positionTo
             threadTrainerAux->positionTo.posx = positionTo.posx;
             threadTrainerAux->positionTo.posy = positionTo.posy;
             threadTrainerAux->state = READY;
-            calculateTrainerToReady(READY);
+			log_info(obligatory_logger, "Entrenador %d, cambia de BLOCKED a READY, porque intercambiará por deadlock", threadTrainerAux->idTrainer);
+            calculateTrainerFromReadyToExec(READY);
         }
     }
 }
@@ -165,29 +183,35 @@ void calculateLeaveBlockedFromCaught(uint32_t idTrainer){
     for(int i=0; i<threadsTrainersCount && continueFor; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
         trainerAux = (t_trainer*)list_get(trainers, i);
-        if(threadTrainerAux->idTrainer == idTrainer){
-            if(list_size(trainerAux->pokemonNeeded) == list_size(trainerAux->pokemonOwned)){
-                t_list* copyOfNeeded = list_duplicate(trainerAux->pokemonNeeded);
-                t_list* copyOfOwned = list_duplicate(trainerAux->pokemonOwned);
-                bool listsAreIdenticals = true;
-
-                list_sort(copyOfNeeded, compareStrings);
-                list_sort(copyOfOwned, compareStrings);
-
-                for(int j=0; j<list_size(copyOfNeeded) && listsAreIdenticals; j++){
-                    if(strcmp((char*)list_get(copyOfNeeded, j), (char*)list_get(copyOfOwned, j)) != 0){
-                        listsAreIdenticals = false;
-                    }
-                }
-
-                if(listsAreIdenticals){
-                    //Needed and owned same size and same contents, go to exit
-                    threadTrainerAux->state = EXIT;
-                    calculateTrainerInExit(idTrainer);
-                }
-            }
+        
+		if(threadTrainerAux->idTrainer == idTrainer){
+			if(trainerCompleteOwnObjetives(trainerAux)){
+				threadTrainerAux->state = EXIT;
+				log_info(obligatory_logger, "Entrenador %d, cambia de BLOCKED a EXIT, porque cumplió sus objetivos individuales", threadTrainerAux->idTrainer);
+				calculateTrainerInExit(idTrainer);
+			}
         }
     }
+}
+
+bool trainerCompleteOwnObjetives(t_trainer* trainerAux){
+	bool result = false;
+	if(list_size(trainerAux->pokemonNeeded) == list_size(trainerAux->pokemonOwned)){
+		t_list* copyOfNeeded = list_duplicate(trainerAux->pokemonNeeded);
+		t_list* copyOfOwned = list_duplicate(trainerAux->pokemonOwned);
+		result = true;
+
+		list_sort(copyOfNeeded, compareStrings);
+		list_sort(copyOfOwned, compareStrings);
+
+		for(int j=0; j<list_size(copyOfNeeded) && result; j++){
+			if(strcmp((char*)list_get(copyOfNeeded, j), (char*)list_get(copyOfOwned, j)) != 0){
+				result = false;
+			}
+		}
+	}
+
+	return result;
 }
 
 bool compareStrings(void* string1, void* string2){
@@ -210,8 +234,8 @@ void writeTrainerMetrics(uint32_t idTrainer){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
 
         if(threadTrainerAux->idTrainer == idTrainer) {
-            log_info(obligatory_logger, "Trainer %d", idTrainer);
-            log_info(obligatory_logger, "Total Cycle CPU by Trainer", threadTrainerAux->cpuCycleCount);
+            log_info(obligatory_logger, "Trainer: %d", idTrainer);
+            log_info(obligatory_logger, "Total Cycle CPU by Trainer: %d", threadTrainerAux->cpuCycleCount);
         }
         else{
             log_info(obligatory_logger, "Trainer %d not valid", idTrainer);
@@ -226,8 +250,8 @@ bool trainerStateIsExit(void* threadTrainer){
 void writeTeamMetrics(){
     //write team metrics
     t_threadTrainer* threadTrainerAux;
-    uint32_t totalCycleCpuTeam;
-    uint32_t totalContextSwitch;
+    uint32_t totalCycleCpuTeam = 0;
+    uint32_t totalContextSwitch = 0;
 
     for(int i = 0; i<list_size(threadsTrainers); i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
@@ -235,173 +259,214 @@ void writeTeamMetrics(){
         totalContextSwitch += threadTrainerAux->contextSwitchCount;
                
     }
-      log_info(obligatory_logger, "Algorithm %s ", config_values.algoritmo_planificacion); 
-      log_info(obligatory_logger, "Total Cycle CPU by TEAM %d", totalCycleCpuTeam);
-      log_info(obligatory_logger, "Total Context Switch by Team %d", totalContextSwitch);
+      log_info(obligatory_logger, "Algorithm: %s ", config_values.algoritmo_planificacion); 
+      log_info(obligatory_logger, "Total Cycle CPU by TEAM: %d", totalCycleCpuTeam);
+      log_info(obligatory_logger, "Total Context Switch by Team: %d", totalContextSwitch);
 }
 
 void finishTeam(){
     //finish team
     release_resources();
+	exit(1);
+}
+
+
+void executeAlgorithm() {
+	t_threadTrainer* threadTrainerAux = (t_threadTrainer*)list_find(threadsTrainers, threadTrainerInExec);
+
+	if (strcmp(config_values.algoritmo_planificacion, "FIFO") == 0) execThreadTrainerSetedFCFS(threadTrainerAux);
+    else if (strcmp(config_values.algoritmo_planificacion, "RR") == 0) execThreadTrainerSetedRR(threadTrainerAux);
+    else if (strcmp(config_values.algoritmo_planificacion, "SJF-SD") == 0) execThreadTrainerSetedSJF_SD(threadTrainerAux);
+    else if (strcmp(config_values.algoritmo_planificacion, "SJF-CD") == 0) execThreadTrainerSetedSJF_CD(threadTrainerAux);
+}
+
+bool threadTrainerInExec(void* threadTrainerAux){
+	return ((t_threadTrainer*)threadTrainerAux)->state == EXEC;
 }
 
 //// algoritmos de planifiacion
 //despues de  setTrainerToExec_FirstCome() obtengo el threadTrainerChosen y el pokemonOnMap
-void execThreadTrainerSetedFCFS(t_threadTrainer* threadTrainerChosen, t_pokemon_on_map pokemon_on_map){
-	uint32_t success;
-	void* pokemon;
-	uint32_t distanceToMove = calculateDistance(threadTrainerChosen->positionTo, pokemon_on_map.position);
-//calculo rafaga de cpu FCFS con la distancia calculada
-	calculate_cpu_burst_threadTrainerOnExec(threadTrainerChosen, distanceToMove);
-	move_to_objetive_FCFS(threadTrainerChosen, pokemon_on_map);
-
-	connection* connectionMessage = malloc(sizeof(connection));
-	if(connectionMessage != NULL) {
-	//envio send catch_pokemon al broker, una vez que estoy en la posicion del pokemon
-		send_catch_pokemon(socket_team, pokemon_on_map);
-		threadTrainerChosen->state = BLOCKED; 
-	//espero  rta del broker
-		reconnect* reconnectMessage = malloc(sizeof(reconnect));
-		send_reconnect(socket_broker, reconnectMessage->id_connection);
-		pthread_t reconnection_broker_caught_pokemon;
-        pthread_create(&reconnection_broker_caught_pokemon, NULL, (void*)retry_on_x_time, NULL);
-        log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", config_values.tiempo_reconexion,  reconnection_broker_caught_pokemon);
-	}
-	else {
-		success = caught_default();
-		log_info(optional_logger, "Caught by Default.")	;
-		log_info(optional_logger, "Pokemon %s", pokemon_on_map.pokemon);	
-		}
-		if(success == 0) {
-		//agrego el pokemon capturado a la lista de pokemon Owned	
-		//sacarlo de la lista de pokemons en mapa 
-		pokemon= list_find(pokemonsOnMap, isPokemonOnMapChasing);
-		pokemon_on_map.pokemon = (char*)pokemon;
-		pokemon_on_map.state = P_CATCHED;
-		log_info(optional_logger, "State catched %d", success);	
-		log_info(optional_logger, "Adding to pokemon owned");
-		}
-	//verifico si cumpli el objetivo
-	calculateLeaveBlockedFromCaught(threadTrainerChosen->idTrainer);
+void execThreadTrainerSetedFCFS(t_threadTrainer* threadTrainerChosen){
+	t_trainer* trainerAux = (t_trainer*)list_get(trainers, threadTrainerChosen->idTrainer-1);
+	uint32_t distanceToMove = calculateDistance(trainerAux->position, threadTrainerChosen->positionTo);
+	t_pokemon_on_map* pokemonOnMap = getPokemonByPosition(threadTrainerChosen->positionTo);
+	pokemonOnMap->state = P_CHASING;
+	
 	threadTrainerChosen->contextSwitchCount++;
-}
-void execThreadTrainerSetedRR(t_threadTrainer* threadTrainerChosen, t_pokemon_on_map pokemon_on_map){
-	uint32_t success;
-	void* pokemon;
-	uint32_t distanceToMove = calculateDistance(threadTrainerChosen->positionTo, pokemon_on_map.position);
-//la rafaga total de cpu va a estar temporizada por el quantum
-	calculate_cpu_burst_threadTrainerOnExec(threadTrainerChosen, distanceToMove);
-	move_to_objetive_RR(threadTrainerChosen, pokemon_on_map, distanceToMove);
-
-connection* connectionMessage = malloc(sizeof(connection));
-	if(connectionMessage != NULL) {
-	//envio send catch_pokemon al broker, una vez que estoy en la posicion del pokemon
-		send_catch_pokemon(socket_team, pokemon_on_map);
-		threadTrainerChosen->state = BLOCKED; 
-	//espero  rta del broker
-		reconnect* reconnectMessage = malloc(sizeof(reconnect));
-		send_reconnect(socket_broker, reconnectMessage->id_connection);
-		pthread_t reconnection_broker_caught_pokemon;
-        pthread_create(&reconnection_broker_caught_pokemon, NULL, (void*)retry_on_x_time, NULL);
-        log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", config_values.tiempo_reconexion,  reconnection_broker_caught_pokemon);
+	for(int i=0; i<distanceToMove; i++){
+		move_to_objetive(trainerAux, threadTrainerChosen->positionTo);
+		threadTrainerChosen->cpuCycleCount++;
 	}
-	else {
-		success = caught_default();
-		log_info(optional_logger, "Caught by Default.")	;
-		log_info(optional_logger, "Pokemon %s", pokemon_on_map.pokemon);	
-		}
-		if(success == 0) {
-		//agrego el pokemon capturado a la lista de pokemon Owned	
-		//sacarlo de la lista de pokemons en mapa 
-		pokemon= list_find(pokemonsOnMap, isPokemonOnMapChasing);
-		pokemon_on_map.pokemon = (char*)pokemon;
-		pokemon_on_map.state = P_CATCHED;
-		log_info(optional_logger, "State catched %d", success);	
-		log_info(optional_logger, "Adding to pokemon owned");
-		}
-	//verifico si cumpli el objetivo?
-	calculateLeaveBlockedFromCaught(threadTrainerChosen->idTrainer);
-	threadTrainerChosen->contextSwitchCount++;
-}
-void execThreadTrainerSetedSJF_SD(t_threadTrainer* threadTrainerChosen, t_pokemon_on_map pokemon_on_map){
-//una vez que se hizo el set del trainer elegido para el EXEC, 
-// la ejecucion de la rafaga es igual que  con FCFS?
-// de ser asi, reuso funciones de move y de calculo de rafaga de cpu
-uint32_t success;
-void* pokemon;
-uint32_t distanceToMove = calculateDistance(threadTrainerChosen->positionTo, pokemon_on_map.position);
-//calculo rafaga de cpu SJF-SD con la distancia calculada
-calculate_cpu_burst_threadTrainerOnExec(threadTrainerChosen, distanceToMove);
-move_to_objetive_FCFS(threadTrainerChosen, pokemon_on_map);
 
-connection* connectionMessage = malloc(sizeof(connection));
-	if(connectionMessage != NULL) {
-	//envio send catch_pokemon al broker, una vez que estoy en la posicion del pokemon
-		send_catch_pokemon(socket_team, pokemon_on_map);
-		threadTrainerChosen->state = BLOCKED; 
-	//espero  rta del broker
-		reconnect* reconnectMessage = malloc(sizeof(reconnect));
-		send_reconnect(socket_broker, reconnectMessage->id_connection);
-		pthread_t reconnection_broker_caught_pokemon;
-        pthread_create(&reconnection_broker_caught_pokemon, NULL, (void*)retry_on_x_time, NULL);
-        log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", config_values.tiempo_reconexion,  reconnection_broker_caught_pokemon);
+	if(!sendCatch(pokemonOnMap)){
+		catch_succesfull(trainerAux->id_trainer);
+		log_info(optional_logger, "Caught by Default.");
+		log_info(optional_logger, "Pokemon %s", pokemonOnMap->pokemon);
 	}
-	else {
-		success = caught_default();
-		log_info(optional_logger, "Caught by Default.")	;
-		log_info(optional_logger, "Pokemon %s", pokemon_on_map.pokemon);	
-		}
-		if(success == 0) {
-		//agrego el pokemon capturado a la lista de pokemon Owned	
-		//sacarlo de la lista de pokemons en mapa 
-		pokemon= list_find(pokemonsOnMap, isPokemonOnMapChasing);
-		pokemon_on_map.pokemon = (char*)pokemon;
-		pokemon_on_map.state = P_CATCHED;
-		log_info(optional_logger, "State catched %d", success);	
-		log_info(optional_logger, "Adding to pokemon owned");
-		}
-	//verifico si cumpli el objetivo?
-	calculateLeaveBlockedFromCaught(threadTrainerChosen->idTrainer);
-	threadTrainerChosen->contextSwitchCount++;
 }
 
-void execThreadTrainerSetedSJF_CD(t_threadTrainer* threadTrainerChosen, t_pokemon_on_map pokemon_on_map){
-	uint32_t success;
-	void* pokemon;
-	uint32_t distanceToMove = calculateDistance(threadTrainerChosen->positionTo, pokemon_on_map.position);
-	//calculo rafaga de cpu SJF-SD con la distancia calculada
-	calculate_cpu_burst_threadTrainerOnExec(threadTrainerChosen, distanceToMove);
-	move_to_objetive_SJF_CD(threadTrainerChosen, pokemon_on_map, distanceToMove);
-	//funcion mover de SJF_CD
-	connection* connectionMessage = malloc(sizeof(connection));
-	if(connectionMessage != NULL) {
-	//envio send catch_pokemon al broker, una vez que estoy en la posicion del pokemon
-		send_catch_pokemon(socket_team, pokemon_on_map);
-		threadTrainerChosen->state = BLOCKED; 
-	//espero  rta del broker
-		reconnect* reconnectMessage = malloc(sizeof(reconnect));
-		send_reconnect(socket_broker, reconnectMessage->id_connection);
-		pthread_t reconnection_broker_caught_pokemon;
-        pthread_create(&reconnection_broker_caught_pokemon, NULL, (void*)retry_on_x_time, NULL);
-        log_info(obligatory_logger, "Sending reconnect to broker each %d on thread %ul\n", config_values.tiempo_reconexion,  reconnection_broker_caught_pokemon);
-	}
-	else {
-		success = caught_default();
-		log_info(optional_logger, "Caught by Default.")	;
-		log_info(optional_logger, "Pokemon %s", pokemon_on_map.pokemon);	
+t_pokemon_on_map* getPokemonByPosition(t_position pokemonPosition){
+	positionCompare.posx = pokemonPosition.posx;
+	positionCompare.posy = pokemonPosition.posy;
+
+	return (t_pokemon_on_map*)list_find(pokemonsOnMap, pokemonsOnMapComparePosition);
+}
+bool pokemonsOnMapComparePosition(void* pokemonOnMapAux){
+	return ((t_pokemon_on_map*)pokemonOnMapAux)->position.posx == positionCompare.posx && ((t_pokemon_on_map*)pokemonOnMapAux)->position.posy == positionCompare.posy;
+}
+void move_to_objetive(t_trainer* trainerAux, t_position positionTo){
+	t_position currentPosition = trainerAux->position;
+	if(trainerAux->position.posx != positionTo.posx){
+		if(trainerAux->position.posx < positionTo.posx){
+			trainerAux->position.posx++;
+		}else{
+			trainerAux->position.posx--;
 		}
-		if(success == 0) {
-		//agrego el pokemon capturado a la lista de pokemon Owned	
-		//sacarlo de la lista de pokemons en mapa 
-		pokemon= list_find(pokemonsOnMap, isPokemonOnMapChasing);
-		pokemon_on_map.pokemon = (char*)pokemon;
-		pokemon_on_map.state = P_CATCHED;
-		log_info(optional_logger, "State catched %d", success);	
-		log_info(optional_logger, "Adding to pokemon owned");
+	}else{
+		if(trainerAux->position.posy != positionTo.posy){
+			if(trainerAux->position.posy < positionTo.posy){
+				trainerAux->position.posy++;
+			}else{
+				trainerAux->position.posy--;
+			}
+		}	
 	}
-	//verifico si cumpli el objetivo?
-	calculateLeaveBlockedFromCaught(threadTrainerChosen->idTrainer);
+	log_info(obligatory_logger, "Entrenador %d - Posicion actual: (%d,%d) - Posicion destino: (%d,%d)", trainerAux->id_trainer, currentPosition.posx, currentPosition.posy, trainerAux->position.posx, trainerAux->position.posy);
+	sleep(config_values.retardo_ciclo_cpu);
+}
+bool sendCatch(t_pokemon_on_map* pokemon){
+	//TODO
+	bool result = false;
+	log_info(obligatory_logger, "Atrapar pokemon: %s, en posicion: (%d,%d)", pokemon->pokemon, pokemon->position.posx, pokemon->position.posy);
+
+	if(!result){
+		log_info(obligatory_logger, "Falló conexión con broker, se ejecutará función por default de appeared");
+	}
+	return result;
+}
+void catch_succesfull(uint32_t id_trainer){
+	t_trainer* trainerAux = (t_trainer*)list_get(trainers, id_trainer-1);
+	t_threadTrainer* threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, id_trainer-1);
+
+	//Set the pokemon as catched
+	t_pokemon_on_map* pokemonOnMapAux = getPokemonByPosition(threadTrainerAux->positionTo);
+	pokemonOnMapAux->state = P_CATCHED;
+
+	//Remove the global objetive
+	pokemonCompareGlobalObjetive = malloc(strlen(pokemonOnMapAux->pokemon));
+	strcpy(pokemonCompareGlobalObjetive, pokemonOnMapAux->pokemon);
+	list_remove_by_condition(globalObjetive, analyzePokemonInGlobal);
+	free(pokemonCompareGlobalObjetive);
+
+	//Add pokemon owned
+	char* newPokemonOwned = malloc(strlen(pokemonOnMapAux->pokemon));
+	strcpy(newPokemonOwned, pokemonOnMapAux->pokemon);
+	list_add(trainerAux->pokemonOwned, (void*)newPokemonOwned);
+
+	//Validate trainer objetive complete
+	if(list_size(trainerAux->pokemonOwned) == list_size(trainerAux->pokemonNeeded) && trainerCompleteOwnObjetives(trainerAux)){
+		threadTrainerAux->state = EXIT;
+		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales", threadTrainerAux->idTrainer);
+		calculateTrainerInExit(trainerAux->id_trainer);
+	}else{
+		threadTrainerAux->state = BLOCKED;
+		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon", threadTrainerAux->idTrainer);
+	}
+}
+
+
+void execThreadTrainerSetedRR(t_threadTrainer* threadTrainerChosen){
+
+	t_trainer* trainerAux = (t_trainer*)list_get(trainers, threadTrainerChosen->idTrainer-1);
+	uint32_t distanceToMove = calculateDistance(trainerAux->position, threadTrainerChosen->positionTo);
+	t_pokemon_on_map* pokemonOnMap = getPokemonByPosition(threadTrainerChosen->positionTo);
+	bool continueMoving = true;
+	uint32_t usedCycle = 0;
+	
+	pokemonOnMap->state = P_CHASING;
+	
 	threadTrainerChosen->contextSwitchCount++;
+	for(int i=0; i<distanceToMove && continueMoving; i++){
+		move_to_objetive(trainerAux, threadTrainerChosen->positionTo);
+		threadTrainerChosen->cpuCycleCount++;
+
+		if(trainerAux->position.posx == threadTrainerChosen->positionTo.posx && trainerAux->position.posy == threadTrainerChosen->positionTo.posy){
+			if(!sendCatch(pokemonOnMap)){
+				catch_succesfull(trainerAux->id_trainer);
+				log_info(optional_logger, "Caught by Default.");
+				log_info(optional_logger, "Pokemon %s", pokemonOnMap->pokemon);
+			}
+			continueMoving = false;
+		}else{
+			if(usedCycle == config_values.quantum){
+				threadTrainerChosen->state = READY;
+				threadTrainerChosen->contextSwitchCount++;
+				log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a READY, porque se le acabó el QUANTUM", threadTrainerChosen->idTrainer);
+				calculateTrainerFromReadyToExec();
+				continueMoving = false;
+			}
+		}
+		usedCycle++;
+	}
+}
+void execThreadTrainerSetedSJF_SD(t_threadTrainer* threadTrainerChosen){
+	t_trainer* trainerAux = (t_trainer*)list_get(trainers, threadTrainerChosen->idTrainer-1);
+	uint32_t distanceToMove = calculateDistance(trainerAux->position, threadTrainerChosen->positionTo);
+	t_pokemon_on_map* pokemonOnMap = getPokemonByPosition(threadTrainerChosen->positionTo);
+	pokemonOnMap->state = P_CHASING;
+	
+	threadTrainerChosen->contextSwitchCount++;
+	for(int i=0; i<distanceToMove; i++){
+		move_to_objetive(trainerAux, threadTrainerChosen->positionTo);
+		threadTrainerChosen->cpuCycleCount++;
+	}
+
+	if(!sendCatch(pokemonOnMap)){
+		catch_succesfull(trainerAux->id_trainer);
+		log_info(optional_logger, "Caught by Default.");
+		log_info(optional_logger, "Pokemon %s", pokemonOnMap->pokemon);
+	}
+}
+
+void execThreadTrainerSetedSJF_CD(t_threadTrainer* threadTrainerChosen){
+	t_trainer* trainerAux = (t_trainer*)list_get(trainers, threadTrainerChosen->idTrainer-1);
+	uint32_t distanceToMove = calculateDistance(trainerAux->position, threadTrainerChosen->positionTo);
+	t_pokemon_on_map* pokemonOnMap = getPokemonByPosition(threadTrainerChosen->positionTo);
+	pokemonOnMap->state = P_CHASING;
+	int countPokemonOnReady = calculatePokemonsOnReady();
+	
+	threadTrainerChosen->contextSwitchCount++;
+	for(int i=0; i<distanceToMove; i++){
+		move_to_objetive(trainerAux, threadTrainerChosen->positionTo);
+		threadTrainerChosen->cpuCycleCount++;
+
+		if(trainerAux->position.posx == threadTrainerChosen->positionTo.posx && trainerAux->position.posy == threadTrainerChosen->positionTo.posy){
+			if(!sendCatch(pokemonOnMap)){
+				catch_succesfull(trainerAux->id_trainer);
+				log_info(optional_logger, "Caught by Default.");
+				log_info(optional_logger, "Pokemon %s", pokemonOnMap->pokemon);
+			}
+		}else{
+			if(countPokemonOnReady != calculatePokemonsOnReady()){
+				threadTrainerChosen->state = READY;
+				threadTrainerChosen->contextSwitchCount++;
+				log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a READY, porque apareció un entrenador con estimador menor que está en READY", threadTrainerChosen->idTrainer);
+				calculateTrainerFromReadyToExec();
+			}
+		}
+	}
+}
+
+int calculatePokemonsOnReady(){
+	int count = 0;
+	t_threadTrainer* threadTrainerAux;
+
+	for(int i=0; i<list_size(threadsTrainers);i++){
+		threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+		if(threadTrainerAux->state == READY) count++;
+	}
+
+	return count;
 }
 
 void calculate_cpu_burst_threadTrainerOnExec(t_threadTrainer* threadTrainerChosen, uint32_t distanceToMove) {	

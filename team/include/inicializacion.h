@@ -40,8 +40,7 @@ typedef struct {
     pthread_t threadTrainer;
     time_t incomingTime;
     uint32_t remainingDistance; //Needed to RR y para SJF CD
-    time_t previousIncomingTime; //Needed for SJF
-    uint32_t valueEstimator; //Needed for SJF 
+    double valueEstimator; //Needed for SJF 
     uint32_t contextSwitchCount;
     uint32_t cpuCycleCount;
     t_position positionTo;
@@ -55,7 +54,7 @@ typedef struct{
        uint32_t  retardo_ciclo_cpu; 
        char *algoritmo_planificacion;
        uint32_t quantum;
-       uint32_t alpha;
+       double alpha;
        uint32_t estimacion_inicial;
        char *ip_broker;
        char *puerto_broker;       

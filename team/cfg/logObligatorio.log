@@ -1,22 +1,7 @@
-[INFO] 11:03:45:593 TEAM/(7889:7889): Obligatory Log was created successfully
-
-[INFO] 22:02:50:593 TEAM/(8315:8315): Obligatory Log was created successfully
-
-[INFO] 22:07:08:616 TEAM/(8414:8414): Obligatory Log was created successfully
-
-[INFO] 22:13:43:451 TEAM/(8582:8582): Obligatory Log was created successfully
-
-[INFO] 22:14:04:943 TEAM/(8645:8645): Obligatory Log was created successfully
-
-[INFO] 22:14:22:176 TEAM/(8705:8705): Obligatory Log was created successfully
-
-[INFO] 22:14:35:647 TEAM/(8768:8768): Obligatory Log was created successfully
-
-[INFO] 22:15:09:780 TEAM/(8857:8857): Obligatory Log was created successfully
-
-[INFO] 23:41:36:123 TEAM/(9190:9190): Obligatory Log was created successfully
-
-[INFO] 23:42:16:328 TEAM/(9269:9269): Obligatory Log was created successfully
-
-[INFO] 23:42:33:865 TEAM/(9344:9344): Obligatory Log was created successfully
-
+[INFO] 18:35:38:875 TEAM/(25897:25903): Se conectó un proceso en el socket 6
+[INFO] 18:35:38:878 TEAM/(25897:25981): Receiving Message Appeared pokemon by Broker.
+[INFO] 18:35:38:878 TEAM/(25897:25981): Pokemon Appeared Pikachu: 
+[INFO] 18:35:38:878 TEAM/(25897:25981): Position on x: 1
+[INFO] 18:35:38:879 TEAM/(25897:25981): Position on y: 1
+[INFO] 18:35:38:879 TEAM/(25897:25981): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 18:35:38:879 TEAM/(25897:25981): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar

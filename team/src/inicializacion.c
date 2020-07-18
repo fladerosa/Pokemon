@@ -6,7 +6,6 @@
 #include "deadlock.h"
 
 void initialize_team() { 
-    testDeadlock();
     read_config();
     create_obligatory_logger();
     create_optional_logger();
@@ -16,15 +15,15 @@ void initialize_team() {
     pokemonsOnMap = list_create();
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO); 
     
-    connection_broker_global_suscribe();
-    listen_to_gameboy();
+    //connection_broker_global_suscribe();
     request = &reception_message_queue_subscription;
+    listen_to_gameboy();
+    send_get_pokemon_global_team(socket_team, globalObjetive);
     pthread_join(suscripcionAppearedPokemon,NULL);
     pthread_join(suscripcionCaughtPokemon,NULL);
     pthread_join(suscripcionLocalizedPokemon,NULL);
-
-    send_get_pokemon_global_team(socket_team, globalObjetive);
-   
+    //pthread_join(listening_gameboy,NULL);
+    pthread_join(server,NULL);
 }
 
 void read_config() {   
@@ -63,7 +62,7 @@ void load_values_config() {
     config_values.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
     config_values.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
     config_values.quantum = (uint32_t)config_get_int_value(config, "QUANTUM");
-    config_values.alpha = (uint32_t)config_get_int_value(config, "ALPHA");
+    config_values.alpha = (double)config_get_double_value(config, "ALPHA");
     config_values.estimacion_inicial = (uint32_t)config_get_int_value(config, "ESTIMACION_INICIAL");
     config_values.ip_broker = config_get_string_value(config, "IP_BROKER");
     config_values.puerto_broker= config_get_string_value(config, "PUERTO_BROKER");
@@ -72,7 +71,6 @@ void load_values_config() {
 }
 
 void assign_data_trainer() {
-
     trainers = list_create();
     threadsTrainers = list_create();
     t_trainer *data_trainer;
@@ -93,24 +91,21 @@ void assign_data_trainer() {
             valorAux = string_split(init_position[i], "|");
             data_trainer->position.posx = (uint32_t)atoi(valorAux[0]);
             data_trainer->position.posy = (uint32_t)atoi(valorAux[1]);
-            
-            valorAux = string_split(pokemonOwns[i], "|");
 
-            while(*valorAux != NULL){
-                dataAux = malloc(strlen(*valorAux));
-                strcpy(dataAux, *valorAux);
-                list_add(data_trainer->pokemonOwned, dataAux);
-                valorAux++;
-            };
+            if(pokemonNeeds != NULL && pokemonNeeds[i] != NULL && !string_is_empty(pokemonNeeds[i])){
+                if(string_contains(pokemonNeeds[i], "|")){
+                    *valorAux = pokemonNeeds[i];
+                }else{
+                    valorAux = string_split(pokemonNeeds[i], "|");
+                }
 
-            valorAux = string_split(pokemonNeeds[i], "|");
-
-            while(*valorAux != NULL){
-                dataAux = malloc(strlen(*valorAux));
-                strcpy(dataAux, *valorAux);
-                list_add(data_trainer->pokemonNeeded, dataAux);
-                valorAux++;
-            };
+                while(*valorAux != NULL){
+                    dataAux = malloc(strlen(*valorAux));
+                    strcpy(dataAux, *valorAux);
+                    list_add(data_trainer->pokemonNeeded, dataAux);
+                    valorAux++;
+                };
+            }
 
             data_trainer->state = NEW;
 
@@ -121,7 +116,7 @@ void assign_data_trainer() {
             threadTrainerAux->idTrainer = data_trainer->id_trainer;
             threadTrainerAux->state = NEW;
             threadTrainerAux->incomingTime = time(NULL);
-            threadTrainerAux->previousIncomingTime = time(NULL); //Needed for SJF
+            threadTrainerAux->valueEstimator = config_values.estimacion_inicial; //Needed for SJF
             threadTrainerAux->contextSwitchCount = 0;
             threadTrainerAux->cpuCycleCount = 0;
 
@@ -130,6 +125,25 @@ void assign_data_trainer() {
             log_info(optional_logger, "Request malloc succesfully to TRAINER %d ", (int)i+1);   
         }else{
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
+        }
+    }
+
+    for(uint32_t i = 0; pokemonOwns[i] != NULL; i++) {
+        data_trainer = (t_trainer*)list_get(trainers, i);
+        if(!string_is_empty(pokemonOwns[i])){
+            //if(strchr(pokemonOwns[i], '|') == NULL){
+            if(string_contains(pokemonOwns[i], "|")){
+                *valorAux = pokemonOwns[i];
+            }else{
+                valorAux = string_split(pokemonOwns[i], "|");
+            }
+            
+            while(*valorAux != NULL){
+                dataAux = malloc(strlen(*valorAux));
+                strcpy(dataAux, *valorAux);
+                list_add(data_trainer->pokemonOwned, dataAux);
+                valorAux++;
+            };
         }
     }
 
