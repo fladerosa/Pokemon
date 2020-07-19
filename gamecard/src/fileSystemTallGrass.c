@@ -123,7 +123,7 @@ int hayBitmap(){
 void iniciarTallGrass(){
     obtenerConfig();
     //crearBloques();
-    if(hayBitmap()){
+    if(!hayBitmap()){
         printf("\nCreando Bitmap...\n");
         crearArchivoBitmap();
         printf("Bitmap Creado con exito.\n");

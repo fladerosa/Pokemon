@@ -3,6 +3,6 @@ FILE=gamecard
 echo "Compiling & Executing with Valgrind:"
 make $FILE
 if test -f "./$FILE"; then
-    valgrind --tool=helgrind --log-file=b.out ./$FILE 
+    valgrind --tool=memcheck --leak-check=yes --redzone-size=128 --show-possibly-lost=no --show-reachable=no --num-callers=20 --log-file=a.out ./$FILE 
 fi
 echo "Finished executing with Valgrind."

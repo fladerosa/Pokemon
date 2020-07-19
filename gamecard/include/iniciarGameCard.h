@@ -38,4 +38,5 @@ void connect_client();
 void crearSuscripcion(uint32_t socket,op_code codeOperation, pthread_t* threadName);
 void subscribeAndConnect(args_pthread* arguments);
 bool compareSockets(void* element, void* args);
+void iniciarMutex();
 #endif
