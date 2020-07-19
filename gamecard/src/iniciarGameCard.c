@@ -14,7 +14,7 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             send_ack(client_fd, *id_message);
 
             pthread_create_and_detach(newPokemonTallGrass, newPokemonMessage);
-            //newPokemonTallGrass(newPokemonMessage);
+            
             //TODO SEND APPEARED
             break;
         case CATCH_POKEMON:;
@@ -61,7 +61,7 @@ void iniciarMutex(){
     DIR* dirp; 
     struct dirent *direntp; 
 
-    dirp = opendir("./TALL_GRASS/Files");
+    dirp = opendir(filesPath);
 
     while((direntp = readdir(dirp)) != NULL){
         if(direntp->d_type == DT_DIR){
@@ -71,8 +71,6 @@ void iniciarMutex(){
             strcpy(directory, "");
             strcat(directory, direntp->d_name);
             strcat(directory, "\0");
-            //memcpy(directory, direntp->d_name, strlen(direntp->d_name)); 
-            //directory[strlen(direntp->d_name) + 1] = '\0';
 
             mutexDirectoryRead->nombreDirectorio = directory;
             pthread_mutex_init(&mutexDirectoryRead->mutex, NULL);
@@ -103,19 +101,17 @@ void iniciarGameCard(){
     char* PUERTO_GAMECARD = config_get_string_value(config,"PUERTO_GAMECARD");
     PUERTO_BROKER = config_get_string_value(config,"PUERTO_BROKER");
     IP_BROKER = config_get_string_value(config,"IP_BROKER");
+    PUNTO_MONTAJE = config_get_string_value(config, "PUNTO_MONTAJE_TALLGRASS"); 
 
+    iniciarTallGrass();
     iniciarMutex();
 
     request = &receiveMessage; 
-    iniciarTallGrass();
-    //Se intentara suscribir globalmente al Broker a las siguientes colas de mensajes
-    //TODO
-    pthread_mutex_init(&mutexthreadSubscribeList, NULL);
-    
+
+    pthread_mutex_init(&mutexthreadSubscribeList, NULL);    
     pthread_mutex_init(&mutexBitmap, NULL);
 
     threadSubscribeList = list_create();
-
 
     suscribirseATodo();
 

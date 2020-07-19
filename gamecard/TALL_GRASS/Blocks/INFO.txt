@@ -1,1 +1,0 @@
-Aqui se van a encontrar los datos repartidos en archivos de texto nombrados con un número, el cual representará el número de bloque. (Por ej 1.bin, 2.bin, 3.bin)

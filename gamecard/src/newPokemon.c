@@ -10,19 +10,19 @@
 //}
 
 void newPokemonTallGrass(new_pokemon* newPokemon){
-    char* directorio = "./TALL_GRASS/Files/";
-    char buffer[50];   
+    char buffer[100];   
     char* stream = malloc(newPokemon->sizePokemon + 1);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
     stream[newPokemon->sizePokemon] = '\0';
 
     strcpy(buffer, "");
-    strcat(buffer, directorio);
+    strcat(buffer, filesPath);
+    strcat(buffer, "/");
     strcat(buffer, stream);
 
-    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon + 2);
-    memcpy(directory, buffer, strlen(directorio) + newPokemon->sizePokemon + 1);
-    memcpy(directory + strlen(directorio) + newPokemon->sizePokemon + 1, "\0", sizeof(char));
+    char* directory = malloc(strlen(filesPath) + newPokemon->sizePokemon + 3);
+    memcpy(directory, buffer, strlen(filesPath) + newPokemon->sizePokemon + 2);
+    memcpy(directory + strlen(filesPath) + newPokemon->sizePokemon + 2, "\0", sizeof(char));
 
     int created = mkdir(directory, ACCESSPERMS);
     
@@ -93,7 +93,6 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
 }
 
 char* crearBloque(new_pokemon* newPokemon){
-    char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
     pthread_mutex_lock(&mutexBitmap);
     size_t sizeBitmap = bitarray_get_max_bit(bitmap);
@@ -106,9 +105,10 @@ char* crearBloque(new_pokemon* newPokemon){
             
             strcpy(binChar,"");
             sprintf(binChar, "%d", bin);
-            char* directorioBloques = malloc(strlen(directorio) + strlen(binChar) + strlen(extension)+1); //ver de cambiarlo 
+            char* directorioBloques = malloc(strlen(blocksPath) + strlen(binChar) + strlen(extension) + 2); //ver de cambiarlo 
             strcpy(directorioBloques,"");
-            strcat(directorioBloques,directorio);
+            strcat(directorioBloques,blocksPath);
+            strcat(directorioBloques, "/");
             strcat(directorioBloques,binChar);
             strcat(directorioBloques,extension);
             
@@ -192,12 +192,12 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
 
     log_info(optional_logger, "ya agregue los bloques");
 
-    char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
 
-    char* bloque = malloc(strlen(directorio) + strlen(block) + strlen(extension) + 1);
+    char* bloque = malloc(strlen(blocksPath) + strlen(block) + strlen(extension) + 2);
     strcpy(bloque,"");
-    strcat(bloque, directorio); 
+    strcat(bloque, blocksPath);
+    strcat(bloque, "/"); 
     strcat(bloque, block); 
     strcat(bloque, extension);
     
@@ -315,13 +315,12 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     config_destroy(configMetadataTallGrass);
     
     char* ultimoBloque = bloques[cantidadBloques-1]; 
-
-    char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
 
-    char* bloque = malloc(strlen(directorio) + sizeof(char) + strlen(extension)+1);
+    char* bloque = malloc(strlen(blocksPath) + sizeof(char) + strlen(extension) + 2);
     strcpy(bloque,"");
-    strcat(bloque, directorio); 
+    strcat(bloque, blocksPath);
+    strcat(bloque, "/"); 
     strcat(bloque, ultimoBloque); 
     strcat(bloque, extension);
 
@@ -393,7 +392,6 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
 }
 
 t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
-    char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
     t_list* listaPosiciones = list_create();
     int caracterActual = 0; 
@@ -405,10 +403,11 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
     bool cant = false;
         
     for(int i = 0; i<cantidadBloques; i++){
-        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension) + 1);
+        char* direccionBinario = malloc(strlen(blocksPath) + strlen(bloques[i]) + strlen(extension) + 2);
 
         strcpy(direccionBinario,"");
-        strcat(direccionBinario,directorio);
+        strcat(direccionBinario,blocksPath);
+        strcat(direccionBinario, "/");
         strcat(direccionBinario,bloques[i]);
         strcat(direccionBinario,extension);
 
@@ -484,14 +483,14 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     char* listaConcatenada = concatenarStrings(writeListBinary);
     uint32_t sizeTotal = strlen(listaConcatenada) + 1;  
     int j=0;
-    char* directorio = "./TALL_GRASS/Blocks/";
     char* extension = ".bin";
 
     for(int i = 0; i<cantidadBloques; i++){
-        char* direccionBinario = malloc(strlen(directorio) + strlen(bloques[i]) + strlen(extension) + 1);
+        char* direccionBinario = malloc(strlen(blocksPath) + strlen(bloques[i]) + strlen(extension) + 2);
 
         strcpy(direccionBinario,"");
-        strcat(direccionBinario,directorio);
+        strcat(direccionBinario,blocksPath);
+        strcat(direccionBinario, "/");
         strcat(direccionBinario,bloques[i]);
         strcat(direccionBinario,extension);
 

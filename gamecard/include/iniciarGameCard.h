@@ -20,6 +20,7 @@ on_request request;
 char* PUERTO_BROKER;
 char* IP_BROKER;
 
+
 pthread_t suscripcionNewPokemon;
 pthread_t suscripcionCatchPokemon;
 pthread_t suscripcionGetPokemon;

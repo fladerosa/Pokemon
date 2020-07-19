@@ -15,10 +15,18 @@ typedef struct{
 
 configMetadata configM;
 t_bitarray* bitmap;
+char* PUNTO_MONTAJE; 
 
-//void crearBloques();
+char* blocksPath;
+char* filesPath; 
+char* metadataPath;
+char* bitmapPath;
+
 void obtenerConfig();
 void crearBitmap();
 void iniciarTallGrass();
+void crearPuntoDeMontaje();
+void metadataFiles();
+void metadataMetadata();
 
 #endif
