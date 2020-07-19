@@ -1,59 +1,18 @@
 #include "fileSystemTallGrass.h"
 
-void crearBloques(){
-    char* nombreArchivo = "./TALL_GRASS/Blocks/";
-    char* extension = ".bin";
-    char buffer[29];
-    char* bloque = malloc(sizeof(char));
-    
-
-    for(uint32_t i = 1; i <= configM.blocks; i++){
-        FILE* block;
-        strcpy(buffer,"");
-        snprintf(bloque,10,"%d",i);
-
-        strcat(buffer,nombreArchivo);
-        strcat(buffer,bloque);
-        strcat(buffer,extension);
-        block = fopen(buffer,"wb");
-        fclose(block);
-        
-    }
-
-    free(bloque);
-}
-
 void obtenerConfig(){
-    FILE* file; 
-    char buffer[25];
-    char BLOCKS[4];
-    char BLOCKSIZE[2];
-    uint32_t j=0;
+	
+	char* metadata = malloc(strlen(metadataPath) + strlen("/Metadata.bin") + 1);
+	strcpy(metadata, "");
+	strcat(metadata, metadataPath);
+	strcat(metadata, "/Metadata.bin");
 
-    file = fopen("./TALL_GRASS/Metadata/Metadata.bin","rb");
+    t_config* configMetadata = config_create(metadata);
 
-    fread(buffer,sizeof(buffer),1,file);
+    configM.blockSize = config_get_int_value(configMetadata, "BLOCK_SIZE");
+    configM.blocks = config_get_int_value(configMetadata, "BLOCKS");
 
-    for(int i = 11; i<13; i++){
-        if(buffer[i] == "\n"){
-            break;
-        }
-        
-        BLOCKSIZE[j] = buffer[i];
-        j++;
-    }
-    configM.blockSize = atoi(BLOCKSIZE);
-    j=0;
-    for(int i = 21; i<25; i++){
-        if(buffer[i] == "\n"){
-            break;
-        }
-
-        BLOCKS[j] = buffer[i];
-        j++;
-    }
-    configM.blocks = atoi(BLOCKS);
-    fclose(file);
+    config_destroy(configMetadata);
 }
 
 void crearArchivoBitmap(){
@@ -69,7 +28,8 @@ void crearArchivoBitmap(){
 	t_bitarray* arrayCreador = bitarray_create_with_mode(bitsVacios,bytes,0);
 
 	printf("\n");
-	fp=fopen("./TALL_GRASS/Metadata/Bitmap.bin","w");
+
+	fp=fopen(bitmapPath,"w");
 	fwrite(arrayCreador->bitarray,1,bytes,fp);
 	fclose(fp);
 
@@ -89,7 +49,6 @@ void imprimirBITARRAY(t_bitarray* bitarray){
 
 }
 
-
 void crearBitMap(){
 
 	int blockNum = configM.blocks;
@@ -98,7 +57,8 @@ void crearBitMap(){
 	}
 	int bytes = BIT_CHAR(blockNum);
 	char* archivoBitmap;
-	int fd = open("./TALL_GRASS/Metadata/Bitmap.bin", O_RDWR , (mode_t)0600);
+
+	int fd = open(bitmapPath, O_RDWR , (mode_t)0600);
 	struct stat mystat;
 	if(fstat(fd,&mystat)<0){
 		printf("Error al establecer fstat\n");
@@ -116,7 +76,7 @@ void crearBitMap(){
 
 	msync(archivoBitmap,bytes,MS_SYNC);
 
-    //imprimirBITARRAY(bitmap);
+    imprimirBITARRAY(bitmap);
 
 	close(fd);
 }
@@ -129,24 +89,101 @@ void ActualizarBitmap(){
 			blockNum++; 
 	}
 	int bytes = BIT_CHAR(blockNum);
-	FILE *fp;
-	fp=fopen("./TALL_GRASS/Metadata/Bitmap.bin","w");
-	fwrite(bitmap->bitarray,1,bytes,fp);
 
+	FILE *fp;
+	fp=fopen(bitmapPath,"w");
+	fwrite(bitmap->bitarray,1,bytes,fp);
 
 	fclose(fp);
 }
 
 int hayBitmap(){
+	bitmapPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Metadata") + strlen("/Bitmap.bin") + 1); 
+	strcpy(bitmapPath,""); 
+	strcat(bitmapPath, metadataPath);
+	strcat(bitmapPath, "/Bitmap.bin");
 
-    return access( "./TALL_GRASS/Metadata/Bitmap.bin", F_OK ) != -1;
+    return access( bitmapPath, F_OK ) != -1;
 
 }
 
+void crearPuntoDeMontaje(){
+	int puntoMontajeCreated = mkdir(PUNTO_MONTAJE, ACCESSPERMS);
+	if(puntoMontajeCreated != -1){
+		log_info(optional_logger, "Se creo el punto de montaje"); 
+	}
+
+	filesPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Files") + 1); 
+	strcpy(filesPath,""); 
+	strcat(filesPath, PUNTO_MONTAJE);
+	strcat(filesPath, "/Files");
+
+	int filesCreated = mkdir(filesPath, ACCESSPERMS);
+	if(filesCreated != -1){
+		log_info(optional_logger, "Se creo el files"); 
+	}
+
+	metadataFiles();
+
+	blocksPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Blocks") + 1); 
+	strcpy(blocksPath,""); 
+	strcat(blocksPath, PUNTO_MONTAJE);
+	strcat(blocksPath, "/Blocks");
+
+	int blocksCreated = mkdir(blocksPath, ACCESSPERMS);
+	if(blocksCreated != -1){
+		log_info(optional_logger, "Se creo el blocks"); 
+	}
+
+	metadataPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Metadata") + 1); 
+	strcpy(metadataPath,""); 
+	strcat(metadataPath, PUNTO_MONTAJE);
+	strcat(metadataPath, "/Metadata");
+
+	int metadataCreated = mkdir(metadataPath, ACCESSPERMS);
+	if(metadataCreated != -1){
+		log_info(optional_logger, "Se creo el metadata"); 
+	}
+
+	metadataMetadata();
+
+}
+
+void metadataFiles(){
+	t_config* configToWrite = config_create("./cfg/files_metadata.config");
+
+	char* files = malloc(strlen(filesPath) + strlen("/Metadata.bin") + 1);
+	strcpy(files, "");
+	strcat(files, filesPath);
+	strcat(files, "/Metadata.bin");
+
+	config_save_in_file(configToWrite, files);
+	config_destroy(configToWrite); 
+	free(files);
+}
+
+void metadataMetadata(){
+	t_config* configToWrite = config_create("./cfg/metadata_metadata.config");
+
+	char* metadata = malloc(strlen(metadataPath) + strlen("/Metadata.bin") + 1);
+	strcpy(metadata, "");
+	strcat(metadata, metadataPath);
+	strcat(metadata, "/Metadata.bin");
+
+
+	if(access( metadata, F_OK ) == -1){
+		config_save_in_file(configToWrite, metadata);
+	}
+
+	config_destroy(configToWrite); 
+	free(metadata);
+}
+
 void iniciarTallGrass(){
+	crearPuntoDeMontaje(); 
     obtenerConfig();
-    //crearBloques();
-    if(hayBitmap()){
+    
+    if(!hayBitmap()){
         printf("\nCreando Bitmap...\n");
         crearArchivoBitmap();
         printf("Bitmap Creado con exito.\n");

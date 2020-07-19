@@ -246,6 +246,7 @@ void* suscribirseA(op_code codigoOp,uint32_t socket_broker){
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
 	free(paquete);
+    free_subscribe(suscripcion);
     return NULL;
 }
 
@@ -256,7 +257,7 @@ void send_new_connection(uint32_t socket_broker){
     new_connection* newConnection = init_new_connection();
 
     paquete->codigo_operacion = NEW_CONNECTION;
-    paquete->buffer->size = sizeof(u_int32_t); // revisar
+    paquete->buffer->size = sizeof(uint32_t); 
     paquete->buffer->stream = new_connection_to_stream(newConnection);
 
     uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);

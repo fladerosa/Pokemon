@@ -3,6 +3,9 @@
 
 #include "common_utils.h"
 #include "fileSystemTallGrass.h"
+#include "newPokemon.h"
+#include <dirent.h>
+ //#include <sys/types.h>
 
 typedef struct
 {
@@ -17,6 +20,7 @@ on_request request;
 char* PUERTO_BROKER;
 char* IP_BROKER;
 
+
 pthread_t suscripcionNewPokemon;
 pthread_t suscripcionCatchPokemon;
 pthread_t suscripcionGetPokemon;
@@ -25,7 +29,7 @@ threadSubscribe* structNewPokemon;
 threadSubscribe* structCatchPokemon;
 threadSubscribe* structGetPokemon;
 
-t_list* threadSubscribeList; 
+t_list* threadSubscribeList;
 
 
 void iniciarGameCard();
@@ -35,4 +39,5 @@ void connect_client();
 void crearSuscripcion(uint32_t socket,op_code codeOperation, pthread_t* threadName);
 void subscribeAndConnect(args_pthread* arguments);
 bool compareSockets(void* element, void* args);
+void iniciarMutex();
 #endif

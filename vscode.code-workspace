@@ -20,8 +20,10 @@
 		"files.associations": {
 			"dump.h": "c",
 			"common_tests.h": "c",
-			"team.h": "c"
-		}
+			"team.h": "c",
+			"initializer_list": "c"
+		},
+		"git.ignoreLimitWarning": true
 	},
 	"launch": {
 		"configurations": [],

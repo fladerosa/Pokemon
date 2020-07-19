@@ -10,26 +10,266 @@
 //}
 
 void newPokemonTallGrass(new_pokemon* newPokemon){
-    char* directorio = "./TALL_GRASS/Files/";
-    char buffer[50];   
-    char* stream = malloc(sizeof(new_pokemon));
+    char buffer[100];   
+    char* stream = malloc(newPokemon->sizePokemon + 1);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
     stream[newPokemon->sizePokemon] = '\0';
 
     strcpy(buffer, "");
-    strcat(buffer, directorio);
+    strcat(buffer, filesPath);
+    strcat(buffer, "/");
     strcat(buffer, stream);
 
-    char* directory = malloc(strlen(directorio) + newPokemon->sizePokemon); 
-    memcpy(directory, buffer, strlen(directorio) + newPokemon->sizePokemon);
-    directory[strlen(directorio) + newPokemon->sizePokemon] = '\0';
+    char* directory = malloc(strlen(filesPath) + newPokemon->sizePokemon + 3);
+    memcpy(directory, buffer, strlen(filesPath) + newPokemon->sizePokemon + 2);
+    memcpy(directory + strlen(filesPath) + newPokemon->sizePokemon + 2, "\0", sizeof(char));
 
     int created = mkdir(directory, ACCESSPERMS);
-    if(created == -1){
-        printf("%d",errno);
-        printf("No se pudo crear el directorio.");
+    
+    if(created != -1){
+        pthread_mutex_lock(&mutexListOfMutex);
+        mutexDirectory* mutex = malloc(sizeof(mutexDirectory));
+        mutex->nombreDirectorio = malloc(strlen(stream) + 1);
+        strcpy(mutex->nombreDirectorio, "");
+        strcat(mutex->nombreDirectorio, stream);
+        strcat(mutex->nombreDirectorio, "\0");
+        pthread_mutex_init(&mutex->mutex, NULL);
+        list_add(mutexListDirectory, mutex); //Asi solo tiene el nombre del pokemon 
+        pthread_mutex_unlock(&mutexListOfMutex);
+    }
+
+    createMetadataPokemon(directory, newPokemon);
+
+    free(directory);
+    free(stream);
+    free(newPokemon->pokemon);
+    free_new_pokemon(newPokemon);
+
+}
+
+void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
+    char* metadata = "/Metadata.bin";
+    char* directorioMetadata = malloc(strlen(directory) + strlen(metadata) + 1);
+    strcpy(directorioMetadata,"");
+    strcat(directorioMetadata,directory);
+    strcat(directorioMetadata, metadata);
+
+    FILE* file = fopen(directorioMetadata,"ab+");
+    flock(fileno(file), LOCK_EX);
+    
+    fseek(file, 0, SEEK_END);
+    int sizeFile = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    
+    flock(fileno(file), LOCK_UN);
+    fclose(file);
+
+    char* stream = malloc(newPokemon->sizePokemon + 1);
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon] = '\0';
+
+    if(sizeFile == 0){
+        configMetadataCreate(directorioMetadata);
+    }
+
+    abrirMetadata(directorioMetadata, stream);
+    int cantidadBloques = metadataBlocks(directorioMetadata, stream);
+
+    if(cantidadBloques == 0){
+        log_info(optional_logger, "creando mi primer bloque");
+        char* block = crearBloque(newPokemon);
+        addBlockMetadata(directorioMetadata, block, newPokemon);
+        
+        free(block);
+        log_info(optional_logger, "ya sali de crear mi primer bloque");
     }else{
-        printf("Directorio creado o abierto.");
+        agregarDatosYOrdenarBloques(directorioMetadata, newPokemon);
+    }
+    cerrarMetadata(directorioMetadata, stream);
+    log_info(optional_logger, "se cerro el metadata todo ok");
+    free(stream);
+    free(directorioMetadata);
+    log_info(optional_logger, "free crear metadata ok");
+}
+
+
+void configMetadataCreate(char* metadata){
+    
+    t_config* configMetadataTallGrass = config_create("./cfg/tall_grass_metadata.config");
+
+    pthread_mutex_lock(&metadata_create);
+    config_save_in_file(configMetadataTallGrass, metadata);
+    pthread_mutex_unlock(&metadata_create);
+
+    config_destroy(configMetadataTallGrass);
+}
+
+void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
+    char* stream = malloc(newPokemon->sizePokemon + 1);
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon] = '\0';
+
+    log_info(optional_logger, "to liso");
+    pthread_mutex_lock(&metadata_create);
+    t_config* configMetadataTallGrass = config_create(metadata);
+    pthread_mutex_unlock(&metadata_create);
+    
+    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    int cantidadBloques = ceil((float)size / configM.blockSize);
+    
+    char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
+
+    char* bloquesConfig = malloc(sizeof(char)*3*(cantidadBloques + 1) + 1);
+    strcpy(bloquesConfig,"");
+    strcat(bloquesConfig,"[");
+    for(int i = 0; i < cantidadBloques; i++){
+        strcat(bloquesConfig,bloques[i]);
+        strcat(bloquesConfig,",");
+    }
+    strcat(bloquesConfig,block); 
+    strcat(bloquesConfig,"]");
+
+    log_info(optional_logger, "ya agregue los bloques");
+
+    char* extension = ".bin";
+
+    char* bloque = malloc(strlen(blocksPath) + strlen(block) + strlen(extension) + 2);
+    strcpy(bloque,"");
+    strcat(bloque, blocksPath);
+    strcat(bloque, "/"); 
+    strcat(bloque, block); 
+    strcat(bloque, extension);
+    
+    FILE* file = fopen(bloque,"rb");
+
+    fseek(file, 0, SEEK_END);
+    int sizeFile = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    fclose(file);
+
+    size += sizeFile;
+
+    char* sizeChar = malloc(sizeof(uint32_t));
+    strcpy(sizeChar, "");
+    sprintf(sizeChar, "%d", size);
+
+    log_info(optional_logger, "ya tengo el size");
+
+    config_set_value(configMetadataTallGrass, "SIZE", sizeChar);
+    config_set_value(configMetadataTallGrass,"BLOCKS", bloquesConfig);
+
+    pthread_mutex_lock(&metadata_create);
+    config_save(configMetadataTallGrass);
+    pthread_mutex_unlock(&metadata_create);
+
+    config_destroy(configMetadataTallGrass);
+    
+    free(stream);
+    free(bloque);
+    free(bloquesConfig);
+    for(int i = 0; i<cantidadBloques; i++){
+        free(bloques[i]);
+    }
+    free(bloques);
+    free(sizeChar);
+
+    log_info(optional_logger, "free end ");
+}
+
+void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
+    char* stream = malloc(newPokemon->sizePokemon + 1);
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon] = '\0';
+
+    pthread_mutex_lock(&metadata_create);
+    t_config* configMetadataTallGrass = config_create(metadata);
+    pthread_mutex_unlock(&metadata_create);
+
+    char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
+    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    int cantidadBloques = ceil((float)size / configM.blockSize);
+
+    config_destroy(configMetadataTallGrass);
+    
+    char* ultimoBloque = bloques[cantidadBloques-1]; 
+    char* extension = ".bin";
+
+    char* bloque = malloc(strlen(blocksPath) + sizeof(char) + strlen(extension) + 2);
+    strcpy(bloque,"");
+    strcat(bloque, blocksPath);
+    strcat(bloque, "/"); 
+    strcat(bloque, ultimoBloque); 
+    strcat(bloque, extension);
+
+    FILE* file = fopen(bloque,"ab+");
+
+    fseek(file, 0, SEEK_END);
+    int sizeFile = ftell(file);
+    fseek(file,0,SEEK_SET);
+
+    if(sizeFile >= configM.blockSize){
+        log_info(optional_logger, "agregar datos y bloque");
+        char* block = crearBloque(newPokemon);
+        addBlockMetadata(metadata, block, newPokemon);
+        
+        free(block);
+    }else{
+
+        char* posX = malloc(10);
+        strcpy(posX,"");
+        sprintf(posX,"%d",newPokemon->position.posx);//(char); 
+
+        char* posY = malloc(10);
+        strcpy(posY,"");
+        sprintf(posY,"%d",newPokemon->position.posy);//(char); 
+
+        char* quantity = malloc(10);
+        strcpy(quantity,"");
+        sprintf(quantity,"%d",newPokemon->quantity);//(char); 
+
+        t_list* lista = levantarBloquesAMemoria(bloques, cantidadBloques);
+
+        positionQuantity* posicionNewPokemon = malloc(sizeof(positionQuantity));
+        posicionNewPokemon->posicionX = atoi(posX); 
+        posicionNewPokemon->posicionY = atoi(posY);
+        posicionNewPokemon->cantidad = atoi(quantity);
+
+        positionQuantity* posicionEncontrada = list_find_with_args(lista, coincidePosicion, (void*)posicionNewPokemon);
+
+        if(posicionEncontrada != NULL){
+            posicionEncontrada->cantidad = posicionEncontrada->cantidad + posicionNewPokemon->cantidad;
+            free(posicionNewPokemon);
+        }else{
+            list_add(lista, posicionNewPokemon);
+        }
+
+        char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, newPokemon->pokemon, newPokemon->position.posx, newPokemon->position.posy, newPokemon->quantity, metadata);
+
+        pthread_mutex_lock(&metadata_create);
+        t_config* configMetadataUpdated = config_create(metadata);
+        pthread_mutex_unlock(&metadata_create);
+        config_set_value(configMetadataUpdated, "SIZE", sizeMetadata);
+
+        pthread_mutex_lock(&metadata_create);
+        config_save(configMetadataUpdated); 
+        pthread_mutex_unlock(&metadata_create);
+
+        list_destroy_and_destroy_elements(lista,free);
+
+        free(posY);
+        free(posX);
+        free(quantity);
+        free(sizeMetadata);
+        config_destroy(configMetadataUpdated);
     }
     
+    fclose(file);
+    free(bloque);
+    //free(bloques);
+    for(int i = 0; i<cantidadBloques; i++){
+        free(bloques[i]);
+    }
+    free(bloques);
+    free(stream);
 }
