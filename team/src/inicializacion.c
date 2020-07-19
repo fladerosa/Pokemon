@@ -6,6 +6,7 @@
 #include "deadlock.h"
 
 void initialize_team() { 
+    pthread_t threadDeadlock;
     read_config();
     create_obligatory_logger();
     create_optional_logger();
@@ -19,11 +20,13 @@ void initialize_team() {
     request = &reception_message_queue_subscription;
     listen_to_gameboy();
     send_get_pokemon_global_team(socket_team, globalObjetive);
+    pthread_create(&threadDeadlock, NULL, (void*)detectDeadlock, NULL);
     pthread_join(suscripcionAppearedPokemon,NULL);
     pthread_join(suscripcionCaughtPokemon,NULL);
     pthread_join(suscripcionLocalizedPokemon,NULL);
     //pthread_join(listening_gameboy,NULL);
     pthread_join(server,NULL);
+    pthread_join(threadDeadlock,NULL);
 }
 
 void read_config() {   
@@ -118,6 +121,7 @@ void assign_data_trainer() {
             threadTrainerAux->incomingTime = time(NULL);
             threadTrainerAux->valueEstimator = config_values.estimacion_inicial; //Needed for SJF
             threadTrainerAux->contextSwitchCount = 0;
+            threadTrainerAux->interchangeCycleCount = 0;
             threadTrainerAux->cpuCycleCount = 0;
 
             list_add(threadsTrainers, (void*)threadTrainerAux);
@@ -153,6 +157,7 @@ void assign_data_trainer() {
 void calculate_global_objetives(){
     //Its the join of all needs of trainers, minus the pokemon that already have
     globalObjetive = list_create();
+    deadlockCount = 0;
     uint32_t trainersCount = list_size(trainers);
     t_trainer* trainerAux;
     int i, j;

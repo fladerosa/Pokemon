@@ -44,6 +44,7 @@ typedef struct {
     uint32_t contextSwitchCount;
     uint32_t cpuCycleCount;
     t_position positionTo;
+    uint32_t interchangeCycleCount;
 } t_threadTrainer;
 
 /* Estructura con los datos del archivo de configuración */
@@ -64,6 +65,7 @@ t_list* trainers; //List of type t_trainer
 t_configuration config_values; //Values readed from tema.config
 t_list* threadsTrainers;
 t_list* globalObjetive;
+uint32_t deadlockCount;
 char* pokemonCompareGlobalObjetive; //Variable used ONLY to calculate global objetive
 
 void initialize_team();

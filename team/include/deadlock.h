@@ -2,17 +2,13 @@
 #define DEADLOCK_H
 
 #include "inicializacion.h"
-
-typedef struct{
-    uint32_t idTrainer;
-    char* pokemon;
-} t_cycleDeadlock;
+#include "team.h"
 
 char* pokemonCompareDeadlock; //variable used ONLY to detect pokemon needed in deadlock
-t_list* cycleDeadLock;
 
 void testDeadlock();
-void detectDeadlock();
+void* detectDeadlock();
+void detectDeadlock_do();
 t_list* getPokemonsNeeded(t_trainer* trainerAux);
 bool comparePokemonDeadlock(void* pokemonOwn);
 bool isCandidateDeadlock(t_trainer* blockedTrainer);

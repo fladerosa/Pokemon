@@ -90,10 +90,18 @@ void testDeadlock(){
     list_add(trainer5->pokemonNeeded, (void*)"Snorlax");
     list_add(trainers, trainer5);
 
-    detectDeadlock();
+    detectDeadlock_do();
 }
 
-void detectDeadlock(){
+void* detectDeadlock(){
+    while(true){
+        sleep(4);
+        detectDeadlock_do();
+    }
+    return NULL;
+}
+
+void detectDeadlock_do(){
     //If exists a cycle of blocked trainers without disponible space for more pokemon, exists deadlock
     int threadsTrainersCount = list_size(threadsTrainers);
     t_threadTrainer* threadTrainerAux;
@@ -104,6 +112,8 @@ void detectDeadlock(){
     for(int i = 0; i < threadsTrainersCount; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
         trainerAux = (t_trainer*)list_get(trainers, i);
+        log_info(optional_logger, "DL - Trainer %d captured pokemon: %s", trainerAux->id_trainer, (char*)list_get(trainerAux->pokemonOwned, 0));
+	    log_info(optional_logger, "DL - Trainer %d needs pokemon: %s", trainerAux->id_trainer, (char*)list_get(trainerAux->pokemonNeeded, 0));
         if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(trainerAux)){
             t_list* pokemonsNeeded = getPokemonsNeeded(trainerAux);
             for(int j = 0; j < list_size(pokemonsNeeded); j++){
@@ -116,13 +126,14 @@ void detectDeadlock(){
                 list_add(cycleDeadLock, (void*)deadlockNode);
                 if(!completeCycleDeadlock()){
                     list_remove(cycleDeadLock, 0);
+                    list_destroy(cycleDeadLock);
                 }else{
                     if(existsDeadlock()){
                         setInterchangePokemon();
+                    }else{
+                        list_destroy(cycleDeadLock);
                     }
                 }
-
-                list_destroy(cycleDeadLock);
             }
         }
     }
@@ -216,5 +227,5 @@ void setInterchangePokemon(){
     threadTrainerToMove->positionTo.posx = trainerWithDestiny->position.posx;
     threadTrainerToMove->positionTo.posy = trainerWithDestiny->position.posy;
 
-    threadTrainerToMove->state = READY;
+    calculateLeaveBlockedFromDeadlock(threadTrainerToMove->idTrainer);
 }
