@@ -19,7 +19,7 @@ typedef struct config_values{
     char* algoritmo_particion_libre;
     char* ip_broker;
     char* puerto_broker;
-    uint32_t frecuencia_compactacion;
+    int frecuencia_compactacion;
     char* dump_file;
 } config_values;
 
