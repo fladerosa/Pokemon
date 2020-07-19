@@ -110,6 +110,7 @@ void iniciarGameCard(){
 
     pthread_mutex_init(&mutexthreadSubscribeList, NULL);    
     pthread_mutex_init(&mutexBitmap, NULL);
+    pthread_mutex_init(&metadata_create, NULL);
 
     threadSubscribeList = list_create();
 
