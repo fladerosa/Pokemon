@@ -130,9 +130,9 @@ void reception_message_gameboy(uint32_t code, uint32_t sizeofstruct, uint32_t cl
     if(code == APPEARED_POKEMON){  
        appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, NULL, false); 
        log_info(optional_logger, "Receiving Message Appeared pokemon by Gameboy.");
-       log_info(optional_logger, "Pokemon Appeared %s: ", appeared_pokemon_Message->pokemon);
-       log_info(optional_logger, "Position on x", appeared_pokemon_Message->position.posx); 
-       log_info(optional_logger, "Position on y", appeared_pokemon_Message->position.posy); 
+       log_info(optional_logger, "Pokemon Appeared: %s", appeared_pokemon_Message->pokemon);
+       log_info(optional_logger, "Position on x: %d", appeared_pokemon_Message->position.posx); 
+       log_info(optional_logger, "Position on y: %d", appeared_pokemon_Message->position.posy); 
             send_ack(client_fd, *id_message);
 
     }
@@ -147,8 +147,8 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
         case APPEARED_POKEMON:;
             appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, NULL, false); 
             appeared_pokemon_Message->pokemon[appeared_pokemon_Message->sizePokemon] = '\0';
-            log_info(obligatory_logger, "Receiving Message Appeared pokemon by Broker.");
-            log_info(obligatory_logger, "Pokemon Appeared %s: ", appeared_pokemon_Message->pokemon);
+            log_info(obligatory_logger, "Receiving Message Appeared pokemon.");
+            log_info(obligatory_logger, "Pokemon Appeared: %s", appeared_pokemon_Message->pokemon);
             log_info(obligatory_logger, "Position on x: %d", appeared_pokemon_Message->position.posx); 
             log_info(obligatory_logger, "Position on y: %d", appeared_pokemon_Message->position.posy);
             send_ack(client_fd, *id_message);
@@ -161,11 +161,14 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
                 newPokemonAppeared->position.posx = appeared_pokemon_Message->position.posx;
                 newPokemonAppeared->position.posy = appeared_pokemon_Message->position.posy;
                 newPokemonAppeared->pokemon = malloc(strlen(appeared_pokemon_Message->pokemon));
+                newPokemonAppeared->id = list_size(pokemonsOnMap) + 1;
                 strcpy(newPokemonAppeared->pokemon, appeared_pokemon_Message->pokemon);
 
                 list_add(pokemonsOnMap, newPokemonAppeared);
 
-                calculateTrainerFromNewToReady();
+                //pthread_mutex_unlock(&plannerMutex);
+                sem_post(&plannerSemaphore);
+                //calculateTrainerFromNewToReady();
             }
             free(pokemonCompareGlobalObjetive);
             break;

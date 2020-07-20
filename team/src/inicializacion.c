@@ -6,7 +6,7 @@
 #include "deadlock.h"
 
 void initialize_team() { 
-    pthread_t threadDeadlock;
+    pthread_t plannerThread;
     read_config();
     create_obligatory_logger();
     create_optional_logger();
@@ -15,18 +15,47 @@ void initialize_team() {
     calculate_global_objetives();
     pokemonsOnMap = list_create();
     log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO); 
-    
+    flagExistsDeadlock = false;
     //connection_broker_global_suscribe();
     request = &reception_message_queue_subscription;
     listen_to_gameboy();
     send_get_pokemon_global_team(socket_team, globalObjetive);
-    pthread_create(&threadDeadlock, NULL, (void*)detectDeadlock, NULL);
+    pthread_mutex_init(&plannerMutex, NULL);
+    sem_init(&plannerSemaphore, 0, 0);
+    pthread_create(&plannerThread, NULL, planTrainers, NULL);
+    validateEndTeam();
+    pthread_join(plannerThread,NULL);
+    pthread_mutex_destroy(&plannerMutex);
     pthread_join(suscripcionAppearedPokemon,NULL);
     pthread_join(suscripcionCaughtPokemon,NULL);
     pthread_join(suscripcionLocalizedPokemon,NULL);
-    //pthread_join(listening_gameboy,NULL);
     pthread_join(server,NULL);
-    pthread_join(threadDeadlock,NULL);
+}
+
+void validateEndTeam(){
+    for(int i=0; i<list_size(threadsTrainers); i++){
+        t_threadTrainer* threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+        pthread_join(threadTrainerAux->threadTrainer,NULL);
+    }
+    writeTeamMetrics();
+    finishTeam();
+}
+
+void* planTrainers(){
+    int counterStrike = 0;
+    while(true){
+        counterStrike++;
+        log_info(optional_logger, "Before - Planner counter: %d", counterStrike);
+        sem_wait(&plannerSemaphore);
+        counterStrike--;
+        log_info(optional_logger, "After - Planner counter: %d", counterStrike);
+        
+        //pthread_mutex_lock(&plannerMutex);
+        calculateTrainerFromNewToReady();
+        calculateTrainerFromReadyToExec();
+        detectDeadlock_do();
+        //pthread_mutex_unlock(&plannerMutex);
+    }
 }
 
 void read_config() {   
@@ -123,10 +152,13 @@ void assign_data_trainer() {
             threadTrainerAux->contextSwitchCount = 0;
             threadTrainerAux->interchangeCycleCount = 0;
             threadTrainerAux->cpuCycleCount = 0;
+            pthread_mutex_init(&(threadTrainerAux->mutexAction), NULL);
 
             list_add(threadsTrainers, (void*)threadTrainerAux);
+            pthread_create(&threadTrainerAux->threadTrainer, NULL, trainerDo, (void*)&threadTrainerAux->idTrainer);
 
             log_info(optional_logger, "Request malloc succesfully to TRAINER %d, position: (%d,%d) ", data_trainer->id_trainer, data_trainer->position.posx, data_trainer->position.posy);
+            log_info(obligatory_logger, "Entrenador %d entra a cola NEW.", data_trainer->id_trainer);
         }else{
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
         }
@@ -152,6 +184,26 @@ void assign_data_trainer() {
     }
 
    return;
+}
+
+void* trainerDo(void* ptrIdTrainer){
+    uint32_t trainerId = *(uint32_t*)ptrIdTrainer;
+    while(true){
+        
+        t_threadTrainer* threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, trainerId - 1);
+        pthread_mutex_lock(&(threadTrainerAux->mutexAction));
+        //Actions according state
+        if(threadTrainerAux->state == READY){
+            calculateTrainerFromReadyToExec();
+        }else{
+            if(threadTrainerAux->state == EXEC){
+                executeAlgorithm();
+            }
+        }
+        //Check deadlock
+    }
+
+    return NULL;
 }
 
 void calculate_global_objetives(){

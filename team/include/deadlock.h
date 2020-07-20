@@ -5,6 +5,7 @@
 #include "team.h"
 
 char* pokemonCompareDeadlock; //variable used ONLY to detect pokemon needed in deadlock
+bool flagExistsDeadlock;
 
 void testDeadlock();
 void* detectDeadlock();

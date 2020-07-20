@@ -4,6 +4,7 @@
 #include "common_utils.h"
 #include "inicializacion.h"
 #include "mapa.h"
+#include "deadlock.h"
 typedef struct{
     uint32_t idTrainer;
     char* pokemon;

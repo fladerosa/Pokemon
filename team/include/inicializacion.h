@@ -5,6 +5,7 @@
 #include<commons/string.h>
 #include "common_utils.h"
 #include "suscripcion.h"
+#include <semaphore.h>
 
 typedef enum{
 	NEW = 0,
@@ -38,6 +39,7 @@ typedef struct {
     uint32_t idTrainer;
     enum_process_state state;
     pthread_t threadTrainer;
+    pthread_mutex_t mutexAction;
     time_t incomingTime;
     uint32_t remainingDistance; //Needed to RR y para SJF CD
     double valueEstimator; //Needed for SJF 
@@ -66,14 +68,19 @@ t_configuration config_values; //Values readed from tema.config
 t_list* threadsTrainers;
 t_list* globalObjetive;
 uint32_t deadlockCount;
+pthread_mutex_t plannerMutex;
+sem_t plannerSemaphore;
 char* pokemonCompareGlobalObjetive; //Variable used ONLY to calculate global objetive
 
+void* planTrainers();
 void initialize_team();
+void validateEndTeam();
 void read_config();
 void create_optional_logger();
 void create_obligatory_logger();
 void load_values_config();
 void assign_data_trainer();
+void* trainerDo(void* ptrIdTrainer);
 void release_resources();
 void destroy_trainer(t_trainer*);
 void destroy_lists_and_loaded_elements();
