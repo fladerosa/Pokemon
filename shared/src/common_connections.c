@@ -322,3 +322,68 @@ uint32_t receive_connection_id(uint32_t socket_broker){
 
     return id_connection;
 }
+
+void send_appeared(appeared_pokemon* appearedPokemon, uint32_t socket, uint32_t* id_message){
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = malloc(sizeof(t_buffer));
+    uint32_t* id_appeared = malloc(sizeof(uint32_t));
+    *id_appeared = -1;
+
+    paquete->codigo_operacion = APPEARED_POKEMON; 
+    paquete->buffer->size = size_of_appeared_pokemon(appearedPokemon); // revisar
+    paquete->buffer->stream = appeared_pokemon_to_stream(appearedPokemon, id_appeared, id_message);
+
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
+
+    void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+
+	send(socket, a_enviar, bytes, 0);
+
+	free(a_enviar);
+    free_package(paquete);
+    free(id_appeared);
+    //free_(ackBroker);
+}
+
+void send_caught(caught_pokemon* caughtPokemon, uint32_t socket, uint32_t* id_message){
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = malloc(sizeof(t_buffer));
+    uint32_t* id_appeared = malloc(sizeof(uint32_t));
+    *id_appeared = -1;
+
+    paquete->codigo_operacion = CAUGHT_POKEMON; 
+    paquete->buffer->size = size_of_caught_pokemon(caughtPokemon); // revisar
+    paquete->buffer->stream = caught_pokemon_to_stream(caughtPokemon, id_appeared, id_message);
+
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
+
+    void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+
+	send(socket, a_enviar, bytes, 0);
+
+	free(a_enviar);
+    free_package(paquete);
+    free(id_appeared);
+}
+
+void send_localized(localized_pokemon* localizedPokemon, uint32_t socket, uint32_t* id_message){
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = malloc(sizeof(t_buffer));
+    uint32_t* id_appeared = malloc(sizeof(uint32_t));
+    *id_appeared = -1;
+
+    paquete->codigo_operacion = LOCALIZED_POKEMON; 
+    paquete->buffer->size = size_of_localized_pokemon(localizedPokemon); // revisar
+    paquete->buffer->stream = localized_pokemon_to_stream(localizedPokemon, id_appeared, id_message);
+
+    uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
+
+    void* a_enviar = (void *) serializar_paquete(paquete, bytes);
+
+	send(socket, a_enviar, bytes, 0);
+
+	free(a_enviar);
+    free_package(paquete);
+    free(id_appeared);
+
+}

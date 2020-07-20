@@ -9,7 +9,8 @@
     /**En caso de que no se pueda establecer conexion con el broker notificarlo por Logs y continuar**/
 //}
 
-void newPokemonTallGrass(new_pokemon* newPokemon){
+void newPokemonTallGrass(threadPokemonMessage* threadPokemonMessage){
+    new_pokemon* newPokemon = threadPokemonMessage->pokemon;
     char buffer[100];   
     char* stream = malloc(newPokemon->sizePokemon + 1);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
@@ -42,9 +43,18 @@ void newPokemonTallGrass(new_pokemon* newPokemon){
 
     free(directory);
     free(stream);
-    free(newPokemon->pokemon);
-    free_new_pokemon(newPokemon);
+    //free(newPokemon->pokemon);
+    //free_new_pokemon(newPokemon);
 
+    appeared_pokemon* appearedPokemon = malloc(sizeof(appeared_pokemon));
+    appearedPokemon->sizePokemon = newPokemon->sizePokemon;
+    appearedPokemon->pokemon = newPokemon->pokemon;
+    appearedPokemon->position.posx = newPokemon->position.posx;
+    appearedPokemon->position.posy = newPokemon->position.posy;
+    //void* appearedStream = appeared_pokemon_to_stream(appearedPokemon, -1, threadPokemonMessage->id_mensaje);
+    send_appeared(appearedPokemon, threadPokemonMessage->client_fd, threadPokemonMessage->id_mensaje);
+
+    free(appearedPokemon);
 }
 
 void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
@@ -72,9 +82,10 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
         configMetadataCreate(directorioMetadata);
     }
 
-    abrirMetadata(directorioMetadata, stream);
+    intentarAbrirMetadata(directorioMetadata, stream);
     int cantidadBloques = metadataBlocks(directorioMetadata, stream);
 
+    
     if(cantidadBloques == 0){
         log_info(optional_logger, "creando mi primer bloque");
         char* block = crearBloque(newPokemon);
@@ -85,6 +96,7 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     }else{
         agregarDatosYOrdenarBloques(directorioMetadata, newPokemon);
     }
+    
     cerrarMetadata(directorioMetadata, stream);
     log_info(optional_logger, "se cerro el metadata todo ok");
     free(stream);
@@ -102,79 +114,6 @@ void configMetadataCreate(char* metadata){
     pthread_mutex_unlock(&metadata_create);
 
     config_destroy(configMetadataTallGrass);
-}
-
-void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
-    char* stream = malloc(newPokemon->sizePokemon + 1);
-    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
-    stream[newPokemon->sizePokemon] = '\0';
-
-    log_info(optional_logger, "to liso");
-    pthread_mutex_lock(&metadata_create);
-    t_config* configMetadataTallGrass = config_create(metadata);
-    pthread_mutex_unlock(&metadata_create);
-    
-    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil((float)size / configM.blockSize);
-    
-    char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
-
-    char* bloquesConfig = malloc(sizeof(char)*3*(cantidadBloques + 1) + 1);
-    strcpy(bloquesConfig,"");
-    strcat(bloquesConfig,"[");
-    for(int i = 0; i < cantidadBloques; i++){
-        strcat(bloquesConfig,bloques[i]);
-        strcat(bloquesConfig,",");
-    }
-    strcat(bloquesConfig,block); 
-    strcat(bloquesConfig,"]");
-
-    log_info(optional_logger, "ya agregue los bloques");
-
-    char* extension = ".bin";
-
-    char* bloque = malloc(strlen(blocksPath) + strlen(block) + strlen(extension) + 2);
-    strcpy(bloque,"");
-    strcat(bloque, blocksPath);
-    strcat(bloque, "/"); 
-    strcat(bloque, block); 
-    strcat(bloque, extension);
-    
-    FILE* file = fopen(bloque,"rb");
-
-    fseek(file, 0, SEEK_END);
-    int sizeFile = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    fclose(file);
-
-    size += sizeFile;
-
-    char* sizeChar = malloc(sizeof(uint32_t));
-    strcpy(sizeChar, "");
-    sprintf(sizeChar, "%d", size);
-
-    log_info(optional_logger, "ya tengo el size");
-
-    config_set_value(configMetadataTallGrass, "SIZE", sizeChar);
-    config_set_value(configMetadataTallGrass,"BLOCKS", bloquesConfig);
-
-    pthread_mutex_lock(&metadata_create);
-    config_save(configMetadataTallGrass);
-    pthread_mutex_unlock(&metadata_create);
-
-    config_destroy(configMetadataTallGrass);
-    
-    free(stream);
-    free(bloque);
-    free(bloquesConfig);
-    for(int i = 0; i<cantidadBloques; i++){
-        free(bloques[i]);
-    }
-    free(bloques);
-    free(sizeChar);
-
-    log_info(optional_logger, "free end ");
 }
 
 void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){

@@ -56,7 +56,6 @@ char* crearBloque(new_pokemon* newPokemon){
             free(writeBinary);
             //imprimirBITARRAY(bitmap);
             pthread_mutex_unlock(&mutexBitmap);
-            log_info(optional_logger, "bitmap ok :D ");
             return binChar;
         }else{
             bin++;
@@ -70,13 +69,13 @@ int metadataBlocks(char* metadata, char* pokemon){
     
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
-    pthread_mutex_unlock(&metadata_create);
+    
 
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
     int cantidadBloques = ceil((float)size / configM.blockSize);
 
     config_destroy(configMetadataTallGrass);
-    
+    pthread_mutex_unlock(&metadata_create);
     return cantidadBloques;
 }
 
@@ -170,10 +169,11 @@ bool coincidePosicion(void* elem, void* args){
 char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, char* nombrePokemon, uint32_t posx, uint32_t posy, uint32_t quantity, char* metadata){
     t_list* writeListBinary = list_map(lista, structALinea);
     char* listaConcatenada = concatenarStrings(writeListBinary);
-    uint32_t sizeTotal = strlen(listaConcatenada) + 1;  
+    uint32_t sizeTotal = strlen(listaConcatenada);  
     int j=0;
     char* extension = ".bin";
 
+    log_info(optional_logger, "bajando bloques a disco mi size es: %d", sizeTotal);
     for(int i = 0; i<cantidadBloques; i++){
         char* direccionBinario = malloc(strlen(blocksPath) + strlen(bloques[i]) + strlen(extension) + 2);
 
@@ -205,7 +205,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
             newPokemon->position.posx = posx;
             newPokemon->position.posy = posy; 
             newPokemon->quantity = quantity;
-    
+            //sizeTotal++;
             char* block = crearBloque(newPokemon);
             addBlockMetadata(metadata, block, newPokemon);
             free(block);
@@ -216,6 +216,16 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
             pthread_mutex_unlock(&metadata_create);
             bloques = config_get_array_value(configMetadataTallGrass, "BLOCKS");
             free(newPokemon);
+            config_destroy(configMetadataTallGrass);
+        }
+
+        if(sizeArchivo == 1 && bloques[i] == bloques[cantidadBloques - 1]){
+            //sizeTotal--;
+            cantidadBloques--;
+            pthread_mutex_lock(&metadata_create);
+            t_config* configMetadataTallGrass = config_create(metadata);
+            pthread_mutex_unlock(&metadata_create);
+            bloques = config_get_array_value(configMetadataTallGrass, "BLOCKS");
             config_destroy(configMetadataTallGrass);
         }
         
@@ -229,6 +239,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     char* sizeTotalChar = malloc(20);
     strcpy(sizeTotalChar, "");
     sprintf(sizeTotalChar, "%d", sizeTotal);
+    log_info(optional_logger, "saliendo de bajar bloques a disco mi size es: %d", sizeTotal);
 
     return sizeTotalChar; 
 }
@@ -308,68 +319,142 @@ bool esPokemon(void* elem, void* args){
 
 void abrirMetadata(char* metadata, char* pokemon){
 
-    log_info(optional_logger, "bloqueadooo");
     bloquearMetadata(pokemon);
-    log_info(optional_logger, "pude pasar");
 
-    pthread_mutex_lock(&metadata_create);
+    //pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
-    pthread_mutex_unlock(&metadata_create);
-
-    log_info(optional_logger, "cree el metadata");
-    char* valorOpen = malloc(sizeof(char)*5 + 1);
-    
-    strcpy(valorOpen, "");
-    strcat(valorOpen, config_get_string_value(configMetadataTallGrass, "OPEN"));
-    log_info(optional_logger, "aca no hay segmentation fault");
-    //strcat(valorOpen, "\0");
-    uint32_t tiempoReintento = config_get_int_value(config, "TIEMPO_DE_REINTENTO_OPERACION");
-    
-    while(strcmp(valorOpen, "Y") == 0){
-        log_info(optional_logger, "intentando abrir metadata");
-        desbloquearMetadata(pokemon);
-        sleep(tiempoReintento);
-        bloquearMetadata(pokemon);
-        config_destroy(configMetadataTallGrass);
-        pthread_mutex_lock(&metadata_create);
-        configMetadataTallGrass = config_create(metadata);
-        pthread_mutex_unlock(&metadata_create);
-        //if(configMetadataTallGrass != NULL){
-            strcpy(valorOpen, "");
-            strcat(valorOpen, config_get_string_value(configMetadataTallGrass, "OPEN"));
-        //}
-        
-    }
+    //pthread_mutex_unlock(&metadata_create);
 
     config_set_value(configMetadataTallGrass, "OPEN", "Y");
 
-    pthread_mutex_lock(&metadata_create);
+    //pthread_mutex_lock(&metadata_create);
     config_save(configMetadataTallGrass);
-    pthread_mutex_unlock(&metadata_create);
+    //pthread_mutex_unlock(&metadata_create);
 
-    free(valorOpen);
-    desbloquearMetadata(pokemon);
+    
+    //desbloquearMetadata(pokemon);
     config_destroy(configMetadataTallGrass);
 }
 
 void cerrarMetadata(char* metadata, char* pokemon){
 
-    bloquearMetadata(pokemon);
+    //bloquearMetadata(pokemon);
 
-    pthread_mutex_lock(&metadata_create);
+    //pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
-    pthread_mutex_unlock(&metadata_create);
+    //pthread_mutex_unlock(&metadata_create);
 
     int time = config_get_int_value(config, "TIEMPO_RETARDO_OPERACION");
     sleep(time);
 
     config_set_value(configMetadataTallGrass, "OPEN", "N");
 
+    //pthread_mutex_lock(&metadata_create);
+    config_save(configMetadataTallGrass);
+    //pthread_mutex_unlock(&metadata_create);
+
+    desbloquearMetadata(pokemon);
+    config_destroy(configMetadataTallGrass);
+}
+
+void intentarAbrirMetadata(char* metadata, char* pokemon){
+    //pthread_mutex_lock(&metadata_create);
+    bloquearMetadata(pokemon);
+    t_config* configMetadataTallGrass = config_create(metadata);
+    desbloquearMetadata(pokemon);
+    //pthread_mutex_unlock(&metadata_create);
+
+    char* valorOpen = malloc(sizeof(char)*5 + 1);
+    
+    strcpy(valorOpen, "");
+    strcat(valorOpen, config_get_string_value(configMetadataTallGrass, "OPEN"));
+    
+    uint32_t tiempoReintento = config_get_int_value(config, "TIEMPO_DE_REINTENTO_OPERACION");
+
+    while(strcmp(valorOpen, "Y") == 0){
+        //desbloquearMetadata(pokemon);
+        sleep(tiempoReintento);
+        
+        config_destroy(configMetadataTallGrass);
+        pthread_mutex_lock(&metadata_create);
+        //bloquearMetadata(pokemon);
+        configMetadataTallGrass = config_create(metadata);
+        //desbloquearMetadata(pokemon);
+        pthread_mutex_unlock(&metadata_create);
+        strcpy(valorOpen, "");
+        strcat(valorOpen, config_get_string_value(configMetadataTallGrass, "OPEN"));
+    }
+    config_destroy(configMetadataTallGrass);
+    free(valorOpen);
+    abrirMetadata(metadata, pokemon);
+}
+
+void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
+    char* stream = malloc(newPokemon->sizePokemon + 1);
+    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
+    stream[newPokemon->sizePokemon] = '\0';
+
+    pthread_mutex_lock(&metadata_create);
+    t_config* configMetadataTallGrass = config_create(metadata);
+    pthread_mutex_unlock(&metadata_create);
+    
+    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    int cantidadBloques = ceil((float)size / configM.blockSize);
+    
+    char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
+
+    char* bloquesConfig = malloc(sizeof(char)*3*(cantidadBloques + 1) + 1);
+    strcpy(bloquesConfig,"");
+    strcat(bloquesConfig,"[");
+    for(int i = 0; i < cantidadBloques; i++){
+        strcat(bloquesConfig,bloques[i]);
+        strcat(bloquesConfig,",");
+    }
+    strcat(bloquesConfig,block); 
+    strcat(bloquesConfig,"]");
+
+    char* extension = ".bin";
+
+    char* bloque = malloc(strlen(blocksPath) + strlen(block) + strlen(extension) + 2);
+    strcpy(bloque,"");
+    strcat(bloque, blocksPath);
+    strcat(bloque, "/"); 
+    strcat(bloque, block); 
+    strcat(bloque, extension);
+    
+    FILE* file = fopen(bloque,"rb");
+
+    fseek(file, 0, SEEK_END);
+    int sizeFile = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    /*if(feof(file)){ //ver que no rompa todo
+        sizeFile--;
+    }*/
+
+    fclose(file);
+
+    size += sizeFile;
+    size --;
+
+    char* sizeChar = malloc(sizeof(uint32_t));
+    strcpy(sizeChar, "");
+    sprintf(sizeChar, "%d", size);
+
+    config_set_value(configMetadataTallGrass, "SIZE", sizeChar);
+    config_set_value(configMetadataTallGrass,"BLOCKS", bloquesConfig);
+
     pthread_mutex_lock(&metadata_create);
     config_save(configMetadataTallGrass);
     pthread_mutex_unlock(&metadata_create);
 
-    desbloquearMetadata(pokemon);
-    log_info(optional_logger, "done!");
     config_destroy(configMetadataTallGrass);
+    
+    free(stream);
+    free(bloque);
+    free(bloquesConfig);
+    for(int i = 0; i<cantidadBloques; i++){
+        free(bloques[i]);
+    }
+    free(bloques);
+    free(sizeChar);
 }

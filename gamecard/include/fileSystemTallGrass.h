@@ -28,5 +28,6 @@ void iniciarTallGrass();
 void crearPuntoDeMontaje();
 void metadataFiles();
 void metadataMetadata();
+void imprimirBITARRAY(t_bitarray* bitarray);
 
 #endif

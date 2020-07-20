@@ -2,8 +2,9 @@
 #define INICIARGAMECARD_H_
 
 #include "common_utils.h"
-#include "fileSystemTallGrass.h"
 #include "newPokemon.h"
+#include "catchPokemon.h"
+#include "getPokemon.h"
 #include <dirent.h>
  //#include <sys/types.h>
 

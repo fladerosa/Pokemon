@@ -1,12 +1,14 @@
 #ifndef COMMONS_FILESYSTEM_H_
 #define COMMONS_FILESYSTEM_H_
 
-#include "iniciarGameCard.h"
+//#include "iniciarGameCard.h"
+#include "common_utils.h"
+#include "common_connections.h"
 #include <math.h>
 #include <commons/string.h>
 #include <ctype.h>
 #include <sys/file.h>
-
+#include "fileSystemTallGrass.h"
 typedef struct{
     uint32_t posicionX; 
     uint32_t posicionY;
@@ -18,6 +20,12 @@ typedef struct{
     char* nombreDirectorio; 
     pthread_mutex_t mutex;
 }mutexDirectory;
+
+typedef struct{
+    void* pokemon; 
+    uint32_t client_fd; 
+    uint32_t* id_mensaje;
+} threadPokemonMessage;
 
 pthread_mutex_t mutexthreadSubscribeList;
 
@@ -41,5 +49,7 @@ void bloquearMetadata(char* pokemon);
 void desbloquearMetadata(char* pokemon);
 void abrirMetadata(char* metadata, char* pokemon);
 void cerrarMetadata(char* metadata, char* pokemon);
+void addBlockMetadata(char* metadata, char* block, new_pokemon* newPokemon);
+void intentarAbrirMetadata(char* metadata, char* pokemon);
 
 #endif

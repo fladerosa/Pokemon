@@ -17,7 +17,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <stdint.h>
-#include "common_connections.h"
+//#include "common_connections.h"
 #include "exit_status.h"
 
 t_log* obligatory_logger,* optional_logger;

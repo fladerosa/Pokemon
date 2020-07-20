@@ -13,9 +13,15 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             
             send_ack(client_fd, *id_message);
 
-            pthread_create_and_detach(newPokemonTallGrass, newPokemonMessage);
+            threadPokemonMessage* threadNewPokemonMessage = malloc(sizeof(threadPokemonMessage));
+            threadNewPokemonMessage->pokemon = newPokemonMessage;
+            threadNewPokemonMessage->client_fd = structNewPokemon->socket;
+            threadNewPokemonMessage->id_mensaje = id_message;
+
+            pthread_create_and_detach(newPokemonTallGrass, threadNewPokemonMessage);
             
             //TODO SEND APPEARED
+
             break;
         case CATCH_POKEMON:;
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream,id_message,false);
@@ -23,8 +29,13 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
 
             send_ack(client_fd, *id_message);
             //TODO SEND CAUGHT
+            threadPokemonMessage* threadCatchPokemonMessage = malloc(sizeof(threadPokemonMessage));
+            threadCatchPokemonMessage->pokemon = catchPokemonMessage;
+            threadCatchPokemonMessage->client_fd = structCatchPokemon->socket;
+            threadCatchPokemonMessage->id_mensaje = id_message;
+            pthread_create_and_detach(catchPokemonTallGrass, threadCatchPokemonMessage);
             
-            free_catch_pokemon(catchPokemonMessage);
+            //free_catch_pokemon(catchPokemonMessage);
             break;
         case GET_POKEMON:;
             get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream,id_message,false);
@@ -32,6 +43,13 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
 
             send_ack(client_fd, *id_message);
             //TODO SEND LOCALIZED
+
+            threadPokemonMessage* threadGetPokemonMessage = malloc(sizeof(threadPokemonMessage));
+            threadGetPokemonMessage->pokemon = getPokemonMessage;
+            threadGetPokemonMessage->client_fd = structGetPokemon->socket;
+            threadGetPokemonMessage->id_mensaje = id_message;
+
+            pthread_create_and_detach(getPokemonTallGrass, threadGetPokemonMessage);
             
             free_get_pokemon(getPokemonMessage);
             break;
@@ -111,6 +129,7 @@ void iniciarGameCard(){
     pthread_mutex_init(&mutexthreadSubscribeList, NULL);    
     pthread_mutex_init(&mutexBitmap, NULL);
     pthread_mutex_init(&metadata_create, NULL);
+    pthread_mutex_init(&createBlock, NULL);
 
     threadSubscribeList = list_create();
 
@@ -127,14 +146,14 @@ void iniciarGameCard(){
 
 void suscribirseATodo(){ 
 
-    uint32_t socket_new_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
-    crearSuscripcion(socket_new_pokemon, NEW_POKEMON, &suscripcionNewPokemon);
+    //uint32_t socket_new_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    //crearSuscripcion(socket_new_pokemon, NEW_POKEMON, &suscripcionNewPokemon);
     
     //uint32_t socket_catch_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
     //crearSuscripcion(socket_catch_pokemon, CATCH_POKEMON, &suscripcionCatchPokemon);
 
-    //uint32_t socket_get_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
-    //crearSuscripcion(socket_get_pokemon, GET_POKEMON, &suscripcionGetPokemon);
+    uint32_t socket_get_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    crearSuscripcion(socket_get_pokemon, GET_POKEMON, &suscripcionGetPokemon);
 }
 
 void crearSuscripcion(uint32_t socket,op_code codeOperation, pthread_t* threadName){
