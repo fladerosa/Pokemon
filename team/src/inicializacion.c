@@ -42,19 +42,16 @@ void validateEndTeam(){
 }
 
 void* planTrainers(){
-    int counterStrike = 0;
     while(true){
-        counterStrike++;
-        log_info(optional_logger, "Before - Planner counter: %d", counterStrike);
         sem_wait(&plannerSemaphore);
-        counterStrike--;
-        log_info(optional_logger, "After - Planner counter: %d", counterStrike);
-        
-        //pthread_mutex_lock(&plannerMutex);
+        log_info(optional_logger, "planTrainers - calculateTrainersInExit - %ld", time(NULL));
+        calculateTrainersInExit();
+        log_info(optional_logger, "planTrainers - calculateTrainerFromNewToReady - %ld", time(NULL));
         calculateTrainerFromNewToReady();
+        log_info(optional_logger, "planTrainers - calculateTrainerFromReadyToExec - %ld", time(NULL));
         calculateTrainerFromReadyToExec();
+        log_info(optional_logger, "planTrainers - detectDeadlock_do - %ld", time(NULL));
         detectDeadlock_do();
-        //pthread_mutex_unlock(&plannerMutex);
     }
 }
 
@@ -65,7 +62,6 @@ void read_config() {
         error_show("Error creating TEAM process config on %s\t", config_path);
         exit(CONFIG_FAIL);
     }    
-    //log_info(optional_logger, "Creation TEAM config path on successfully/n");      
 }
 
 void create_obligatory_logger() {      
@@ -139,8 +135,6 @@ void assign_data_trainer() {
                 };
             }
 
-            data_trainer->state = NEW;
-
             list_add(trainers, (void*)data_trainer);
 
             //Creation of trainer thread
@@ -152,6 +146,8 @@ void assign_data_trainer() {
             threadTrainerAux->contextSwitchCount = 0;
             threadTrainerAux->interchangeCycleCount = 0;
             threadTrainerAux->cpuCycleCount = 0;
+            threadTrainerAux->destinyIsTrainer = false;
+            
             pthread_mutex_init(&(threadTrainerAux->mutexAction), NULL);
 
             list_add(threadsTrainers, (void*)threadTrainerAux);
@@ -194,13 +190,15 @@ void* trainerDo(void* ptrIdTrainer){
         pthread_mutex_lock(&(threadTrainerAux->mutexAction));
         //Actions according state
         if(threadTrainerAux->state == READY){
+            log_info(optional_logger, "trainerDo - Trainer: %d - calculateTrainerFromReadyToExec - %ld", trainerId, time(NULL));
             calculateTrainerFromReadyToExec();
-        }else{
-            if(threadTrainerAux->state == EXEC){
-                executeAlgorithm();
-            }
+        }else if(threadTrainerAux->state == EXEC){
+            log_info(optional_logger, "trainerDo - Trainer: %d - executeAlgorithm - %ld", trainerId, time(NULL));
+            executeAlgorithm();
+        }else if(threadTrainerAux->state == E_P_EXIT){
+            log_info(optional_logger, "trainerDo - Trainer: %d - calculateTrainerInExit - %ld", trainerId, time(NULL));
+            calculateTrainerInExit(threadTrainerAux->idTrainer);
         }
-        //Check deadlock
     }
 
     return NULL;

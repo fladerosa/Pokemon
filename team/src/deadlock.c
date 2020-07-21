@@ -116,8 +116,7 @@ void detectDeadlock_do(){
     for(int i = 0; i < threadsTrainersCount && continueAnalize; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
         trainerAux = (t_trainer*)list_get(trainers, i);
-        //log_info(optional_logger, "DL - Trainer %d captured pokemon: %s", trainerAux->id_trainer, (char*)list_get(trainerAux->pokemonOwned, 0));
-	    //log_info(optional_logger, "DL - Trainer %d needs pokemon: %s", trainerAux->id_trainer, (char*)list_get(trainerAux->pokemonNeeded, 0));
+        
         if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(trainerAux)){
             t_list* pokemonsNeeded = getPokemonsNeeded(trainerAux);
             for(int j = 0; j < list_size(pokemonsNeeded); j++){
@@ -128,20 +127,16 @@ void detectDeadlock_do(){
                 deadlockNode->pokemon = malloc(strlen(pokemonNeededAux));
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
-                log_info(optional_logger, "Inicia analisis DL - Trainer %d, needed pokemon: %s", deadlockNode->idTrainer, deadlockNode->pokemon);
                 if(!completeCycleDeadlock()){
                     list_remove(cycleDeadLock, 0);
                     list_destroy(cycleDeadLock);
-                    log_info(optional_logger, "Lista descartada 1");
                 }else{
                     if(existsDeadlock()){
                         log_info(obligatory_logger, "Existe deadlock.");
-                        log_info(optional_logger, "Existe deadlock");
                         flagExistsDeadlock = true;
                         setInterchangePokemon();
                         continueAnalize = false;
                     }else{
-                        log_info(optional_logger, "Lista descartada 2");
                         list_destroy(cycleDeadLock);
                     }
                 }
@@ -205,7 +200,7 @@ bool completeCycleDeadlock(){
                 deadlockNode->pokemon = malloc(strlen(pokemonNeededAux));
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
-                log_info(optional_logger, "Agrega DL - Trainer %d, needed pokemon: %s", deadlockNode->idTrainer, deadlockNode->pokemon);
+
                 if(existsDeadlock()){
                     return true;
                 }else{
@@ -246,6 +241,7 @@ void setInterchangePokemon(){
 
     threadTrainerToMove->positionTo.posx = trainerWithDestiny->position.posx;
     threadTrainerToMove->positionTo.posy = trainerWithDestiny->position.posy;
+    threadTrainerToMove->destinyIsTrainer = true;
 
     calculateLeaveBlockedFromDeadlock(threadTrainerToMove->idTrainer);
 }

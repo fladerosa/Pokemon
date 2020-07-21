@@ -1,6 +1,7 @@
 #ifndef TEAM_H
 #define TEAM_H
 
+#include "common_connections.h"
 #include "common_utils.h"
 #include "inicializacion.h"
 #include "mapa.h"
@@ -29,6 +30,7 @@ void calculateLeaveBlockedFromDeadlock(uint32_t idTrainer);
 void calculateLeaveBlockedFromCaught(uint32_t idTrainer);
 bool trainerCompleteOwnObjetives(t_trainer* trainerAux);
 bool compareStrings(void* string1, void* string2);
+void calculateTrainersInExit();
 void calculateTrainerInExit(uint32_t idTrainer);
 void writeTrainerMetrics(uint32_t idTrainer);
 bool trainerStateIsExit(void* threadTrainer);

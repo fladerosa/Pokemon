@@ -12,7 +12,7 @@ typedef enum{
 	READY,
 	EXEC,
 	BLOCKED,
-	EXIT
+	E_P_EXIT
 } enum_process_state;
 /* Estructura de posición */
 typedef struct{
@@ -31,7 +31,6 @@ typedef struct{
     t_position position;
     t_list* pokemonOwned; ///Pokemons that i captured 
     t_list* pokemonNeeded; //Pokemons that i must capture to accomplish the objetive
-    enum_process_state state;
 } t_trainer;
 
 //hilos de entrenador / metricas de algoritmos
@@ -46,6 +45,7 @@ typedef struct {
     uint32_t contextSwitchCount;
     uint32_t cpuCycleCount;
     t_position positionTo;
+    bool destinyIsTrainer;
     uint32_t interchangeCycleCount;
 } t_threadTrainer;
 
