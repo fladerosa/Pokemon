@@ -40,7 +40,6 @@ typedef struct {
     pthread_t threadTrainer;
     pthread_mutex_t mutexAction;
     time_t incomingTime;
-    uint32_t remainingDistance; //Needed to RR y para SJF CD
     double valueEstimator; //Needed for SJF 
     uint32_t contextSwitchCount;
     uint32_t cpuCycleCount;
@@ -68,7 +67,6 @@ t_configuration config_values; //Values readed from tema.config
 t_list* threadsTrainers;
 t_list* globalObjetive;
 uint32_t deadlockCount;
-pthread_mutex_t plannerMutex;
 sem_t plannerSemaphore;
 char* pokemonCompareGlobalObjetive; //Variable used ONLY to calculate global objetive
 
@@ -82,7 +80,7 @@ void load_values_config();
 void assign_data_trainer();
 void* trainerDo(void* ptrIdTrainer);
 void release_resources();
-void destroy_trainer(t_trainer*);
+void destroy_pointer(void*);
 void destroy_lists_and_loaded_elements();
 
 void calculate_global_objetives();

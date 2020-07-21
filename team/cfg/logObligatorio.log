@@ -1,142 +1,106 @@
-[INFO] 22:24:40:424 TEAM/(11153:11153): Obligatory Log was created successfully
+[INFO] 20:00:58:957 TEAM/(8034:8034): Obligatory Log was created successfully
 
-[INFO] 22:24:40:426 TEAM/(11153:11153): Entrenador 1 entra a cola NEW.
-[INFO] 22:24:40:428 TEAM/(11153:11153): Entrenador 2 entra a cola NEW.
-[INFO] 22:24:40:430 TEAM/(11153:11153): Entrenador 3 entra a cola NEW.
-[INFO] 22:24:43:413 TEAM/(11153:11161): Se conectó un proceso en el socket 6
-[INFO] 22:24:43:417 TEAM/(11153:11165): Receiving Message Appeared pokemon.
-[INFO] 22:24:43:417 TEAM/(11153:11165): Pokemon Appeared: Pikachu
-[INFO] 22:24:43:417 TEAM/(11153:11165): Position on x: 16
-[INFO] 22:24:43:417 TEAM/(11153:11165): Position on y: 16
-[INFO] 22:24:43:417 TEAM/(11153:11162): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
-[INFO] 22:24:43:417 TEAM/(11153:11162): Entrenador 3, cambia de READY a EXEC, porque es el siguiente a ejecutar
-[INFO] 22:24:43:417 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:43:417 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:43:418 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:43:418 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:43:418 TEAM/(11153:11160): Entrenador 3 - Posicion actual: (15,15) - Posicion destino: (16,15)
-[INFO] 22:24:43:428 TEAM/(11153:11161): Se conectó un proceso en el socket 7
-[INFO] 22:24:43:432 TEAM/(11153:11167): Receiving Message Appeared pokemon.
-[INFO] 22:24:43:432 TEAM/(11153:11167): Pokemon Appeared: Charmander
-[INFO] 22:24:43:432 TEAM/(11153:11167): Position on x: 1
-[INFO] 22:24:43:432 TEAM/(11153:11167): Position on y: 1
-[INFO] 22:24:43:432 TEAM/(11153:11162): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
-[INFO] 22:24:43:433 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:43:433 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:43:433 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:43:433 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:43:458 TEAM/(11153:11161): Se conectó un proceso en el socket 6
-[INFO] 22:24:43:464 TEAM/(11153:11169): Receiving Message Appeared pokemon.
-[INFO] 22:24:43:464 TEAM/(11153:11169): Pokemon Appeared: Squirtle
-[INFO] 22:24:43:464 TEAM/(11153:11169): Position on x: 9
-[INFO] 22:24:43:464 TEAM/(11153:11169): Position on y: 9
-[INFO] 22:24:43:465 TEAM/(11153:11162): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
-[INFO] 22:24:43:465 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:43:465 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:43:465 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:43:465 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:45:418 TEAM/(11153:11160): Entrenador 3 - Posicion actual: (16,15) - Posicion destino: (16,16)
-[INFO] 22:24:47:419 TEAM/(11153:11160): Atrapar pokemon: Pikachu, en posicion: (16,16)
-[INFO] 22:24:47:419 TEAM/(11153:11160): Falló conexión con broker, se ejecutará función por default de appeared
-[INFO] 22:24:47:419 TEAM/(11153:11160): Entrenador 3, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
-[INFO] 22:24:47:419 TEAM/(11153:11160): Entrenador 3 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:24:47:420 TEAM/(11153:11162): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
-[INFO] 22:24:47:420 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:47:420 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:47:420 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (10,10) - Posicion destino: (9,10)
-[INFO] 22:24:49:420 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (9,10) - Posicion destino: (9,9)
-[INFO] 22:24:51:435 TEAM/(11153:11159): Atrapar pokemon: Squirtle, en posicion: (9,9)
-[INFO] 22:24:51:435 TEAM/(11153:11159): Falló conexión con broker, se ejecutará función por default de appeared
-[INFO] 22:24:51:435 TEAM/(11153:11159): Entrenador 2, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
-[INFO] 22:24:51:435 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (9,9) - Posicion destino: (9,9)
-[INFO] 22:24:51:437 TEAM/(11153:11162): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
-[INFO] 22:24:51:438 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:51:438 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:24:51:438 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (0,0) - Posicion destino: (1,0)
-[INFO] 22:24:53:456 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (1,0) - Posicion destino: (1,1)
-[INFO] 22:24:55:458 TEAM/(11153:11158): Atrapar pokemon: Charmander, en posicion: (1,1)
-[INFO] 22:24:55:458 TEAM/(11153:11158): Falló conexión con broker, se ejecutará función por default de appeared
-[INFO] 22:24:55:458 TEAM/(11153:11158): Entrenador 1, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
-[INFO] 22:24:55:458 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,1)
-[INFO] 22:24:55:458 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:24:55:458 TEAM/(11153:11162): Existe deadlock.
-[INFO] 22:24:55:458 TEAM/(11153:11162): El entrenador 1 intercambiará con el entrenador 3
-[INFO] 22:24:55:458 TEAM/(11153:11162): Entrenador 1, cambia de BLOCKED a READY, porque intercambiará por deadlock
-[INFO] 22:24:55:459 TEAM/(11153:11162): Se detectó deadlock.
-[INFO] 22:24:55:459 TEAM/(11153:11162): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
-[INFO] 22:24:57:459 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (2,1)
-[INFO] 22:24:59:460 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (2,1) - Posicion destino: (3,1)
-[INFO] 22:25:01:463 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (3,1) - Posicion destino: (4,1)
-[INFO] 22:25:03:471 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (4,1) - Posicion destino: (5,1)
-[INFO] 22:25:05:476 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (5,1) - Posicion destino: (6,1)
-[INFO] 22:25:07:478 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (6,1) - Posicion destino: (7,1)
-[INFO] 22:25:09:487 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (7,1) - Posicion destino: (8,1)
-[INFO] 22:25:11:491 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (8,1) - Posicion destino: (9,1)
-[INFO] 22:25:13:498 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (9,1) - Posicion destino: (10,1)
-[INFO] 22:25:15:507 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (10,1) - Posicion destino: (11,1)
-[INFO] 22:25:17:511 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (11,1) - Posicion destino: (12,1)
-[INFO] 22:25:19:519 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (12,1) - Posicion destino: (13,1)
-[INFO] 22:25:21:523 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (13,1) - Posicion destino: (14,1)
-[INFO] 22:25:23:527 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (14,1) - Posicion destino: (15,1)
-[INFO] 22:25:25:533 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (15,1) - Posicion destino: (16,1)
-[INFO] 22:25:27:538 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,1) - Posicion destino: (16,2)
-[INFO] 22:25:29:543 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,2) - Posicion destino: (16,3)
-[INFO] 22:25:31:544 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,3) - Posicion destino: (16,4)
-[INFO] 22:25:33:547 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,4) - Posicion destino: (16,5)
-[INFO] 22:25:35:553 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,5) - Posicion destino: (16,6)
-[INFO] 22:25:37:560 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,6) - Posicion destino: (16,7)
-[INFO] 22:25:39:567 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,7) - Posicion destino: (16,8)
-[INFO] 22:25:41:567 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,8) - Posicion destino: (16,9)
-[INFO] 22:25:43:571 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,9) - Posicion destino: (16,10)
-[INFO] 22:25:45:575 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,10) - Posicion destino: (16,11)
-[INFO] 22:25:47:580 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,11) - Posicion destino: (16,12)
-[INFO] 22:25:49:588 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,12) - Posicion destino: (16,13)
-[INFO] 22:25:51:588 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,13) - Posicion destino: (16,14)
-[INFO] 22:25:53:599 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,14) - Posicion destino: (16,15)
-[INFO] 22:25:55:599 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,15) - Posicion destino: (16,16)
-[INFO] 22:25:57:601 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:25:59:604 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:01:611 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:03:615 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:05:622 TEAM/(11153:11158): Entrenador 1 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:07:625 TEAM/(11153:11158): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio
-[INFO] 22:26:07:625 TEAM/(11153:11158): Trainer: 1
-[INFO] 22:26:07:625 TEAM/(11153:11158): Total Cycle CPU by Trainer 1: 40
-[INFO] 22:26:07:628 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:26:07:628 TEAM/(11153:11162): Existe deadlock.
-[INFO] 22:26:07:628 TEAM/(11153:11162): El entrenador 2 intercambiará con el entrenador 3
-[INFO] 22:26:07:628 TEAM/(11153:11162): Entrenador 2, cambia de BLOCKED a READY, porque intercambiará por deadlock
-[INFO] 22:26:07:628 TEAM/(11153:11162): Se detectó deadlock.
-[INFO] 22:26:07:628 TEAM/(11153:11162): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
-[INFO] 22:26:07:628 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (9,9) - Posicion destino: (10,9)
-[INFO] 22:26:09:631 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (10,9) - Posicion destino: (11,9)
-[INFO] 22:26:11:636 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (11,9) - Posicion destino: (12,9)
-[INFO] 22:26:13:643 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (12,9) - Posicion destino: (13,9)
-[INFO] 22:26:15:644 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (13,9) - Posicion destino: (14,9)
-[INFO] 22:26:17:645 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (14,9) - Posicion destino: (15,9)
-[INFO] 22:26:19:646 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (15,9) - Posicion destino: (16,9)
-[INFO] 22:26:21:646 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,9) - Posicion destino: (16,10)
-[INFO] 22:26:23:648 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,10) - Posicion destino: (16,11)
-[INFO] 22:26:25:649 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,11) - Posicion destino: (16,12)
-[INFO] 22:26:27:650 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,12) - Posicion destino: (16,13)
-[INFO] 22:26:29:650 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,13) - Posicion destino: (16,14)
-[INFO] 22:26:31:652 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,14) - Posicion destino: (16,15)
-[INFO] 22:26:33:656 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,15) - Posicion destino: (16,16)
-[INFO] 22:26:35:660 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:37:664 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:39:668 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:41:675 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:43:680 TEAM/(11153:11159): Entrenador 2 - Posicion actual: (16,16) - Posicion destino: (16,16)
-[INFO] 22:26:45:685 TEAM/(11153:11159): Entrenador 2, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio
-[INFO] 22:26:45:685 TEAM/(11153:11159): Entrenador 3, cambia de BLOCKED a EXIT, porque cumplió sus objetivos individuales
-[INFO] 22:26:45:685 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:26:45:685 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:26:45:686 TEAM/(11153:11160): Trainer: 3
-[INFO] 22:26:45:686 TEAM/(11153:11160): Total Cycle CPU by Trainer 3: 4
-[INFO] 22:26:45:687 TEAM/(11153:11162): Inicia algoritmo de detección de deadlock.
-[INFO] 22:26:45:687 TEAM/(11153:11162): No se detectó deadlock.
-[INFO] 22:26:45:687 TEAM/(11153:11159): Trainer: 2
-[INFO] 22:26:45:687 TEAM/(11153:11159): Total Cycle CPU by Trainer 2: 24
-[INFO] 22:26:45:687 TEAM/(11153:11153): Algorithm: FIFO 
-[INFO] 22:26:45:687 TEAM/(11153:11153): Total Cycle CPU by TEAM: 68
-[INFO] 22:26:45:687 TEAM/(11153:11153): Total Context Switch by Team: 4
+[INFO] 20:00:58:964 TEAM/(8034:8034): Entrenador 1 entra a cola NEW.
+[INFO] 20:00:58:969 TEAM/(8034:8034): Entrenador 2 entra a cola NEW.
+[INFO] 20:00:58:987 TEAM/(8034:8034): Entrenador 3 entra a cola NEW.
+[INFO] 20:01:01:720 TEAM/(8034:8043): Se conectó un proceso en el socket 6
+[INFO] 20:01:01:723 TEAM/(8034:8048): Receiving Message Appeared pokemon.
+[INFO] 20:01:01:723 TEAM/(8034:8048): Pokemon Appeared: Vulpix
+[INFO] 20:01:01:723 TEAM/(8034:8048): Position on x: 2
+[INFO] 20:01:01:723 TEAM/(8034:8048): Position on y: 2
+[INFO] 20:01:01:723 TEAM/(8034:8044): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 20:01:01:723 TEAM/(8034:8044): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 20:01:01:723 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (3,3) - Posicion destino: (2,3)
+[INFO] 20:01:01:724 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:01:724 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:01:724 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:01:724 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:01:737 TEAM/(8034:8043): Se conectó un proceso en el socket 7
+[INFO] 20:01:01:740 TEAM/(8034:8051): Receiving Message Appeared pokemon.
+[INFO] 20:01:01:740 TEAM/(8034:8051): Pokemon Appeared: Charmander
+[INFO] 20:01:01:740 TEAM/(8034:8051): Position on x: 4
+[INFO] 20:01:01:740 TEAM/(8034:8051): Position on y: 4
+[INFO] 20:01:01:740 TEAM/(8034:8044): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 20:01:01:740 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:01:740 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:01:740 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:01:740 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:01:765 TEAM/(8034:8043): Se conectó un proceso en el socket 6
+[INFO] 20:01:01:784 TEAM/(8034:8054): Receiving Message Appeared pokemon.
+[INFO] 20:01:01:784 TEAM/(8034:8054): Pokemon Appeared: Squirtle
+[INFO] 20:01:01:784 TEAM/(8034:8054): Position on x: 1
+[INFO] 20:01:01:784 TEAM/(8034:8054): Position on y: 1
+[INFO] 20:01:01:784 TEAM/(8034:8044): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 20:01:01:784 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:01:784 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:01:784 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:01:784 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:03:724 TEAM/(8034:8041): Entrenador 2, cambia de EXEC a READY, porque apareció un entrenador con estimador menor que está en READY
+[INFO] 20:01:03:725 TEAM/(8034:8044): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 20:01:03:725 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:03:725 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:03:725 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (2,3) - Posicion destino: (2,2)
+[INFO] 20:01:05:726 TEAM/(8034:8041): Atrapar pokemon: Vulpix, en posicion: (2,2)
+[INFO] 20:01:05:726 TEAM/(8034:8041): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 20:01:05:726 TEAM/(8034:8041): Entrenador 2, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 20:01:05:726 TEAM/(8034:8044): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 20:01:05:726 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (0,0) - Posicion destino: (1,0)
+[INFO] 20:01:05:727 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:05:727 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:07:727 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (1,0) - Posicion destino: (1,1)
+[INFO] 20:01:09:727 TEAM/(8034:8040): Atrapar pokemon: Squirtle, en posicion: (1,1)
+[INFO] 20:01:09:727 TEAM/(8034:8040): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 20:01:09:727 TEAM/(8034:8040): Entrenador 1, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 20:01:09:728 TEAM/(8034:8044): Entrenador 3, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 20:01:09:728 TEAM/(8034:8042): Entrenador 3 - Posicion actual: (5,5) - Posicion destino: (4,5)
+[INFO] 20:01:09:728 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:09:728 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:11:728 TEAM/(8034:8042): Entrenador 3 - Posicion actual: (4,5) - Posicion destino: (4,4)
+[INFO] 20:01:13:729 TEAM/(8034:8042): Atrapar pokemon: Charmander, en posicion: (4,4)
+[INFO] 20:01:13:729 TEAM/(8034:8042): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 20:01:13:729 TEAM/(8034:8042): Entrenador 3, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 20:01:13:729 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:13:729 TEAM/(8034:8044): Existe deadlock.
+[INFO] 20:01:13:729 TEAM/(8034:8044): El entrenador 1 intercambiará con el entrenador 2
+[INFO] 20:01:13:729 TEAM/(8034:8044): Entrenador 1, cambia de BLOCKED a READY, porque intercambiará por deadlock
+[INFO] 20:01:13:729 TEAM/(8034:8044): Se detectó deadlock.
+[INFO] 20:01:13:729 TEAM/(8034:8044): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 20:01:13:730 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (2,1)
+[INFO] 20:01:15:731 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (2,1) - Posicion destino: (2,2)
+[INFO] 20:01:17:731 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (2,2) - Posicion destino: (2,2)
+[INFO] 20:01:19:736 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (2,2) - Posicion destino: (2,2)
+[INFO] 20:01:21:737 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (2,2) - Posicion destino: (2,2)
+[INFO] 20:01:23:737 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (2,2) - Posicion destino: (2,2)
+[INFO] 20:01:25:743 TEAM/(8034:8040): Entrenador 1 - Posicion actual: (2,2) - Posicion destino: (2,2)
+[INFO] 20:01:27:744 TEAM/(8034:8040): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio
+[INFO] 20:01:27:745 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:27:745 TEAM/(8034:8044): Existe deadlock.
+[INFO] 20:01:27:745 TEAM/(8034:8044): El entrenador 2 intercambiará con el entrenador 3
+[INFO] 20:01:27:745 TEAM/(8034:8044): Entrenador 2, cambia de BLOCKED a READY, porque intercambiará por deadlock
+[INFO] 20:01:27:745 TEAM/(8034:8040): Trainer: 1
+[INFO] 20:01:27:745 TEAM/(8034:8044): Se detectó deadlock.
+[INFO] 20:01:27:745 TEAM/(8034:8044): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 20:01:27:745 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (2,2) - Posicion destino: (3,2)
+[INFO] 20:01:27:745 TEAM/(8034:8040): Total Cycle CPU by Trainer 1: 9
+[INFO] 20:01:29:749 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (3,2) - Posicion destino: (4,2)
+[INFO] 20:01:31:749 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (4,2) - Posicion destino: (4,3)
+[INFO] 20:01:33:750 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (4,3) - Posicion destino: (4,4)
+[INFO] 20:01:35:751 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (4,4) - Posicion destino: (4,4)
+[INFO] 20:01:37:752 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (4,4) - Posicion destino: (4,4)
+[INFO] 20:01:39:752 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (4,4) - Posicion destino: (4,4)
+[INFO] 20:01:41:754 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (4,4) - Posicion destino: (4,4)
+[INFO] 20:01:43:755 TEAM/(8034:8041): Entrenador 2 - Posicion actual: (4,4) - Posicion destino: (4,4)
+[INFO] 20:01:45:759 TEAM/(8034:8041): Entrenador 2, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio
+[INFO] 20:01:45:760 TEAM/(8034:8041): Entrenador 3, cambia de BLOCKED a EXIT, porque cumplió sus objetivos individuales
+[INFO] 20:01:45:762 TEAM/(8034:8042): Trainer: 3
+[INFO] 20:01:45:762 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:45:762 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:45:762 TEAM/(8034:8042): Total Cycle CPU by Trainer 3: 2
+[INFO] 20:01:45:762 TEAM/(8034:8044): Inicia algoritmo de detección de deadlock.
+[INFO] 20:01:45:762 TEAM/(8034:8044): No se detectó deadlock.
+[INFO] 20:01:45:762 TEAM/(8034:8041): Trainer: 2
+[INFO] 20:01:45:762 TEAM/(8034:8041): Total Cycle CPU by Trainer 2: 11
+[INFO] 20:01:45:762 TEAM/(8034:8034): Algorithm: SJF-CD 
+[INFO] 20:01:45:762 TEAM/(8034:8034): Total Cycle CPU by TEAM: 22
+[INFO] 20:01:45:762 TEAM/(8034:8034): Total Context Switch by Team: 10
+[INFO] 20:01:45:762 TEAM/(8034:8034): Total Deadlocks by Team: 2

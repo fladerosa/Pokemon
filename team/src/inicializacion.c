@@ -14,18 +14,15 @@ void initialize_team() {
     assign_data_trainer();
     calculate_global_objetives();
     pokemonsOnMap = list_create();
-    log_info(optional_logger, "Initialization and configuration upload successful\n", LOG_LEVEL_INFO); 
     flagExistsDeadlock = false;
     //connection_broker_global_suscribe();
     request = &reception_message_queue_subscription;
     listen_to_gameboy();
     send_get_pokemon_global_team(socket_team, globalObjetive);
-    pthread_mutex_init(&plannerMutex, NULL);
     sem_init(&plannerSemaphore, 0, 0);
     pthread_create(&plannerThread, NULL, planTrainers, NULL);
     validateEndTeam();
     pthread_join(plannerThread,NULL);
-    pthread_mutex_destroy(&plannerMutex);
     pthread_join(suscripcionAppearedPokemon,NULL);
     pthread_join(suscripcionCaughtPokemon,NULL);
     pthread_join(suscripcionLocalizedPokemon,NULL);
@@ -44,13 +41,9 @@ void validateEndTeam(){
 void* planTrainers(){
     while(true){
         sem_wait(&plannerSemaphore);
-        log_info(optional_logger, "planTrainers - calculateTrainersInExit - %ld", time(NULL));
         calculateTrainersInExit();
-        log_info(optional_logger, "planTrainers - calculateTrainerFromNewToReady - %ld", time(NULL));
         calculateTrainerFromNewToReady();
-        log_info(optional_logger, "planTrainers - calculateTrainerFromReadyToExec - %ld", time(NULL));
         calculateTrainerFromReadyToExec();
-        log_info(optional_logger, "planTrainers - detectDeadlock_do - %ld", time(NULL));
         detectDeadlock_do();
     }
 }
@@ -85,7 +78,6 @@ void create_obligatory_logger() {
 }
 
 void load_values_config() {
-    
     config_values.tiempo_reconexion = (uint32_t)config_get_int_value(config, "TIEMPO_RECONEXION");
     config_values.retardo_ciclo_cpu = (uint32_t)config_get_int_value(config, "RETARDO_CICLO_CPU");
     config_values.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
@@ -121,18 +113,20 @@ void assign_data_trainer() {
             data_trainer->position.posy = (uint32_t)atoi(valorAux[1]);
 
             if(pokemonNeeds != NULL && pokemonNeeds[i] != NULL && !string_is_empty(pokemonNeeds[i])){
-                if(string_contains(pokemonNeeds[i], "|")){
-                    *valorAux = pokemonNeeds[i];
+                if(strchr(pokemonNeeds[i], '|') == NULL){
+                    dataAux = malloc(strlen(pokemonNeeds[i]));
+                    strcpy(dataAux, pokemonNeeds[i]);
+                    list_add(data_trainer->pokemonNeeded, dataAux);
                 }else{
                     valorAux = string_split(pokemonNeeds[i], "|");
-                }
 
-                while(*valorAux != NULL){
-                    dataAux = malloc(strlen(*valorAux));
-                    strcpy(dataAux, *valorAux);
-                    list_add(data_trainer->pokemonNeeded, dataAux);
-                    valorAux++;
-                };
+                    while(*valorAux != NULL){
+                        dataAux = malloc(strlen(*valorAux));
+                        strcpy(dataAux, *valorAux);
+                        list_add(data_trainer->pokemonNeeded, dataAux);
+                        valorAux++;
+                    };
+                }
             }
 
             list_add(trainers, (void*)data_trainer);
@@ -153,7 +147,6 @@ void assign_data_trainer() {
             list_add(threadsTrainers, (void*)threadTrainerAux);
             pthread_create(&threadTrainerAux->threadTrainer, NULL, trainerDo, (void*)&threadTrainerAux->idTrainer);
 
-            log_info(optional_logger, "Request malloc succesfully to TRAINER %d, position: (%d,%d) ", data_trainer->id_trainer, data_trainer->position.posx, data_trainer->position.posy);
             log_info(obligatory_logger, "Entrenador %d entra a cola NEW.", data_trainer->id_trainer);
         }else{
             log_info(optional_logger, "Error on request malloc to TRAINER \n");
@@ -163,19 +156,20 @@ void assign_data_trainer() {
     for(uint32_t i = 0; pokemonOwns[i] != NULL; i++) {
         data_trainer = (t_trainer*)list_get(trainers, i);
         if(!string_is_empty(pokemonOwns[i])){
-            //if(strchr(pokemonOwns[i], '|') == NULL){
-            if(string_contains(pokemonOwns[i], "|")){
-                *valorAux = pokemonOwns[i];
+            if(strchr(pokemonOwns[i], '|') == NULL){
+                dataAux = malloc(strlen(pokemonOwns[i]));
+                strcpy(dataAux, pokemonOwns[i]);
+                list_add(data_trainer->pokemonOwned, dataAux);
             }else{
                 valorAux = string_split(pokemonOwns[i], "|");
+
+                while(*valorAux != NULL){
+                    dataAux = malloc(strlen(*valorAux));
+                    strcpy(dataAux, *valorAux);
+                    list_add(data_trainer->pokemonOwned, dataAux);
+                    valorAux++;
+                };
             }
-            
-            while(*valorAux != NULL){
-                dataAux = malloc(strlen(*valorAux));
-                strcpy(dataAux, *valorAux);
-                list_add(data_trainer->pokemonOwned, dataAux);
-                valorAux++;
-            };
         }
     }
 
@@ -190,13 +184,10 @@ void* trainerDo(void* ptrIdTrainer){
         pthread_mutex_lock(&(threadTrainerAux->mutexAction));
         //Actions according state
         if(threadTrainerAux->state == READY){
-            log_info(optional_logger, "trainerDo - Trainer: %d - calculateTrainerFromReadyToExec - %ld", trainerId, time(NULL));
             calculateTrainerFromReadyToExec();
         }else if(threadTrainerAux->state == EXEC){
-            log_info(optional_logger, "trainerDo - Trainer: %d - executeAlgorithm - %ld", trainerId, time(NULL));
             executeAlgorithm();
         }else if(threadTrainerAux->state == E_P_EXIT){
-            log_info(optional_logger, "trainerDo - Trainer: %d - calculateTrainerInExit - %ld", trainerId, time(NULL));
             calculateTrainerInExit(threadTrainerAux->idTrainer);
         }
     }
@@ -241,7 +232,6 @@ bool analyzePokemonInGlobal(void* objetiveGlobal){
     }else{
         return 0;
     }
-    
 }
 
 void release_resources() { 
@@ -258,14 +248,12 @@ void release_resources() {
     close_sockets();
 }
 
-void destroy_trainer(t_trainer* trainer)
-{   
-		free(trainer);
+void destroy_pointer(void* pointer){   
+    free(pointer);
 }
 
-void destroy_lists_and_loaded_elements()
-{   
-     list_destroy_and_destroy_elements(trainers, (void*)destroy_trainer);
-        
+void destroy_lists_and_loaded_elements(){   
+     list_destroy_and_destroy_elements(trainers, (void*)destroy_pointer);
+     list_destroy_and_destroy_elements(threadsTrainers, (void*)destroy_pointer);
 }
 

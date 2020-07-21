@@ -56,14 +56,5 @@ char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon);
 bool sendCatch(t_pokemon_on_map* pokemon);
 void catch_succesfull(uint32_t id_trainer);
 int calculatePokemonsOnReady();
-void calculate_cpu_burst_threadTrainerOnExec(t_threadTrainer*, uint32_t);
-void move_to_objetive_FCFS(t_threadTrainer*, t_pokemon_on_map);
-void move_to_objetive_RR(t_threadTrainer*, t_pokemon_on_map, uint32_t);
-void move_to_objetive_SJF_CD(t_threadTrainer*, t_pokemon_on_map, uint32_t);
-bool isPokemonOnMapFree(void *);
-bool isPokemonOnMapChasing(void *);
-void send_catch_pokemon(uint32_t, t_pokemon_on_map);
-
-
 
 #endif

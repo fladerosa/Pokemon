@@ -134,6 +134,7 @@ void detectDeadlock_do(){
                     if(existsDeadlock()){
                         log_info(obligatory_logger, "Existe deadlock.");
                         flagExistsDeadlock = true;
+                        deadlockCount++;
                         setInterchangePokemon();
                         continueAnalize = false;
                     }else{
