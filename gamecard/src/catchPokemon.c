@@ -1,15 +1,5 @@
 #include "catchPokemon.h"
 
-//void catchPokemon(){
-    //Verificar si esta el pokemon en el directorio Pokemon. Si no existe informar un ERROR
-    //Verificar si no hay otro proceso que lo esté abriendo. En caso de que si lo haya finalizar hilo y reintentar en "TIEMPO_DE_REINTENTO_OPERACION"
-    //Verificar si las posiciones ya existen dentro del archivo. En caso de no existir se debe informar un ERROR.
-    //En caso que la cantidad del Pokémon sea “1”, se debe eliminar la línea. En caso contrario se debe decrementar la cantidad en uno.
-    //Cerrar el archivo.
-    //Todo resultado deberá informarse enviando un mensaje a la Cola de Mensajes "CAUGHT_POKEMON" indicando: ID del mensaje recibido y el Resultado (Fail o success).
-    /**En caso de que no se pueda establecer conexion con el broker notificarlo por Logs y continuar**/
-//}
-
 void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
     catch_pokemon* catchPokemon = threadCatchPokemonMessage->pokemon;
 
@@ -52,7 +42,7 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
             cerrarMetadata(directorioMetadata, stream); 
             caughtPokemon->success = 1;
         }else{
-            log_info(obligatory_logger, "ERROR: no existe ese pokemon");
+            log_error(obligatory_logger, "No existen posiciones para ese pokemon (No existe el pokemon).");
             caughtPokemon = 0;
             //hacer fail
         }
@@ -120,9 +110,6 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
                 }
             }  
         }
-        
-    }else{
-        log_info(optional_logger, "No estaba esa posicion");
     }
 
     char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, catchPokemon->pokemon, catchPokemon->position.posx, catchPokemon->position.posy, 1, metadata);
@@ -197,9 +184,6 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     }
     strcat(bloquesConfig,"]");
     
-    
-    //[[29][31]] bloques[1]
-    imprimirBITARRAY(bitmap);
     char* sizeChar = malloc(sizeof(uint32_t));
     strcpy(sizeChar, "");
     sprintf(sizeChar, "%d", size);

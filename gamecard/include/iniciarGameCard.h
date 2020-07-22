@@ -7,7 +7,6 @@
 #include "getPokemon.h"
 #include <dirent.h>
 #include <semaphore.h>
- //#include <sys/types.h>
 
 typedef struct
 {

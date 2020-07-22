@@ -110,9 +110,9 @@ int hayBitmap(){
 
 void crearPuntoDeMontaje(){
 	int puntoMontajeCreated = mkdir(PUNTO_MONTAJE, ACCESSPERMS);
-	if(puntoMontajeCreated != -1){
+	/* if(puntoMontajeCreated != -1){
 		log_info(optional_logger, "Se creo el punto de montaje"); 
-	}
+	}*/
 
 	filesPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Files") + 1); 
 	strcpy(filesPath,""); 
@@ -120,9 +120,9 @@ void crearPuntoDeMontaje(){
 	strcat(filesPath, "/Files");
 
 	int filesCreated = mkdir(filesPath, ACCESSPERMS);
-	if(filesCreated != -1){
+	/* if(filesCreated != -1){
 		log_info(optional_logger, "Se creo el files"); 
-	}
+	}*/
 
 	metadataFiles();
 
@@ -132,9 +132,9 @@ void crearPuntoDeMontaje(){
 	strcat(blocksPath, "/Blocks");
 
 	int blocksCreated = mkdir(blocksPath, ACCESSPERMS);
-	if(blocksCreated != -1){
+	/*if(blocksCreated != -1){
 		log_info(optional_logger, "Se creo el blocks"); 
-	}
+	}*/
 
 	metadataPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Metadata") + 1); 
 	strcpy(metadataPath,""); 
@@ -142,9 +142,9 @@ void crearPuntoDeMontaje(){
 	strcat(metadataPath, "/Metadata");
 
 	int metadataCreated = mkdir(metadataPath, ACCESSPERMS);
-	if(metadataCreated != -1){
+	/* if(metadataCreated != -1){
 		log_info(optional_logger, "Se creo el metadata"); 
-	}
+	}*/
 
 	metadataMetadata();
 
