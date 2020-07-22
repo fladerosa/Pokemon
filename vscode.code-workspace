@@ -18,9 +18,14 @@
 	],
 	"settings": {
 		"files.associations": {
-			"dump.h": "c",
-			"common_tests.h": "c",
+
+			"configuracion.h": "c",
+			"pthread.h": "c",
 			"team.h": "c",
+			"common_utils.h": "c",
+			"string.h": "c"
+			"dump.h": "c",
+			"common_tests.h": "c"
 			"initializer_list": "c"
 		},
 		"git.ignoreLimitWarning": true
