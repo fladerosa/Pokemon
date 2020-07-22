@@ -2,6 +2,7 @@
 #define SERVER_GAMEBOY_H
 
 #include "common_utils.h"
+#include "common_connections.h"
 
 const static struct{
     op_code operation;

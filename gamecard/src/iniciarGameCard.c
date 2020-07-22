@@ -3,7 +3,7 @@
 void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) {
 	void* stream = malloc(sizeofstruct);
     uint32_t* id_message = malloc(sizeof(uint32_t));
-    *id_message = 0; //revisar 
+    *id_message = 0;
     if (recv(client_fd, stream, sizeofstruct, MSG_WAITALL)<=0){free(stream); return;}
 
     switch(cod_op){
@@ -15,27 +15,43 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
 
             threadPokemonMessage* threadNewPokemonMessage = malloc(sizeof(threadPokemonMessage));
             threadNewPokemonMessage->pokemon = newPokemonMessage;
-            threadNewPokemonMessage->client_fd = structNewPokemon->socket;
+
+            pthread_mutex_lock(&structNewPokemon->mutex);
+            if(structNewPokemon->socket != 0){
+                threadNewPokemonMessage->client_fd = structNewPokemon->socket;
+            }else{
+                threadNewPokemonMessage->client_fd = 0;
+            }
+            pthread_mutex_unlock(&structNewPokemon->mutex);
             threadNewPokemonMessage->id_mensaje = id_message;
 
+            pthread_mutex_lock(&createAndDetachMutex);
             pthread_create_and_detach(newPokemonTallGrass, threadNewPokemonMessage);
+            pthread_mutex_unlock(&createAndDetachMutex);
             
-            //TODO SEND APPEARED
-
             break;
         case CATCH_POKEMON:;
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream,id_message,false);
             log_info(optional_logger, "Catch pokemon!");
 
             send_ack(client_fd, *id_message);
-            //TODO SEND CAUGHT
+            
             threadPokemonMessage* threadCatchPokemonMessage = malloc(sizeof(threadPokemonMessage));
             threadCatchPokemonMessage->pokemon = catchPokemonMessage;
-            threadCatchPokemonMessage->client_fd = structCatchPokemon->socket;
-            threadCatchPokemonMessage->id_mensaje = id_message;
-            pthread_create_and_detach(catchPokemonTallGrass, threadCatchPokemonMessage);
             
-            //free_catch_pokemon(catchPokemonMessage);
+            pthread_mutex_lock(&structCatchPokemon->mutex);
+            if(structCatchPokemon->socket != 0){
+                threadCatchPokemonMessage->client_fd = structCatchPokemon->socket;
+            }else{
+                threadCatchPokemonMessage->client_fd = 0;
+            }
+            pthread_mutex_unlock(&structCatchPokemon->mutex);
+            threadCatchPokemonMessage->id_mensaje = id_message;
+
+            pthread_mutex_lock(&createAndDetachMutex);
+            pthread_create_and_detach(catchPokemonTallGrass, threadCatchPokemonMessage);
+            pthread_mutex_unlock(&createAndDetachMutex);
+            
             break;
         case GET_POKEMON:;
             get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream,id_message,false);
@@ -46,12 +62,19 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
 
             threadPokemonMessage* threadGetPokemonMessage = malloc(sizeof(threadPokemonMessage));
             threadGetPokemonMessage->pokemon = getPokemonMessage;
-            threadGetPokemonMessage->client_fd = structGetPokemon->socket;
+            pthread_mutex_lock(&structGetPokemon->mutex);
+            if(structGetPokemon->socket != 0){
+                threadGetPokemonMessage->client_fd = structGetPokemon->socket;
+            }else{
+                threadGetPokemonMessage->client_fd = 0;
+            }
+            pthread_mutex_unlock(&structGetPokemon->mutex);
             threadGetPokemonMessage->id_mensaje = id_message;
 
+            pthread_mutex_lock(&createAndDetachMutex);
             pthread_create_and_detach(getPokemonTallGrass, threadGetPokemonMessage);
-            
-            free_get_pokemon(getPokemonMessage);
+            pthread_mutex_unlock(&createAndDetachMutex);
+        
             break;
         case CONNECTION:;
             connection* connectionMessage = stream_to_connection(stream);
@@ -130,27 +153,46 @@ void iniciarGameCard(){
     pthread_mutex_init(&mutexBitmap, NULL);
     pthread_mutex_init(&metadata_create, NULL);
     pthread_mutex_init(&createBlock, NULL);
+    pthread_mutex_init(&createAndDetachMutex, NULL);
+    sem_init(&semServeClient,0,0);
 
     threadSubscribeList = list_create();
 
-    suscribirseATodo();
+    pthread_create(&threadForThreads,NULL,(void*)suscribirseATodo, NULL);
 
+    sem_wait(&semServeClient);
     start_server(IP_GAMECARD,PUERTO_GAMECARD,request);
 
+    pthread_join(server, NULL);
     pthread_join(suscripcionNewPokemon,NULL);
     pthread_join(suscripcionCatchPokemon,NULL);
     pthread_join(suscripcionGetPokemon,NULL);
+    pthread_join(threadForThreads, NULL);
 
     finalizarGameCard();
 }
 
 void suscribirseATodo(){ 
 
-    //uint32_t socket_new_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
-    //crearSuscripcion(socket_new_pokemon, NEW_POKEMON, &suscripcionNewPokemon);
+    structNewPokemon = malloc(sizeof(threadSubscribe));
+    structNewPokemon->socket = 0;
+    pthread_mutex_init(&structNewPokemon->mutex, NULL);
+
+    structCatchPokemon = malloc(sizeof(threadSubscribe));
+    structCatchPokemon->socket = 0;
+    pthread_mutex_init(&structCatchPokemon->mutex, NULL);
+
+    structGetPokemon = malloc(sizeof(threadSubscribe));
+    structGetPokemon->socket = 0;
+    pthread_mutex_init(&structGetPokemon->mutex, NULL);
+
+    sem_post(&semServeClient);
+
+    uint32_t socket_new_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    crearSuscripcion(socket_new_pokemon, NEW_POKEMON, &suscripcionNewPokemon);
     
-    //uint32_t socket_catch_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
-    //crearSuscripcion(socket_catch_pokemon, CATCH_POKEMON, &suscripcionCatchPokemon);
+    uint32_t socket_catch_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
+    crearSuscripcion(socket_catch_pokemon, CATCH_POKEMON, &suscripcionCatchPokemon);
 
     uint32_t socket_get_pokemon = crear_conexion(IP_BROKER,PUERTO_BROKER);
     crearSuscripcion(socket_get_pokemon, GET_POKEMON, &suscripcionGetPokemon);
@@ -174,11 +216,13 @@ void subscribeAndConnect(args_pthread* arguments){
 
     switch(arguments->codigoCola){
         case NEW_POKEMON:
-            structNewPokemon = malloc(sizeof(threadSubscribe));
+            
+            pthread_mutex_lock(&structNewPokemon->mutex);
             structNewPokemon->idCola = NEW_POKEMON;
             structNewPokemon->socket = *arguments->socket;
             structNewPokemon->idConnection = id_connection;
-
+            pthread_mutex_unlock(&structNewPokemon->mutex);
+           
             pthread_mutex_lock(&mutexthreadSubscribeList);
             list_add(threadSubscribeList, structNewPokemon);
             pthread_mutex_unlock(&mutexthreadSubscribeList);
@@ -186,10 +230,12 @@ void subscribeAndConnect(args_pthread* arguments){
             connect_client(*arguments->socket, NEW_POKEMON);
             break;
         case CATCH_POKEMON:
-            structCatchPokemon = malloc(sizeof(threadSubscribe));
+
+            pthread_mutex_lock(&structCatchPokemon->mutex);
             structCatchPokemon->idCola = CATCH_POKEMON;
             structCatchPokemon->socket = *arguments->socket;
             structCatchPokemon->idConnection = id_connection;
+            pthread_mutex_unlock(&structCatchPokemon->mutex);
 
             pthread_mutex_lock(&mutexthreadSubscribeList);
             list_add(threadSubscribeList, structCatchPokemon);
@@ -198,11 +244,13 @@ void subscribeAndConnect(args_pthread* arguments){
             connect_client(*arguments->socket, CATCH_POKEMON);
             break;
         case GET_POKEMON:
-            structGetPokemon = malloc(sizeof(threadSubscribe));
+
+            pthread_mutex_lock(&structGetPokemon->mutex);
             structGetPokemon->idCola = GET_POKEMON;
             structGetPokemon->socket = *arguments->socket;
             structGetPokemon->idConnection = id_connection;
-
+            pthread_mutex_unlock(&structGetPokemon->mutex);
+            
             pthread_mutex_lock(&mutexthreadSubscribeList);
             list_add(threadSubscribeList, structGetPokemon);
             pthread_mutex_unlock(&mutexthreadSubscribeList);
@@ -212,7 +260,6 @@ void subscribeAndConnect(args_pthread* arguments){
         default:
             break;
     }
-    
 }
 
 void connect_client(uint32_t socket,op_code codeOperation){
@@ -232,7 +279,9 @@ void connect_client(uint32_t socket,op_code codeOperation){
         (*process_request).socket = malloc(sizeof(uint32_t));
         *(*process_request).socket = socket; 
         (*process_request).request_receiver = request;
+        pthread_mutex_lock(&thread->mutex);
         send_reconnect(socket, thread->idConnection);
+        pthread_mutex_unlock(&thread->mutex);
     } 
 
     pthread_join(server, NULL);

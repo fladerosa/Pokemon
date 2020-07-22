@@ -13,6 +13,7 @@ void obtenerConfig(){
     configM.blocks = config_get_int_value(configMetadata, "BLOCKS");
 
     config_destroy(configMetadata);
+	free(metadata);
 }
 
 void crearArchivoBitmap(){

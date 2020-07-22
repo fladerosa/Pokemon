@@ -330,7 +330,7 @@ void send_appeared(appeared_pokemon* appearedPokemon, uint32_t socket, uint32_t*
     *id_appeared = -1;
 
     paquete->codigo_operacion = APPEARED_POKEMON; 
-    paquete->buffer->size = size_of_appeared_pokemon(appearedPokemon); // revisar
+    paquete->buffer->size = size_of_appeared_pokemon(appearedPokemon);
     paquete->buffer->stream = appeared_pokemon_to_stream(appearedPokemon, id_appeared, id_message);
 
     uint32_t bytes = paquete->buffer->size + 2*sizeof(uint32_t);
@@ -342,7 +342,6 @@ void send_appeared(appeared_pokemon* appearedPokemon, uint32_t socket, uint32_t*
 	free(a_enviar);
     free_package(paquete);
     free(id_appeared);
-    //free_(ackBroker);
 }
 
 void send_caught(caught_pokemon* caughtPokemon, uint32_t socket, uint32_t* id_message){

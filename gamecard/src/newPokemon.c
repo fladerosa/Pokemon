@@ -42,19 +42,26 @@ void newPokemonTallGrass(threadPokemonMessage* threadPokemonMessage){
     createMetadataPokemon(directory, newPokemon);
 
     free(directory);
-    free(stream);
+    
     //free(newPokemon->pokemon);
     //free_new_pokemon(newPokemon);
+    uint32_t* id_message = malloc(sizeof(uint32_t*));
+    if(threadPokemonMessage->client_fd != 0){
+        appeared_pokemon* appearedPokemon = malloc(sizeof(appeared_pokemon));
+        appearedPokemon->sizePokemon = newPokemon->sizePokemon;
+        appearedPokemon->pokemon = stream;
+        appearedPokemon->position.posx = newPokemon->position.posx;
+        appearedPokemon->position.posy = newPokemon->position.posy;
+        *id_message = *threadPokemonMessage->id_mensaje;
+    
+        send_appeared(appearedPokemon, threadPokemonMessage->client_fd, id_message);
+        free(appearedPokemon);
+    }
 
-    appeared_pokemon* appearedPokemon = malloc(sizeof(appeared_pokemon));
-    appearedPokemon->sizePokemon = newPokemon->sizePokemon;
-    appearedPokemon->pokemon = newPokemon->pokemon;
-    appearedPokemon->position.posx = newPokemon->position.posx;
-    appearedPokemon->position.posy = newPokemon->position.posy;
-    //void* appearedStream = appeared_pokemon_to_stream(appearedPokemon, -1, threadPokemonMessage->id_mensaje);
-    send_appeared(appearedPokemon, threadPokemonMessage->client_fd, threadPokemonMessage->id_mensaje);
-
-    free(appearedPokemon);
+    free(id_message);
+    free(stream);
+    free(threadPokemonMessage->pokemon);
+    free(threadPokemonMessage);
 }
 
 void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
@@ -157,15 +164,15 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
 
         char* posX = malloc(10);
         strcpy(posX,"");
-        sprintf(posX,"%d",newPokemon->position.posx);//(char); 
+        sprintf(posX,"%d",newPokemon->position.posx);
 
         char* posY = malloc(10);
         strcpy(posY,"");
-        sprintf(posY,"%d",newPokemon->position.posy);//(char); 
+        sprintf(posY,"%d",newPokemon->position.posy);
 
         char* quantity = malloc(10);
         strcpy(quantity,"");
-        sprintf(quantity,"%d",newPokemon->quantity);//(char); 
+        sprintf(quantity,"%d",newPokemon->quantity);
 
         t_list* lista = levantarBloquesAMemoria(bloques, cantidadBloques);
 

@@ -34,7 +34,7 @@ char* crearBloque(new_pokemon* newPokemon){
             strcpy(quantity,"");
             sprintf(quantity,"%d",newPokemon->quantity);//(char); 
 
-            char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen("\n") + 3); 
+            char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen("\n") + 5); 
             strcpy(writeBinary,"");
             strcat(writeBinary,posX);
             strcat(writeBinary,"-");
@@ -43,7 +43,7 @@ char* crearBloque(new_pokemon* newPokemon){
             strcat(writeBinary,quantity);
             strcat(writeBinary, "\n");
 
-            fwrite(writeBinary, strlen(writeBinary) + 1, 1, binary);
+            fwrite(writeBinary, strlen(writeBinary) + 2, 1, binary);
 
             fclose(binary);
         
@@ -240,7 +240,10 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     strcpy(sizeTotalChar, "");
     sprintf(sizeTotalChar, "%d", sizeTotal);
     log_info(optional_logger, "saliendo de bajar bloques a disco mi size es: %d", sizeTotal);
-
+    for(int i = 0; i<cantidadBloques; i++){
+        free(bloques[i]);
+    }
+    free(bloques);
     return sizeTotalChar; 
 }
 

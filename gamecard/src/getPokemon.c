@@ -48,19 +48,28 @@ void getPokemonTallGrass(threadPokemonMessage* threadGetPokemonMessage){
 
         if( sizeFile != 0){
             abrirMetadata(directorioMetadata, stream);
+            list_destroy(listPosiciones);
             listPosiciones = getPositionsPokemon(directorioMetadata, stream);
             cerrarMetadata(directorioMetadata, stream); 
         }
     }
 
-    localized_pokemon* localizedPokemon = malloc(sizeof(localized_pokemon));
-    localizedPokemon->pokemon = getPokemon->pokemon; 
-    localizedPokemon->sizePokemon = getPokemon->sizePokemon;
-    localizedPokemon->positions = listPosiciones; 
+    if(threadGetPokemonMessage->client_fd != 0){
+        localized_pokemon* localizedPokemon = malloc(sizeof(localized_pokemon));
+        localizedPokemon->pokemon = stream;
+        localizedPokemon->sizePokemon = getPokemon->sizePokemon;
+        localizedPokemon->positions = listPosiciones; 
 
-    send_localized(localizedPokemon, threadGetPokemonMessage->client_fd, threadGetPokemonMessage->id_mensaje);
+        send_localized(localizedPokemon, threadGetPokemonMessage->client_fd, threadGetPokemonMessage->id_mensaje);
+        free(localizedPokemon);
+    }
 
+    list_destroy_and_destroy_elements(listPosiciones, free);
     free(directory);
+    free(stream);
+    free(directorioMetadata);
+    free(threadGetPokemonMessage->pokemon);
+    free(threadGetPokemonMessage);
 }
 
 t_list* getPositionsPokemon(char* metadata, char* pokemon){
@@ -76,6 +85,13 @@ t_list* getPositionsPokemon(char* metadata, char* pokemon){
     t_list* lista = levantarBloquesAMemoria(bloques, cantidadBloques);
     t_list* listPositions = list_map(lista, structALineaSinCantidad);
 
+    for(int i = 0; i<cantidadBloques; i++){
+        free(bloques[i]);
+    }
+
+    list_destroy_and_destroy_elements(lista, free);
+    free(bloques);
+    config_destroy(configMetadataTallGrass);
     return listPositions;
 
 }
@@ -83,22 +99,10 @@ t_list* getPositionsPokemon(char* metadata, char* pokemon){
 void* structALineaSinCantidad(void* posicion){
     positionQuantity* lineaStruct = (positionQuantity*)posicion;
 
-    char* posX = malloc(10);
-    strcpy(posX,"");
-    sprintf(posX,"%d",lineaStruct->posicionX);
+    t_position* posicionAAgregar = malloc(sizeof(t_position));
+    posicionAAgregar->posx = lineaStruct->posicionX;
+    posicionAAgregar->posy = lineaStruct->posicionY;
 
-    char* posY = malloc(10);
-    strcpy(posY,"");
-    sprintf(posY,"%d",lineaStruct->posicionY);
 
-    char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + 3); 
-    strcpy(writeBinary,"");
-    strcat(writeBinary,posX);
-    strcat(writeBinary,"-");
-    strcat(writeBinary,posY);
-
-    free(posX);
-    free(posY);
-
-    return (void*)writeBinary;
+    return (void*)posicionAAgregar;
 }

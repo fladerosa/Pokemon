@@ -66,8 +66,16 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
         caughtPokemon = 0;
     }
 
-    send_caught(caughtPokemon, threadCatchPokemonMessage->client_fd, threadCatchPokemonMessage->id_mensaje);
+    if(threadCatchPokemonMessage->client_fd != 0){
+        send_caught(caughtPokemon, threadCatchPokemonMessage->client_fd, threadCatchPokemonMessage->id_mensaje);
+    }
 
+    free(caughtPokemon);
+    free(stream);
+    free(directory);
+    free(directorioMetadata);
+    free(threadCatchPokemonMessage->pokemon);
+    free(threadCatchPokemonMessage);
 }
 
 void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
@@ -119,7 +127,6 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
                 if(coincidePosicion(posicionEncontradaSacar, posicionEncontrada)){
                     list_remove(lista, i);
                 }
-                //free(posicionEncontradaSacar);
             }
             log_info(optional_logger, "No lo saque de la lista porque le queda");     
         }
@@ -153,6 +160,7 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     free(quantity);
     free(sizeMetadata);
     config_destroy(configMetadataUpdated);
+    config_destroy(configMetadataTallGrass);
     for(int i = 0; i<cantidadBloques; i++){
         free(bloques[i]);
     }
