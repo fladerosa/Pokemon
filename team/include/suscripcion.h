@@ -4,6 +4,7 @@
 #include<commons/collections/list.h>
 #include<commons/string.h>
 #include "common_utils.h"
+#include "common_connections.h"
 #include "inicializacion.h"
 
 typedef struct
