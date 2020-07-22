@@ -37,8 +37,6 @@ bool trainerStateIsExit(void* threadTrainer);
 void writeTeamMetrics();
 void finishTeam();
 
-
-
 //algoritmos de planificacion 
 void executeAlgorithm();
 bool threadTrainerInExec(void* threadTrainerAux);
@@ -53,8 +51,9 @@ bool move_to_objetive(t_trainer* trainerAux, t_position positionTo);
 void interchangePokemon(t_trainer* trainerFrom);
 char* getPokemonNotNeeded(t_trainer* trainerAux);
 char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon);
-bool sendCatch(t_pokemon_on_map* pokemon);
+bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux);
 void catch_succesfull(uint32_t id_trainer);
 int calculatePokemonsOnReady();
+uint32_t team_connect_petition(char *ip, char* puerto);
 
 #endif

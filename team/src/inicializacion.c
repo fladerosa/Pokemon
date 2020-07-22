@@ -15,7 +15,7 @@ void initialize_team() {
     calculate_global_objetives();
     pokemonsOnMap = list_create();
     flagExistsDeadlock = false;
-    //connection_broker_global_suscribe();
+    connection_broker_global_suscribe();
     request = &reception_message_queue_subscription;
     listen_to_gameboy();
     send_get_pokemon_global_team(socket_team, globalObjetive);

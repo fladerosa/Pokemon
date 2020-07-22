@@ -323,7 +323,7 @@ bool move_to_objetive(t_trainer* trainerAux, t_position positionTo){
 			//My goal was a pokemon, then, message catch
 			t_pokemon_on_map* pokemonDestiny = getPokemonByPosition(trainerAux->position);
 			if(pokemonDestiny != NULL){
-				if(!sendCatch(pokemonDestiny)){
+				if(!sendCatch(pokemonDestiny, threadTrainerAux)){
 					catch_succesfull(trainerAux->id_trainer);
 				}
 			}
@@ -391,20 +391,35 @@ char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon){
 	return result;
 }
 
-bool sendCatch(t_pokemon_on_map* pokemon){
-	//TODO
-	/*uint32_t* id_message = malloc(sizeof(uint32_t));
-	catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon));
-	void* stream =catch_pokemon_to_stream(catchPokemonMessage, id_message);
-
- 	send(client_fd, stream, sizeof(pokemon_on_map), MSG_WAITALL);
-	 */
-	bool result = false;
+bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux){
 	log_info(obligatory_logger, "Atrapar pokemon: %s, en posicion: (%d,%d)", pokemon->pokemon, pokemon->position.posx, pokemon->position.posy);
+	uint32_t socketPetition = team_connect_petition(config_values.ip_broker, config_values.puerto_broker);
+	bool result = true;
+	if(socketPetition != -1){
+		threadTrainerAux->state = BLOCKED;
+		threadTrainerAux->contextSwitchCount++;
+		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque espera resultado de catch", threadTrainerAux->idTrainer);
+		
+		uint32_t* id_message = malloc(sizeof(uint32_t));
+		catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon));
+		catchPokemonMessage->sizePokemon = strlen(pokemon->pokemon);
+		catchPokemonMessage->pokemon = malloc(strlen(pokemon->pokemon));
+		strcpy(catchPokemonMessage->pokemon, pokemon->pokemon);
+		catchPokemonMessage->position.posx = pokemon->position.posx;
+		catchPokemonMessage->position.posy = pokemon->position.posy;
+		void* stream = catch_pokemon_to_stream(catchPokemonMessage, id_message);
+		t_paquete* packageToSend = stream_to_package(CATCH_POKEMON, stream, strlen(pokemon->pokemon) + sizeof(uint32_t)*3);
+		int bytes = packageToSend->buffer->size + 2*sizeof(uint32_t);
+		void* a_enviar = (void *) serializar_paquete(packageToSend, bytes);
 
-	if(!result){
+		send(socketPetition, a_enviar, bytes, 0);
+		close(socketPetition);
+		sem_post(&plannerSemaphore);
+	}else{
 		log_info(obligatory_logger, "Falló conexión con broker, se ejecutará función por default de appeared");
+		result = false;
 	}
+
 	return result;
 }
 void catch_succesfull(uint32_t id_trainer){
@@ -451,7 +466,6 @@ void catch_succesfull(uint32_t id_trainer){
 //despues de  setTrainerToExec_FirstCome() obtengo el threadTrainerChosen y el pokemonOnMap
 void execThreadTrainerSetedFCFS(t_threadTrainer* threadTrainerChosen){
 	t_trainer* trainerAux = (t_trainer*)list_get(trainers, threadTrainerChosen->idTrainer-1);
-	uint32_t distanceToMove = calculateDistance(trainerAux->position, threadTrainerChosen->positionTo);
 	t_pokemon_on_map* pokemonOnMap = getPokemonByPosition(threadTrainerChosen->positionTo);
 	bool reachDestiny = false;
 
@@ -460,7 +474,7 @@ void execThreadTrainerSetedFCFS(t_threadTrainer* threadTrainerChosen){
 	}
 	
 	threadTrainerChosen->contextSwitchCount++;
-	for(int i=0; i<=distanceToMove || !reachDestiny; i++){
+	for(int i=0; !reachDestiny; i++){
 		reachDestiny = move_to_objetive(trainerAux, threadTrainerChosen->positionTo);
 	}
 }
@@ -542,4 +556,20 @@ int calculatePokemonsOnReady(){
 	}
 
 	return count;
+}
+
+uint32_t team_connect_petition(char *ip, char* puerto){
+	struct addrinfo hints;
+	struct addrinfo *server_info;
+
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
+
+	getaddrinfo(ip, puerto, &hints, &server_info);
+
+	uint32_t socketfd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
+
+    return connect(socketfd, server_info->ai_addr, server_info->ai_addrlen);
 }
