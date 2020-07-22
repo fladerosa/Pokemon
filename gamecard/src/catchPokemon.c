@@ -18,8 +18,6 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
     memcpy(stream, catchPokemon->pokemon, catchPokemon->sizePokemon); 
     stream[catchPokemon->sizePokemon] = '\0';
 
-    log_info(optional_logger, "stream creado");
-
     strcpy(buffer, "");
     strcat(buffer, filesPath);
     strcat(buffer, "/");
@@ -34,9 +32,6 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
     strcpy(directorioMetadata,"");
     strcat(directorioMetadata,directory);
     strcat(directorioMetadata, metadata);
-    log_info(optional_logger, "metadata creado");
-
-    log_info(optional_logger, "abriendooo");
 
     caught_pokemon* caughtPokemon = malloc(sizeof(caughtPokemon));
 
@@ -53,7 +48,6 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
 
         if(sizeFile != 0){
             intentarAbrirMetadata(directorioMetadata, stream);
-            log_info(optional_logger, "esaaa se pudo abrir");
             sacarDatosYOrdenarBloques(directorioMetadata, catchPokemon);
             cerrarMetadata(directorioMetadata, stream); 
             caughtPokemon->success = 1;
@@ -75,6 +69,8 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
     free(directory);
     free(directorioMetadata);
     free(threadCatchPokemonMessage->pokemon);
+    free(catchPokemon->pokemon);
+    free(threadCatchPokemonMessage->id_mensaje);
     free(threadCatchPokemonMessage);
 }
 
@@ -88,13 +84,9 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     t_config* configMetadataTallGrass = config_create(metadata);
     pthread_mutex_unlock(&metadata_create);
 
-    log_info(optional_logger, "abri el metadata catch");
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
     int size = config_get_int_value(configMetadataTallGrass, "SIZE");
     int cantidadBloques = ceil((float)size / configM.blockSize);
-
-    log_info(optional_logger, "te leo el size antes de hacer algo %d", size);
-    log_info(optional_logger, "lei metadata catch");
 
     char* posX = malloc(10);
     strcpy(posX,"");
@@ -109,7 +101,6 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     sprintf(quantity,"%d",1);
 
     t_list* lista = levantarBloquesAMemoria(bloques, cantidadBloques);
-    log_info(optional_logger, "obtuve la lista");
 
     positionQuantity* posicionPokemonSacar = malloc(sizeof(positionQuantity));
     posicionPokemonSacar->posicionX = atoi(posX); 
@@ -118,17 +109,16 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
 
     positionQuantity* posicionEncontrada = list_find_with_args(lista, coincidePosicion, (void*)posicionPokemonSacar);
 
-    log_info(optional_logger, "encontre el pokemon a sacar");
     if(posicionEncontrada != NULL){
         posicionEncontrada->cantidad = posicionEncontrada->cantidad - posicionPokemonSacar->cantidad;
         if(posicionEncontrada->cantidad == 0){
             for(int i = 0; i < lista->elements_count; i++){
                 positionQuantity* posicionEncontradaSacar = list_get(lista,i); 
                 if(coincidePosicion(posicionEncontradaSacar, posicionEncontrada)){
-                    list_remove(lista, i);
+                    void* elem = list_remove(lista, i);
+                    free(elem);
                 }
-            }
-            log_info(optional_logger, "No lo saque de la lista porque le queda");     
+            }  
         }
         
     }else{
@@ -161,10 +151,10 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     free(sizeMetadata);
     config_destroy(configMetadataUpdated);
     config_destroy(configMetadataTallGrass);
-    for(int i = 0; i<cantidadBloques; i++){
-        free(bloques[i]);
-    }
-    free(bloques);
+    //for(int i = 0; i<cantidadBloques; i++){
+        //free(bloques[i]);
+    //}
+    //free(bloques);
     free(stream);
 }
 
@@ -180,16 +170,12 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     char* lineaBorrada = structALinea(posicionPokemonSacar);
     int sizeBloqueBorrado = strlen(lineaBorrada);
 
-    log_info(optional_logger, "el size del metadata ahora es: %d", size);
-
     size -= sizeBloqueBorrado; 
 
-    log_info(optional_logger, "el size actualizado es: %d", size);
     if(size == 1){ //Porque el EOF es 1 byte
         size--;
     }
 
-    log_info(optional_logger, "mi cantidad de bloques es: %d", cantidadBloques);
     if(cantidadBloques > 0){
         uint32_t bloque = atoi(bloques[cantidadBloques - 1]);
         bool testBit = bitarray_test_bit(bitmap, bloque - 1);
@@ -198,7 +184,6 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
         }
     }
 
-    log_info(optional_logger, "la segunda actualizacion del size: %d", size);
     int cantidadBloquesUpdated = ceil((float)size / configM.blockSize);
 
     char* bloquesConfig = malloc(sizeof(char)*3*(cantidadBloquesUpdated + 1) + 1);
@@ -234,4 +219,5 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     }
     free(bloques);
     free(sizeChar);
+    free(lineaBorrada);
 }

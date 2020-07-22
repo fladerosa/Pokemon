@@ -24,15 +24,15 @@ char* crearBloque(new_pokemon* newPokemon){
 
             char* posX = malloc(10);
             strcpy(posX,"");
-            sprintf(posX,"%d",newPokemon->position.posx);//(char); 
+            sprintf(posX,"%d",newPokemon->position.posx);
 
             char* posY = malloc(10);
             strcpy(posY,"");
-            sprintf(posY,"%d",newPokemon->position.posy);//(char); 
+            sprintf(posY,"%d",newPokemon->position.posy);
 
             char* quantity = malloc(10);
             strcpy(quantity,"");
-            sprintf(quantity,"%d",newPokemon->quantity);//(char); 
+            sprintf(quantity,"%d",newPokemon->quantity); 
 
             char* writeBinary = malloc(strlen(posX) + strlen("-") + strlen(posY) + strlen("=") + strlen("\n") + 5); 
             strcpy(writeBinary,"");
@@ -173,7 +173,6 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     int j=0;
     char* extension = ".bin";
 
-    log_info(optional_logger, "bajando bloques a disco mi size es: %d", sizeTotal);
     for(int i = 0; i<cantidadBloques; i++){
         char* direccionBinario = malloc(strlen(blocksPath) + strlen(bloques[i]) + strlen(extension) + 2);
 
@@ -200,7 +199,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
 
         if(sizeTotal > sizeArchivo && sizeArchivo >= configM.blockSize && bloques[i] == bloques[cantidadBloques - 1]){
             new_pokemon* newPokemon = malloc(sizeof(new_pokemon));
-            newPokemon->sizePokemon = strlen(nombrePokemon) + 3; 
+            newPokemon->sizePokemon = strlen(nombrePokemon) + 2; 
             newPokemon->pokemon = nombrePokemon;
             newPokemon->position.posx = posx;
             newPokemon->position.posy = posy; 
@@ -239,7 +238,6 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     char* sizeTotalChar = malloc(20);
     strcpy(sizeTotalChar, "");
     sprintf(sizeTotalChar, "%d", sizeTotal);
-    log_info(optional_logger, "saliendo de bajar bloques a disco mi size es: %d", sizeTotal);
     for(int i = 0; i<cantidadBloques; i++){
         free(bloques[i]);
     }
@@ -393,7 +391,7 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
 }
 
 void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
-    char* stream = malloc(newPokemon->sizePokemon + 1);
+    char* stream = malloc(newPokemon->sizePokemon);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
     stream[newPokemon->sizePokemon] = '\0';
 

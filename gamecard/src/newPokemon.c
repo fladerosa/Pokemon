@@ -61,6 +61,8 @@ void newPokemonTallGrass(threadPokemonMessage* threadPokemonMessage){
     free(id_message);
     free(stream);
     free(threadPokemonMessage->pokemon);
+    free(newPokemon->pokemon);
+    free(threadPokemonMessage->id_mensaje);
     free(threadPokemonMessage);
 }
 
@@ -94,21 +96,16 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
 
     
     if(cantidadBloques == 0){
-        log_info(optional_logger, "creando mi primer bloque");
         char* block = crearBloque(newPokemon);
         addBlockMetadata(directorioMetadata, block, newPokemon);
-        
         free(block);
-        log_info(optional_logger, "ya sali de crear mi primer bloque");
     }else{
         agregarDatosYOrdenarBloques(directorioMetadata, newPokemon);
     }
     
     cerrarMetadata(directorioMetadata, stream);
-    log_info(optional_logger, "se cerro el metadata todo ok");
     free(stream);
     free(directorioMetadata);
-    log_info(optional_logger, "free crear metadata ok");
 }
 
 
@@ -155,11 +152,14 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     fseek(file,0,SEEK_SET);
 
     if(sizeFile >= configM.blockSize){
-        log_info(optional_logger, "agregar datos y bloque");
         char* block = crearBloque(newPokemon);
         addBlockMetadata(metadata, block, newPokemon);
         
         free(block);
+        for(int i = 0; i<cantidadBloques; i++){
+            free(bloques[i]);
+        }
+        free(bloques);
     }else{
 
         char* posX = malloc(10);
@@ -213,9 +213,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
     fclose(file);
     free(bloque);
     //free(bloques);
-    for(int i = 0; i<cantidadBloques; i++){
-        free(bloques[i]);
-    }
-    free(bloques);
+    
+    //free(bloques);
     free(stream);
 }

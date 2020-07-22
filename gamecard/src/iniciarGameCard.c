@@ -84,15 +84,17 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
 
             suscribirseA(thread->idCola, client_fd);
 
+            free(id_message);
             log_info(optional_logger, "Connection!"); 
             log_info(optional_logger, "This is the id connection: %d", connectionMessage->id_connection);
             log_info(optional_logger, "Subscribing to queues %d, %d and & %d", NEW_POKEMON, CATCH_POKEMON, GET_POKEMON);
             break;
-        
+        default:;
+            free(id_message);
     }
 
     free(stream);
-    free(id_message);
+    //free(id_message);
 }
 
 void iniciarMutex(){
