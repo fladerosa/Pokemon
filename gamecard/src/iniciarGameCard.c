@@ -9,7 +9,7 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
     switch(cod_op){
         case NEW_POKEMON:;
             new_pokemon* newPokemonMessage = stream_to_new_pokemon(stream,id_message,false); 
-            log_info(optional_logger, "New pokemon!");
+            log_info(obligatory_logger, "Recibi NEW POKEMON");
             
             send_ack(client_fd, *id_message);
 
@@ -31,8 +31,8 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             
             break;
         case CATCH_POKEMON:;
+            log_info(obligatory_logger, "Recibi CATCH POKEMON");
             catch_pokemon* catchPokemonMessage = stream_to_catch_pokemon(stream,id_message,false);
-            log_info(optional_logger, "Catch pokemon!");
 
             send_ack(client_fd, *id_message);
             
@@ -54,8 +54,8 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             
             break;
         case GET_POKEMON:;
+            log_info(obligatory_logger, "Recibi GET POKEMON");
             get_pokemon* getPokemonMessage = stream_to_get_pokemon(stream,id_message,false);
-            log_info(optional_logger, "Get pokemon!"); 
 
             send_ack(client_fd, *id_message);
             //TODO SEND LOCALIZED
@@ -85,9 +85,6 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             suscribirseA(thread->idCola, client_fd);
 
             free(id_message);
-            log_info(optional_logger, "Connection!"); 
-            log_info(optional_logger, "This is the id connection: %d", connectionMessage->id_connection);
-            log_info(optional_logger, "Subscribing to queues %d, %d and & %d", NEW_POKEMON, CATCH_POKEMON, GET_POKEMON);
             break;
         default:;
             free(id_message);
@@ -138,7 +135,7 @@ void iniciarGameCard(){
 
     config = config_create("./cfg/gamecard.config");
     uint32_t showConsole = config_get_int_value(config,"LOG_SHOW");
-    obligatory_logger = log_create("./cfg/obligatory.log", "obligatory", showConsole, LOG_LEVEL_INFO); 
+    obligatory_logger = log_create("./cfg/obligatory.log", "obligatory", true, LOG_LEVEL_INFO); 
     optional_logger = log_create("./cfg/optional.log", "optional", showConsole, LOG_LEVEL_INFO);
     char* IP_GAMECARD = config_get_string_value(config,"IP_GAMECARD");
     char* PUERTO_GAMECARD = config_get_string_value(config,"PUERTO_GAMECARD");

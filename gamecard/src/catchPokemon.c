@@ -52,12 +52,13 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
             cerrarMetadata(directorioMetadata, stream); 
             caughtPokemon->success = 1;
         }else{
-            log_info(obligatory_logger, "ERROR: no existe ese pokemon");
+            log_error(obligatory_logger, "No existen posiciones para ese pokemon");
             caughtPokemon = 0;
             //hacer fail
         }
     }else{
         caughtPokemon = 0;
+        log_error(obligatory_logger, "No existe el pokemon.");
     }
 
     if(threadCatchPokemonMessage->client_fd != 0){
@@ -199,7 +200,7 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     
     
     //[[29][31]] bloques[1]
-    imprimirBITARRAY(bitmap);
+   // imprimirBITARRAY(bitmap);
     char* sizeChar = malloc(sizeof(uint32_t));
     strcpy(sizeChar, "");
     sprintf(sizeChar, "%d", size);
@@ -210,6 +211,10 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     pthread_mutex_lock(&metadata_create);
     config_save(configMetadataTallGrass);
     pthread_mutex_unlock(&metadata_create);
+    log_info(obligatory_logger, "Se ha liberado un bloque de un pokemon.");
+    if(size == 0){
+        log_info(obligatory_logger, "Un pokemon fue eliminado logicamente.");
+    }
 
     config_destroy(configMetadataTallGrass);
 

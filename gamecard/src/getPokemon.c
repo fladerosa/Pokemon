@@ -50,6 +50,8 @@ void getPokemonTallGrass(threadPokemonMessage* threadGetPokemonMessage){
             listPosiciones = getPositionsPokemon(directorioMetadata, stream);
             cerrarMetadata(directorioMetadata, stream); 
         }
+    } else {
+        log_error(obligatory_logger, "No existe el pokemon.");
     }
 
     if(threadGetPokemonMessage->client_fd != 0){

@@ -89,6 +89,7 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
 
     if(sizeFile == 0){
         configMetadataCreate(directorioMetadata);
+        log_info(obligatory_logger,"Se ha creado un pokemon");
     }
 
     intentarAbrirMetadata(directorioMetadata, stream);

@@ -382,6 +382,7 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
 
     while(strcmp(valorOpen, "Y") == 0){
         desbloquearMetadata(pokemon);
+        log_error(obligatory_logger, "Un proceso intento abrir un archivo que esta abierto (Reintentando en %d segundos)", tiempoReintento);
         sleep(tiempoReintento);
         
         config_destroy(configMetadataTallGrass);
@@ -455,7 +456,7 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     pthread_mutex_lock(&metadata_create);
     config_save(configMetadataTallGrass);
     pthread_mutex_unlock(&metadata_create);
-
+    log_info(obligatory_logger, "Se ha agregado un nuevo bloque al pokemon");
     config_destroy(configMetadataTallGrass);
     
     free(stream);
