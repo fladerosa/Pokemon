@@ -319,25 +319,33 @@ void abrirMetadata(char* metadata, char* pokemon){
 
     bloquearMetadata(pokemon);
 
+    pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
-
+    pthread_mutex_unlock(&metadata_create);
+    
     config_set_value(configMetadataTallGrass, "OPEN", "Y");
 
+    pthread_mutex_lock(&metadata_create);
     config_save(configMetadataTallGrass);
+    pthread_mutex_unlock(&metadata_create);
 
     config_destroy(configMetadataTallGrass);
 }
 
 void cerrarMetadata(char* metadata, char* pokemon){
 
+    pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
+    pthread_mutex_unlock(&metadata_create);
 
     int time = config_get_int_value(config, "TIEMPO_RETARDO_OPERACION");
     sleep(time);
 
     config_set_value(configMetadataTallGrass, "OPEN", "N");
 
+    pthread_mutex_lock(&metadata_create);
     config_save(configMetadataTallGrass);
+    pthread_mutex_unlock(&metadata_create);
 
     desbloquearMetadata(pokemon);
     config_destroy(configMetadataTallGrass);
@@ -345,7 +353,9 @@ void cerrarMetadata(char* metadata, char* pokemon){
 
 void intentarAbrirMetadata(char* metadata, char* pokemon){
     bloquearMetadata(pokemon);
+    pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
+    pthread_mutex_unlock(&metadata_create);
     desbloquearMetadata(pokemon);
 
     char* valorOpen = malloc(sizeof(char)*5 + 1);
