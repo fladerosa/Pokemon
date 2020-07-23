@@ -173,6 +173,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     int j=0;
     char* extension = ".bin";
 
+    log_info(optional_logger, "bajando bloques a disco mi size es: %d", sizeTotal);
     for(int i = 0; i<cantidadBloques; i++){
         char* direccionBinario = malloc(strlen(blocksPath) + strlen(bloques[i]) + strlen(extension) + 2);
 
@@ -238,6 +239,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     char* sizeTotalChar = malloc(20);
     strcpy(sizeTotalChar, "");
     sprintf(sizeTotalChar, "%d", sizeTotal);
+    log_info(optional_logger, "saliendo de bajar bloques a disco mi size es: %d", sizeTotal);
     for(int i = 0; i<cantidadBloques; i++){
         free(bloques[i]);
     }

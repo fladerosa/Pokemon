@@ -16,6 +16,8 @@ void getPokemonTallGrass(threadPokemonMessage* threadGetPokemonMessage){
     memcpy(stream, getPokemon->pokemon, getPokemon->sizePokemon); 
     stream[getPokemon->sizePokemon] = '\0';
 
+    log_info(optional_logger, "stream creado");
+
     strcpy(buffer, "");
     strcat(buffer, filesPath);
     strcat(buffer, "/");
