@@ -58,6 +58,7 @@ void receiveMessage(uint32_t cod_op, uint32_t sizeofstruct, uint32_t client_fd) 
             log_info(optional_logger, "Get pokemon!"); 
 
             send_ack(client_fd, *id_message);
+            //TODO SEND LOCALIZED
 
             threadPokemonMessage* threadGetPokemonMessage = malloc(sizeof(threadPokemonMessage));
             threadGetPokemonMessage->pokemon = getPokemonMessage;
