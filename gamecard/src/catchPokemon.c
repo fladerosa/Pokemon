@@ -30,7 +30,7 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
         flock(fileno(file), LOCK_EX);
     
         fseek(file, 0, SEEK_END);
-        int sizeFile = ftell(file);
+        uint32_t sizeFile = ftell(file);
         fseek(file, 0, SEEK_SET);
     
         flock(fileno(file), LOCK_UN);
@@ -75,8 +75,8 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     pthread_mutex_unlock(&metadata_create);
 
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
-    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil((float)size / configM.blockSize);
+    uint32_t size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    uint32_t cantidadBloques = ceil((float)size / configM.blockSize);
 
     char* posX = malloc(10);
     strcpy(posX,"");
@@ -102,7 +102,7 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     if(posicionEncontrada != NULL){
         posicionEncontrada->cantidad = posicionEncontrada->cantidad - posicionPokemonSacar->cantidad;
         if(posicionEncontrada->cantidad == 0){
-            for(int i = 0; i < lista->elements_count; i++){
+            for(uint32_t i = 0; i < lista->elements_count; i++){
                 positionQuantity* posicionEncontradaSacar = list_get(lista,i); 
                 if(coincidePosicion(posicionEncontradaSacar, posicionEncontrada)){
                     void* elem = list_remove(lista, i);
@@ -114,7 +114,7 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
 
     char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, catchPokemon->pokemon, catchPokemon->position.posx, catchPokemon->position.posy, 1, metadata);
 
-    int cantidadBloquesUpdated = ceil((float) atoi(sizeMetadata)/configM.blockSize);
+    uint32_t cantidadBloquesUpdated = ceil((float) atoi(sizeMetadata)/configM.blockSize);
 
     if(cantidadBloquesUpdated < cantidadBloques){
         removeLastBlock(metadata, catchPokemon, posicionPokemonSacar);
@@ -138,10 +138,6 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     free(sizeMetadata);
     config_destroy(configMetadataUpdated);
     config_destroy(configMetadataTallGrass);
-    //for(int i = 0; i<cantidadBloques; i++){
-        //free(bloques[i]);
-    //}
-    //free(bloques);
     free(stream);
 }
 
@@ -150,12 +146,12 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     t_config* configMetadataTallGrass = config_create(metadata);
     pthread_mutex_unlock(&metadata_create);
 
-    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil((float)size / configM.blockSize);
+    uint32_t size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    uint32_t cantidadBloques = ceil((float)size / configM.blockSize);
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
 
     char* lineaBorrada = structALinea(posicionPokemonSacar);
-    int sizeBloqueBorrado = strlen(lineaBorrada);
+    uint32_t sizeBloqueBorrado = strlen(lineaBorrada);
 
     size -= sizeBloqueBorrado; 
 
@@ -171,12 +167,12 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
         }
     }
 
-    int cantidadBloquesUpdated = ceil((float)size / configM.blockSize);
+    uint32_t cantidadBloquesUpdated = ceil((float)size / configM.blockSize);
 
     char* bloquesConfig = malloc(sizeof(char)*3*(cantidadBloquesUpdated + 1) + 1);
     strcpy(bloquesConfig,"");
     strcat(bloquesConfig,"[");
-    for(int i = 0; i < cantidadBloquesUpdated; i++){ 
+    for(uint32_t i = 0; i < cantidadBloquesUpdated; i++){ 
         strcat(bloquesConfig,bloques[i]);
         if(i < cantidadBloquesUpdated - 1){
             strcat(bloquesConfig,",");
@@ -195,10 +191,16 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     config_save(configMetadataTallGrass);
     pthread_mutex_unlock(&metadata_create);
 
+    log_info(obligatory_logger, "Se ha liberado un bloque del pokemon");
+
+    if(size == 0){ 
+        log_info(obligatory_logger, "El pokemon fue eliminado");
+    }
+
     config_destroy(configMetadataTallGrass);
 
     free(bloquesConfig);
-    for(int i = 0; i<cantidadBloques; i++){
+    for(uint32_t i = 0; i<cantidadBloques; i++){
         free(bloques[i]);
     }
     free(bloques);

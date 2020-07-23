@@ -4,8 +4,8 @@ char* crearBloque(new_pokemon* newPokemon){
     char* extension = ".bin";
     pthread_mutex_lock(&mutexBitmap);
     size_t sizeBitmap = bitarray_get_max_bit(bitmap);
-    int bin = 1;  
-    while(bin <= (int)sizeBitmap + 1){
+    uint32_t bin = 1;  
+    while(bin <= (uint32_t)sizeBitmap + 1){
         
         bool testBit = bitarray_test_bit(bitmap, bin - 1);
         if(testBit == 0){
@@ -64,24 +64,24 @@ char* crearBloque(new_pokemon* newPokemon){
     return NULL;
 }
 
-int metadataBlocks(char* metadata, char* pokemon){
+uint32_t metadataBlocks(char* metadata, char* pokemon){
     
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
     
 
-    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil((float)size / configM.blockSize);
+    uint32_t size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    uint32_t cantidadBloques = ceil((float)size / configM.blockSize);
 
     config_destroy(configMetadataTallGrass);
     pthread_mutex_unlock(&metadata_create);
     return cantidadBloques;
 }
 
-t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
+t_list* levantarBloquesAMemoria(char** bloques, uint32_t cantidadBloques){
     char* extension = ".bin";
     t_list* listaPosiciones = list_create();
-    int caracterActual = 0; 
+    uint32_t caracterActual = 0; 
     char buffer[10];
     memset(buffer,'\0',10);
     positionQuantity* lineaBloque = malloc(sizeof(positionQuantity));
@@ -89,7 +89,7 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
     bool posy = false;
     bool cant = false;
         
-    for(int i = 0; i<cantidadBloques; i++){
+    for(uint32_t i = 0; i<cantidadBloques; i++){
         char* direccionBinario = malloc(strlen(blocksPath) + strlen(bloques[i]) + strlen(extension) + 2);
 
         strcpy(direccionBinario,"");
@@ -100,7 +100,7 @@ t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques){
 
         FILE* fileBloque = fopen(direccionBinario, "rb");
 
-        int c; 
+        uint32_t c; 
         
         while((c=fgetc(fileBloque)) != EOF){
             char position = (char) c; 
@@ -165,14 +165,14 @@ bool coincidePosicion(void* elem, void* args){
     return false; 
 }
 
-char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, char* nombrePokemon, uint32_t posx, uint32_t posy, uint32_t quantity, char* metadata){
+char* bajarBloquesADisco(t_list* lista, char** bloques, uint32_t cantidadBloques, char* nombrePokemon, uint32_t posx, uint32_t posy, uint32_t quantity, char* metadata){
     t_list* writeListBinary = list_map(lista, structALinea);
     char* listaConcatenada = concatenarStrings(writeListBinary);
     uint32_t sizeTotal = strlen(listaConcatenada);  
-    int j=0;
+    uint32_t j=0;
     char* extension = ".bin";
 
-    for(int i = 0; i<cantidadBloques; i++){
+    for(uint32_t i = 0; i<cantidadBloques; i++){
         char* direccionBinario = malloc(strlen(blocksPath) + strlen(bloques[i]) + strlen(extension) + 2);
 
         strcpy(direccionBinario,"");
@@ -183,7 +183,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
 
         FILE* fileBloque = fopen(direccionBinario, "wb");
 
-        int sizeArchivo = 0; 
+        uint32_t sizeArchivo = 0; 
 
         while(sizeArchivo < configM.blockSize){
             if(strlen(listaConcatenada) < j){
@@ -235,7 +235,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     char* sizeTotalChar = malloc(20);
     strcpy(sizeTotalChar, "");
     sprintf(sizeTotalChar, "%d", sizeTotal);
-    for(int i = 0; i<cantidadBloques; i++){
+    for(uint32_t i = 0; i<cantidadBloques; i++){
         free(bloques[i]);
     }
     free(bloques);
@@ -275,14 +275,14 @@ void* structALinea(void* posicion){
 
 char* concatenarStrings(t_list* lista){
     uint32_t tamano = 0;
-    for(int i = 0; i<list_size(lista); i++){
+    for(uint32_t i = 0; i<list_size(lista); i++){
         tamano += strlen(list_get(lista, i));
     }
     tamano++;
     char* concatenacion = malloc(tamano);
     strcpy(concatenacion,"");
 
-    for(int i = 0; i<list_size(lista); i++){
+    for(uint32_t i = 0; i<list_size(lista); i++){
         strcat(concatenacion, (char*)list_get(lista,i));
     }
 
@@ -332,7 +332,7 @@ void cerrarMetadata(char* metadata, char* pokemon){
 
     t_config* configMetadataTallGrass = config_create(metadata);
 
-    int time = config_get_int_value(config, "TIEMPO_RETARDO_OPERACION");
+    uint32_t time = config_get_int_value(config, "TIEMPO_RETARDO_OPERACION");
     sleep(time);
 
     config_set_value(configMetadataTallGrass, "OPEN", "N");
@@ -356,7 +356,7 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
     uint32_t tiempoReintento = config_get_int_value(config, "TIEMPO_DE_REINTENTO_OPERACION");
 
     while(strcmp(valorOpen, "Y") == 0){
-        log_error(obligatory_logger, "Dos procesos intentaron abrir el mismo archivo simultaneamente (Reintentando en %d segundos)", tiempoReintento);
+        log_info(obligatory_logger, "Un proceso intento abrir un archivo que estaba abierto (Reintentando en %d segundos)", tiempoReintento);
         sleep(tiempoReintento);
         config_destroy(configMetadataTallGrass);
 
@@ -376,20 +376,22 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     char* stream = malloc(newPokemon->sizePokemon);
     memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
     stream[newPokemon->sizePokemon] = '\0';
+    //log_info(optional_logger, "hice stream mi size es %d", newPokemon->sizePokemon);
 
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
     pthread_mutex_unlock(&metadata_create);
     
-    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil((float)size / configM.blockSize);
+    uint32_t size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    uint32_t cantidadBloques = ceil((float)size / configM.blockSize);
     
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
 
     char* bloquesConfig = malloc(sizeof(char)*3*(cantidadBloques + 1) + 1);
+    log_info(optional_logger, "bloques configgg");
     strcpy(bloquesConfig,"");
     strcat(bloquesConfig,"[");
-    for(int i = 0; i < cantidadBloques; i++){
+    for(uint32_t i = 0; i < cantidadBloques; i++){
         strcat(bloquesConfig,bloques[i]);
         strcat(bloquesConfig,",");
     }
@@ -399,6 +401,7 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     char* extension = ".bin";
 
     char* bloque = malloc(strlen(blocksPath) + strlen(block) + strlen(extension) + 2);
+    log_info(optional_logger, "mi bloquecito");
     strcpy(bloque,"");
     strcat(bloque, blocksPath);
     strcat(bloque, "/"); 
@@ -408,11 +411,8 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     FILE* file = fopen(bloque,"rb");
 
     fseek(file, 0, SEEK_END);
-    int sizeFile = ftell(file);
+    uint32_t sizeFile = ftell(file);
     fseek(file, 0, SEEK_SET);
-    /*if(feof(file)){ //ver que no rompa todo
-        sizeFile--;
-    }*/
 
     fclose(file);
 
@@ -422,6 +422,7 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     char* sizeChar = malloc(sizeof(uint32_t));
     strcpy(sizeChar, "");
     sprintf(sizeChar, "%d", size);
+    log_info(optional_logger, "mi sizee");
 
     config_set_value(configMetadataTallGrass, "SIZE", sizeChar);
     config_set_value(configMetadataTallGrass,"BLOCKS", bloquesConfig);
@@ -430,12 +431,14 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     config_save(configMetadataTallGrass);
     pthread_mutex_unlock(&metadata_create);
 
+    log_info(obligatory_logger, "Se ha agregado un nuevo bloque al pokemon");
+
     config_destroy(configMetadataTallGrass);
     
     free(stream);
     free(bloque);
     free(bloquesConfig);
-    for(int i = 0; i<cantidadBloques; i++){
+    for(uint32_t i = 0; i<cantidadBloques; i++){
         free(bloques[i]);
     }
     free(bloques);

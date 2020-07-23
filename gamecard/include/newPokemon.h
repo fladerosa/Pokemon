@@ -8,6 +8,8 @@
 
 pthread_mutex_t createBlock; 
 
+pthread_mutex_t sendResponseNew; 
+
 void newPokemonTallGrass(threadPokemonMessage* threadPokemonMessage);
 void createMetadataPokemon(char* directory, new_pokemon* newPokemon);
 void configMetadataCreate(char* metadata);

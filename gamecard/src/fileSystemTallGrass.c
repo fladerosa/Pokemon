@@ -28,8 +28,6 @@ void crearArchivoBitmap(){
 	FILE *fp;
 	t_bitarray* arrayCreador = bitarray_create_with_mode(bitsVacios,bytes,0);
 
-	printf("\n");
-
 	fp=fopen(bitmapPath,"w");
 	fwrite(arrayCreador->bitarray,1,bytes,fp);
 	fclose(fp);
@@ -62,13 +60,15 @@ void crearBitMap(){
 	int fd = open(bitmapPath, O_RDWR , (mode_t)0600);
 	struct stat mystat;
 	if(fstat(fd,&mystat)<0){
-		printf("Error al establecer fstat\n");
+		//printf("Error al establecer fstat\n");
+		log_error(obligatory_logger, "No se pudo crear bitmap");
 		close (fd);
 	}
 
 	archivoBitmap=(char*) mmap(0,mystat.st_size, PROT_READ|PROT_WRITE, MAP_SHARED ,fd,0);
 	if(archivoBitmap==MAP_FAILED){
-		printf("ERROR AL MAPEAR A MEMORIA");
+		//printf("ERROR AL MAPEAR A MEMORIA");
+		log_error(obligatory_logger, "Error al mapear a memoria");
 		close(fd);
 
 	}
@@ -77,7 +77,7 @@ void crearBitMap(){
 
 	msync(archivoBitmap,bytes,MS_SYNC);
 
-    imprimirBITARRAY(bitmap);
+    //imprimirBITARRAY(bitmap);
 
 	close(fd);
 }
@@ -109,20 +109,14 @@ int hayBitmap(){
 }
 
 void crearPuntoDeMontaje(){
-	int puntoMontajeCreated = mkdir(PUNTO_MONTAJE, ACCESSPERMS);
-	/* if(puntoMontajeCreated != -1){
-		log_info(optional_logger, "Se creo el punto de montaje"); 
-	}*/
+	mkdir(PUNTO_MONTAJE, ACCESSPERMS);
 
 	filesPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Files") + 1); 
 	strcpy(filesPath,""); 
 	strcat(filesPath, PUNTO_MONTAJE);
 	strcat(filesPath, "/Files");
 
-	int filesCreated = mkdir(filesPath, ACCESSPERMS);
-	/* if(filesCreated != -1){
-		log_info(optional_logger, "Se creo el files"); 
-	}*/
+	mkdir(filesPath, ACCESSPERMS);
 
 	metadataFiles();
 
@@ -131,20 +125,14 @@ void crearPuntoDeMontaje(){
 	strcat(blocksPath, PUNTO_MONTAJE);
 	strcat(blocksPath, "/Blocks");
 
-	int blocksCreated = mkdir(blocksPath, ACCESSPERMS);
-	/*if(blocksCreated != -1){
-		log_info(optional_logger, "Se creo el blocks"); 
-	}*/
+	mkdir(blocksPath, ACCESSPERMS);
 
 	metadataPath = malloc(strlen(PUNTO_MONTAJE) + strlen("/Metadata") + 1); 
 	strcpy(metadataPath,""); 
 	strcat(metadataPath, PUNTO_MONTAJE);
 	strcat(metadataPath, "/Metadata");
 
-	int metadataCreated = mkdir(metadataPath, ACCESSPERMS);
-	/* if(metadataCreated != -1){
-		log_info(optional_logger, "Se creo el metadata"); 
-	}*/
+	mkdir(metadataPath, ACCESSPERMS);
 
 	metadataMetadata();
 
@@ -185,10 +173,10 @@ void iniciarTallGrass(){
     obtenerConfig();
     
     if(!hayBitmap()){
-        printf("\nCreando Bitmap...\n");
         crearArchivoBitmap();
-        printf("Bitmap Creado con exito.\n");
     }
 
     crearBitMap();
+
+	log_info(obligatory_logger, "Filesystem se ha iniciado correctamente");
 }

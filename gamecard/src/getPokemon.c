@@ -29,7 +29,7 @@ void getPokemonTallGrass(threadPokemonMessage* threadGetPokemonMessage){
         flock(fileno(file), LOCK_EX);
     
         fseek(file, 0, SEEK_END);
-        int sizeFile = ftell(file);
+        uint32_t sizeFile = ftell(file);
         fseek(file, 0, SEEK_SET);
     
         flock(fileno(file), LOCK_UN);
@@ -70,13 +70,13 @@ t_list* getPositionsPokemon(char* metadata, char* pokemon){
     pthread_mutex_unlock(&metadata_create);
 
     char** bloques = config_get_array_value(configMetadataTallGrass,"BLOCKS");
-    int size = config_get_int_value(configMetadataTallGrass, "SIZE");
-    int cantidadBloques = ceil((float)size / configM.blockSize);
+    uint32_t size = config_get_int_value(configMetadataTallGrass, "SIZE");
+    uint32_t cantidadBloques = ceil((float)size / configM.blockSize);
 
     t_list* lista = levantarBloquesAMemoria(bloques, cantidadBloques);
     t_list* listPositions = list_map(lista, structALineaSinCantidad);
 
-    for(int i = 0; i<cantidadBloques; i++){
+    for(uint32_t i = 0; i<cantidadBloques; i++){
         free(bloques[i]);
     }
 

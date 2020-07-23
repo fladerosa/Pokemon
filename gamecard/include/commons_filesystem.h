@@ -38,12 +38,12 @@ pthread_mutex_t mutexBitmap;
 pthread_mutex_t metadata_create; 
 
 char* crearBloque(new_pokemon* newPokemon);
-int metadataBlocks(char* metadata, char* pokemon);
-t_list* levantarBloquesAMemoria(char** bloques, int cantidadBloques);
+uint32_t metadataBlocks(char* metadata, char* pokemon);
+t_list* levantarBloquesAMemoria(char** bloques, uint32_t cantidadBloques);
 bool coincidePosicion(void* elem, void* args);
 void* structALinea(void* posicion);
 char* concatenarStrings(t_list* lista);
-char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, char* nombrePokemon, uint32_t posx, uint32_t posy, uint32_t quantity, char* metadata);
+char* bajarBloquesADisco(t_list* lista, char** bloques, uint32_t cantidadBloques, char* nombrePokemon, uint32_t posx, uint32_t posy, uint32_t quantity, char* metadata);
 bool esPokemon(void* elem, void* args);
 void bloquearMetadata(char* pokemon);
 void desbloquearMetadata(char* pokemon);

@@ -97,15 +97,15 @@ void serve_client(void* processor){
 	while(1){
         if(recv(socket,(void*) &cod_op, sizeof(uint32_t), MSG_WAITALL)<=0) break;
         if( cod_op >= 1 && cod_op <= SIZEOP ){
-            log_info(optional_logger, "Received %s by socket: %d", operation_names[cod_op-1], socket);
+            log_info(optional_logger, "Recibi %s del socket: %d", operation_names[cod_op-1], socket);
         } else {
-            log_info(optional_logger, "Received %d by socket: %d", cod_op, socket);
+            log_info(optional_logger, "Recibi %d del socket: %d", cod_op, socket);
         }
         if(recv(socket,(void*) &size, sizeof(uint32_t), MSG_WAITALL)<=0) break;
         //log_info(optional_logger, "Size of stream: %d", size);
         request_receiver(cod_op, size, socket);
     }
-    log_info(optional_logger, "Socket %d has disconnected", socket);
+    log_info(optional_logger, "El socket %d se ha desconectado", socket);
     if (connections != NULL){ //turrada para broker, no dar bola
         pthread_mutex_lock(&m_connections);
         t_connection* conn = list_find_with_args(connections, has_socket_fd, (void*) socket);
@@ -175,13 +175,13 @@ uint32_t crear_conexion(char *ip, char* puerto){
 	uint32_t socketfd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 
     while(connect(socketfd, server_info->ai_addr, server_info->ai_addrlen) == -1){
-        log_info(optional_logger, "Could not connect to server on %s:%s.", ip, puerto);
+        log_info(obligatory_logger, "No se pudo conectar con el servidor en %s:%s.", ip, puerto);
         uint32_t timeConfig = config_get_int_value(config,"CONNECTION_TIME");
-        log_info(optional_logger, "Trying to connect again in: %d", timeConfig);
+        log_info(obligatory_logger, "Reintentando conectar en %d segundos", timeConfig);
         sleep(timeConfig);
     }
 
-	log_info(optional_logger, "Connected successfully with %s:%s.", ip, puerto);
+	//log_info(optional_logger, "Connected successfully with %s:%s.", ip, puerto);
 	log_info(obligatory_logger, "Conectado con exito con el proceso en %s:%s", ip, puerto);
 	freeaddrinfo(server_info);
 
@@ -337,7 +337,12 @@ void send_appeared(appeared_pokemon* appearedPokemon, uint32_t socket, uint32_t*
 
     void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
-	send(socket, a_enviar, bytes, 0);
+	ssize_t couldSend = send(socket, a_enviar, bytes, 0);
+    if(couldSend == -1){
+        log_error(obligatory_logger, "Could not send APPEARED message");
+    }else{
+        log_info(obligatory_logger, "APPEARED has been sent to socket: %d", socket);
+    }
 
 	free(a_enviar);
     free_package(paquete);
@@ -358,7 +363,13 @@ void send_caught(caught_pokemon* caughtPokemon, uint32_t socket, uint32_t* id_me
 
     void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
-	send(socket, a_enviar, bytes, 0);
+	ssize_t couldSend = send(socket, a_enviar, bytes, 0);
+
+    if(couldSend == -1){
+        log_error(obligatory_logger, "Could not send CAUGHT message");
+    }else{
+        log_info(obligatory_logger, "CAUGHT has been sent to socket: %d", socket);
+    }
 
 	free(a_enviar);
     free_package(paquete);
@@ -379,7 +390,13 @@ void send_localized(localized_pokemon* localizedPokemon, uint32_t socket, uint32
 
     void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
-	send(socket, a_enviar, bytes, 0);
+	ssize_t couldSend = send(socket, a_enviar, bytes, 0);
+
+    if(couldSend == -1){
+        log_error(obligatory_logger, "Could not send LOCALIZED message");
+    }else{
+        log_info(obligatory_logger, "LOCALIZED has been sent to socket: %d", socket);
+    }
 
 	free(a_enviar);
     free_package(paquete);
