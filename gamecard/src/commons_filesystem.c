@@ -381,13 +381,13 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
     uint32_t tiempoReintento = config_get_int_value(config, "TIEMPO_DE_REINTENTO_OPERACION");
 
     while(strcmp(valorOpen, "Y") == 0){
-        desbloquearMetadata(pokemon);
+        //desbloquearMetadata(pokemon);
         log_error(obligatory_logger, "Un proceso intento abrir un archivo que esta abierto (Reintentando en %d segundos)", tiempoReintento);
         sleep(tiempoReintento);
         
         config_destroy(configMetadataTallGrass);
         pthread_mutex_lock(&metadata_create);
-        bloquearMetadata(pokemon);
+        //bloquearMetadata(pokemon);
         configMetadataTallGrass = config_create(metadata);
         //desbloquearMetadata(pokemon);
         pthread_mutex_unlock(&metadata_create);
