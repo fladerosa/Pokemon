@@ -87,7 +87,7 @@ t_list* getPositionsPokemon(char* metadata, char* pokemon){
     t_list* lista = levantarBloquesAMemoria(bloques, cantidadBloques);
     t_list* listPositions = list_map(lista, structALineaSinCantidad);
 
-    for(int i = 0; i<cantidadBloques; i++){
+    for(int i = 0; i<cantidadBloques-1; i++){
         free(bloques[i]);
     }
 

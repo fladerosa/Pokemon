@@ -213,7 +213,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
             pthread_mutex_lock(&metadata_create);
             t_config* configMetadataTallGrass = config_create(metadata);
             pthread_mutex_unlock(&metadata_create);
-            for(int i = 0; i<cantidadBloques; i++){
+            for(int i = 0; i<cantidadBloques-1; i++){
                 free(bloques[i]);
             }
             free(bloques);
@@ -228,7 +228,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
             pthread_mutex_lock(&metadata_create);
             t_config* configMetadataTallGrass = config_create(metadata);
             pthread_mutex_unlock(&metadata_create);
-            for(int i = 0; i<cantidadBloques; i++){
+            for(int i = 0; i<cantidadBloques-1; i++){
                 free(bloques[i]);
             }
             free(bloques);
@@ -246,7 +246,7 @@ char* bajarBloquesADisco(t_list* lista, char** bloques, int cantidadBloques, cha
     char* sizeTotalChar = malloc(20);
     strcpy(sizeTotalChar, "");
     sprintf(sizeTotalChar, "%d", sizeTotal);
-    for(int i = 0; i<cantidadBloques; i++){
+    for(int i = 0; i<cantidadBloques-1; i++){
         free(bloques[i]);
     }
     free(bloques);
@@ -400,10 +400,6 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
 }
 
 void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
-    char* stream = malloc(newPokemon->sizePokemon);
-    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
-    stream[newPokemon->sizePokemon] = '\0';
-
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
     pthread_mutex_unlock(&metadata_create);
@@ -446,7 +442,7 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     size += sizeFile;
     size --;
 
-    char* sizeChar = malloc(sizeof(uint32_t));
+    char* sizeChar = malloc(10);
     strcpy(sizeChar, "");
     sprintf(sizeChar, "%d", size);
 
@@ -459,10 +455,9 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     log_info(obligatory_logger, "Se ha agregado un nuevo bloque al pokemon");
     config_destroy(configMetadataTallGrass);
     
-    free(stream);
     free(bloque);
     free(bloquesConfig);
-    for(int i = 0; i<cantidadBloques; i++){
+    for(int i = 0; i<cantidadBloques-1; i++){
         free(bloques[i]);
     }
     free(bloques);
