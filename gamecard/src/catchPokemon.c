@@ -1,5 +1,15 @@
 #include "catchPokemon.h"
 
+//void catchPokemon(){
+    //Verificar si esta el pokemon en el directorio Pokemon. Si no existe informar un ERROR
+    //Verificar si no hay otro proceso que lo esté abriendo. En caso de que si lo haya finalizar hilo y reintentar en "TIEMPO_DE_REINTENTO_OPERACION"
+    //Verificar si las posiciones ya existen dentro del archivo. En caso de no existir se debe informar un ERROR.
+    //En caso que la cantidad del Pokémon sea “1”, se debe eliminar la línea. En caso contrario se debe decrementar la cantidad en uno.
+    //Cerrar el archivo.
+    //Todo resultado deberá informarse enviando un mensaje a la Cola de Mensajes "CAUGHT_POKEMON" indicando: ID del mensaje recibido y el Resultado (Fail o success).
+    /**En caso de que no se pueda establecer conexion con el broker notificarlo por Logs y continuar**/
+//}
+
 void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
     catch_pokemon* catchPokemon = threadCatchPokemonMessage->pokemon;
 
@@ -42,12 +52,13 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
             cerrarMetadata(directorioMetadata, stream); 
             caughtPokemon->success = 1;
         }else{
-            log_error(obligatory_logger, "No existen posiciones para ese pokemon (No existe el pokemon).");
+            log_error(obligatory_logger, "No existen posiciones para ese pokemon");
             caughtPokemon = 0;
             //hacer fail
         }
     }else{
         caughtPokemon = 0;
+        log_error(obligatory_logger, "No existe el pokemon.");
     }
 
     if(threadCatchPokemonMessage->client_fd != 0){
@@ -59,6 +70,8 @@ void catchPokemonTallGrass(threadPokemonMessage* threadCatchPokemonMessage){
     free(directory);
     free(directorioMetadata);
     free(threadCatchPokemonMessage->pokemon);
+    free(catchPokemon->pokemon);
+    free(threadCatchPokemonMessage->id_mensaje);
     free(threadCatchPokemonMessage);
 }
 
@@ -103,11 +116,14 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
             for(int i = 0; i < lista->elements_count; i++){
                 positionQuantity* posicionEncontradaSacar = list_get(lista,i); 
                 if(coincidePosicion(posicionEncontradaSacar, posicionEncontrada)){
-                    list_remove(lista, i);
+                    void* elem = list_remove(lista, i);
+                    free(elem);
                 }
-            } 
+            }  
         }
         
+    }else{
+        log_info(optional_logger, "No estaba esa posicion");
     }
 
     char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, catchPokemon->pokemon, catchPokemon->position.posx, catchPokemon->position.posy, 1, metadata);
@@ -136,10 +152,10 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
     free(sizeMetadata);
     config_destroy(configMetadataUpdated);
     config_destroy(configMetadataTallGrass);
-    for(int i = 0; i<cantidadBloques; i++){
-        free(bloques[i]);
-    }
-    free(bloques);
+    //for(int i = 0; i<cantidadBloques; i++){
+        //free(bloques[i]);
+    //}
+    //free(bloques);
     free(stream);
 }
 
@@ -182,6 +198,9 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     }
     strcat(bloquesConfig,"]");
     
+    
+    //[[29][31]] bloques[1]
+   // imprimirBITARRAY(bitmap);
     char* sizeChar = malloc(sizeof(uint32_t));
     strcpy(sizeChar, "");
     sprintf(sizeChar, "%d", size);
@@ -192,6 +211,10 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     pthread_mutex_lock(&metadata_create);
     config_save(configMetadataTallGrass);
     pthread_mutex_unlock(&metadata_create);
+    log_info(obligatory_logger, "Se ha liberado un bloque de un pokemon.");
+    if(size == 0){
+        log_info(obligatory_logger, "Un pokemon fue eliminado logicamente.");
+    }
 
     config_destroy(configMetadataTallGrass);
 
@@ -201,4 +224,5 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     }
     free(bloques);
     free(sizeChar);
+    free(lineaBorrada);
 }
