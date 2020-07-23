@@ -15,7 +15,9 @@ void initialize_team() {
     calculate_global_objetives();
     pokemonsOnMap = list_create();
     flagExistsDeadlock = false;
-    connection_broker_global_suscribe();
+
+    pthread_t brokerSuscriptionThread;
+    pthread_create(&brokerSuscriptionThread, NULL, connection_broker_global_suscribe, NULL);
     request = &reception_message_queue_subscription;
     listen_to_gameboy();
     send_get_pokemon_global_team(socket_team, globalObjetive);
@@ -23,9 +25,7 @@ void initialize_team() {
     pthread_create(&plannerThread, NULL, planTrainers, NULL);
     validateEndTeam();
     pthread_join(plannerThread,NULL);
-    pthread_join(suscripcionAppearedPokemon,NULL);
-    pthread_join(suscripcionCaughtPokemon,NULL);
-    pthread_join(suscripcionLocalizedPokemon,NULL);
+    pthread_join(brokerSuscriptionThread,NULL);
     pthread_join(server,NULL);
 }
 
@@ -43,6 +43,7 @@ void* planTrainers(){
         sem_wait(&plannerSemaphore);
         calculateTrainersInExit();
         calculateTrainerFromNewToReady();
+        calculateLeaveBlockedFromAppear();
         calculateTrainerFromReadyToExec();
         detectDeadlock_do();
     }

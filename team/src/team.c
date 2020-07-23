@@ -24,7 +24,8 @@ void calculateTrainerToReady(enum_process_state threadTrainerState){
         pokemonOnMapAux = (t_pokemon_on_map*)list_get(pokemonsOnMap, i);
         if(pokemonOnMapAux->state == P_FREE){
             threadTrainerAux = getClosestTrainer(pokemonOnMapAux->position, threadTrainerState);
-            if(threadTrainerAux != NULL){
+
+            if(threadTrainerAux != NULL && !isCandidateDeadlock((t_trainer*)list_get(trainers, threadTrainerAux->idTrainer-1))){
                 threadTrainerAux->state = READY;
 				threadTrainerAux->positionTo.posx = pokemonOnMapAux->position.posx;
 				threadTrainerAux->positionTo.posy = pokemonOnMapAux->position.posy;
@@ -35,7 +36,6 @@ void calculateTrainerToReady(enum_process_state threadTrainerState){
 				if(threadTrainerState == NEW){
 					log_info(obligatory_logger, "Entrenador %d, cambia de NEW a READY, porque es el más cercano para realizar la captura", threadTrainerAux->idTrainer);
 				}else{
-					threadTrainerAux->contextSwitchCount++;
 					log_info(obligatory_logger, "Entrenador %d, cambia de BLOCKED a READY, porque es el más cercano para realizar la captura", threadTrainerAux->idTrainer);
 				}
 				sem_post(&plannerSemaphore);
@@ -53,8 +53,8 @@ t_threadTrainer* getClosestTrainer(t_position position, enum_process_state threa
 
     for(int i=0; i < threadsTrainersCount; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
-        if(threadTrainerAux->state == threadTrainerState){
-            trainerAux = (t_trainer*)list_get(trainers, threadTrainerAux->idTrainer - 1);
+		trainerAux = (t_trainer*)list_get(trainers, threadTrainerAux->idTrainer - 1);
+        if(threadTrainerAux->state == threadTrainerState && !isCandidateDeadlock(trainerAux)){
             if(minimunDistance == -1 || minimunDistance > calculateDistance(trainerAux->position, position)){
                 minimunDistance = calculateDistance(trainerAux->position, position);
                 indexClosestThreadTrainer = i;
@@ -334,51 +334,56 @@ bool move_to_objetive(t_trainer* trainerAux, t_position positionTo){
 
 void interchangePokemon(t_trainer* trainerFrom){
 	t_trainer* trainerTo;
-	t_threadTrainer* threadTrainerTo;
 	t_threadTrainer* threadTrainerFrom = (t_threadTrainer*)list_get(threadsTrainers, trainerFrom->id_trainer - 1);
 	bool continueFor = true;
 
 	for(int i=0; i<list_size(trainers) && continueFor; i++){
 		trainerTo = (t_trainer*)list_get(trainers, i);
-		threadTrainerTo = (t_threadTrainer*)list_get(threadsTrainers, i);
-		if(trainerTo->position.posx == trainerFrom->position.posx 
-			&& trainerTo->position.posy == trainerFrom->position.posy && trainerTo->id_trainer != trainerFrom->id_trainer
-			&& threadTrainerTo->state == BLOCKED){
-				t_cycleDeadlock* pokemonInDeadlock = (t_cycleDeadlock*)list_get(cycleDeadLock, 0);
 
-				//Remove from my owned any i dont need
-				char* pokemonOwnedTrainerFrom = getPokemonNotNeeded(trainerFrom);
-				char* pokemonOwnedTrainerTo = getPokemonSpecify(trainerTo, pokemonInDeadlock->pokemon);
+		t_cycleDeadlock* pokemonInDeadlockFrom = (t_cycleDeadlock*)list_get(cycleDeadLock, 0);
+		t_cycleDeadlock* pokemonInDeadlockTo = (t_cycleDeadlock*)list_get(cycleDeadLock, 1);
+		if(trainerTo->id_trainer == pokemonInDeadlockTo->idTrainer){
+			char* pokemonOwnedTrainerFrom = getPokemonNotNeeded(trainerFrom);
+			char* pokemonOwnedTrainerTo = getPokemonSpecify(trainerTo, pokemonInDeadlockFrom->pokemon);
 
-				list_add(trainerFrom->pokemonOwned, pokemonOwnedTrainerTo);
-				list_add(trainerTo->pokemonOwned, pokemonOwnedTrainerFrom);
+			list_add(trainerFrom->pokemonOwned, pokemonOwnedTrainerTo);
+			list_add(trainerTo->pokemonOwned, pokemonOwnedTrainerFrom);
 
-				list_destroy(cycleDeadLock);
-				flagExistsDeadlock = false;
-				continueFor = false;
-				if(trainerCompleteOwnObjetives(trainerFrom)){
-					threadTrainerFrom->state = E_P_EXIT;
-					log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio", trainerFrom->id_trainer);
-				}
-				calculateLeaveBlockedFromCaught(trainerTo->id_trainer);
-				sem_post(&plannerSemaphore);
+			list_destroy(cycleDeadLock);
+			flagExistsDeadlock = false;
+			continueFor = false;
+			if(trainerCompleteOwnObjetives(trainerFrom)){
+				threadTrainerFrom->state = E_P_EXIT;
+				log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio", trainerFrom->id_trainer);
+			}else{
+				threadTrainerFrom->state = BLOCKED;
+				threadTrainerFrom->contextSwitchCount++;
+				log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque le falta cumplir su objetivo", trainerFrom->id_trainer);
 			}
+			calculateLeaveBlockedFromCaught(trainerTo->id_trainer);
+			sem_post(&plannerSemaphore);
+		}
 	}
 }
 
 char* getPokemonNotNeeded(t_trainer* trainerAux){
+	//return the first pokemon that does not need (that own but not need)
+	t_list* copyOfOwned;
 	char* result;
 	bool continueFor = true;
-	for(int j = 0; j < list_size(trainerAux->pokemonOwned) && continueFor; j++){
-		result = (char*)list_get(trainerAux->pokemonOwned, j);
+	copyOfOwned = list_duplicate(trainerAux->pokemonOwned);
+	for(int j = 0; j < list_size(trainerAux->pokemonNeeded) && continueFor; j++){
+		result = (char*)list_get(trainerAux->pokemonNeeded, j);
 		pokemonCompareGlobalObjetive = malloc(strlen(result));
 		strcpy(pokemonCompareGlobalObjetive, result);
-		if(!list_any_satisfy(trainerAux->pokemonNeeded, analyzePokemonInGlobal)){
-			list_remove(trainerAux->pokemonOwned, j);
-			continueFor = false;
-		}
+		list_remove_by_condition(copyOfOwned, analyzePokemonInGlobal);
 		free(pokemonCompareGlobalObjetive);
 	}
+	result = (char*)list_get(copyOfOwned, 0);
+	pokemonCompareGlobalObjetive = malloc(strlen(result));
+	strcpy(pokemonCompareGlobalObjetive, result);
+	list_remove_by_condition(trainerAux->pokemonOwned, analyzePokemonInGlobal);
+	free(pokemonCompareGlobalObjetive);
 	return result;
 }
 char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon){
@@ -444,7 +449,8 @@ void catch_succesfull(uint32_t id_trainer){
 	strcpy(pokemonCompareGlobalObjetive, pokemonOnMapAux->pokemon);
 	list_remove_by_condition(globalObjetive, analyzePokemonInGlobal);
 	free(pokemonCompareGlobalObjetive);
-
+log_info(optional_logger, "Quedan %d objetivos globales", list_size(globalObjetive));
+log_info(optional_logger, "Quedan %d pokemones en el mapa", list_size(pokemonsOnMap));
 	//Add pokemon owned
 	char* newPokemonOwned = malloc(strlen(pokemonOnMapAux->pokemon));
 	strcpy(newPokemonOwned, pokemonOnMapAux->pokemon);

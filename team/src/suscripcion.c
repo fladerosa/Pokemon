@@ -2,11 +2,17 @@
 #include <string.h>
 #include "team.h"
 
-void connection_broker_global_suscribe() {
+void* connection_broker_global_suscribe() {
     threadSubscribeList = list_create();
     connection_broker_suscribe_to_appeared_pokemon(APPEARED_POKEMON);
     connection_broker_suscribe_to_caught_pokemon(CAUGHT_POKEMON);
     connection_broker_suscribe_to_localized_pokemon(LOCALIZED_POKEMON);
+    
+    pthread_join(suscripcionAppearedPokemon,NULL);
+    pthread_join(suscripcionCaughtPokemon,NULL);
+    pthread_join(suscripcionLocalizedPokemon,NULL);
+
+    return NULL;
  }
 
 void connection_broker_suscribe_to_appeared_pokemon(op_code code) {   

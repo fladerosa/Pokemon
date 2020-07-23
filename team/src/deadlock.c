@@ -119,7 +119,7 @@ void detectDeadlock_do(){
         
         if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(trainerAux)){
             t_list* pokemonsNeeded = getPokemonsNeeded(trainerAux);
-            for(int j = 0; j < list_size(pokemonsNeeded); j++){
+            for(int j = 0; j < list_size(pokemonsNeeded) && continueAnalize; j++){
                 pokemonNeededAux = (char*)list_get(pokemonsNeeded, j);
                 cycleDeadLock = list_create();
                 deadlockNode = malloc(sizeof(t_cycleDeadlock));
@@ -153,17 +153,14 @@ void detectDeadlock_do(){
 }
 
 t_list* getPokemonsNeeded(t_trainer* trainerAux){
-    uint32_t pokemonsNeededCount = list_size(trainerAux->pokemonNeeded);
-    char* pokemonNeededAux;
-    t_list* pokemonsNeeded = list_create();
+    char* pokemonOwnedAux;
+    t_list* pokemonsNeeded = list_duplicate(trainerAux->pokemonNeeded);
 
-    for (int i=0; i<pokemonsNeededCount; i++){
-        pokemonNeededAux = (char*)list_get(trainerAux->pokemonNeeded, i);
-        pokemonCompareDeadlock = malloc(strlen(pokemonNeededAux));
-        strcpy(pokemonCompareDeadlock, pokemonNeededAux);
-        if(!list_any_satisfy(trainerAux->pokemonOwned, comparePokemonDeadlock)){
-            list_add(pokemonsNeeded, pokemonNeededAux);
-        }
+    for (int i=0; i<list_size(trainerAux->pokemonOwned); i++){
+        pokemonOwnedAux = (char*)list_get(trainerAux->pokemonOwned, i);
+        pokemonCompareDeadlock = malloc(strlen(pokemonOwnedAux));
+        strcpy(pokemonCompareDeadlock, pokemonOwnedAux);
+        list_remove_by_condition(pokemonsNeeded, comparePokemonDeadlock);
         free(pokemonCompareDeadlock);
     }
 
@@ -195,13 +192,14 @@ bool completeCycleDeadlock(){
         if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(trainerAux) && trainerHasPokemonNoNeeded(trainerAux, deadlockLastNode->pokemon)){
             t_list* pokemonsNeeded = getPokemonsNeeded(trainerAux);
             for(int j = 0; j < list_size(pokemonsNeeded); j++){
+                if(trainerAlreadyInCycleCount(threadTrainerAux->idTrainer) > list_size(pokemonsNeeded)+1) return false;
                 char* pokemonNeededAux = (char*)list_get(pokemonsNeeded, j);
                 t_cycleDeadlock* deadlockNode = malloc(sizeof(t_cycleDeadlock));
                 deadlockNode->idTrainer = trainerAux->id_trainer;
                 deadlockNode->pokemon = malloc(strlen(pokemonNeededAux));
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
-
+log_cycle();
                 if(existsDeadlock()){
                     return true;
                 }else{
@@ -217,10 +215,30 @@ bool completeCycleDeadlock(){
     return false;
 }
 
+void log_cycle(){
+    log_info(optional_logger, "Ciclo: ");
+    for(int i=0; i<list_size(cycleDeadLock); i++){
+        t_cycleDeadlock* cycleNode = (t_cycleDeadlock*)list_get(cycleDeadLock, i);
+        log_info(optional_logger, "Trainer: %d, Pokemon: %s", cycleNode->idTrainer, cycleNode->pokemon);
+    }
+}
+
+int trainerAlreadyInCycleCount(uint32_t idTrainer){
+    int count=0;
+    t_cycleDeadlock* cycleDeadLockAux;
+
+    for(int i=0; i<list_size(cycleDeadLock); i++){
+        cycleDeadLockAux = (t_cycleDeadlock*)list_get(cycleDeadLock, i);
+        if(cycleDeadLockAux->idTrainer == idTrainer) count++;
+    }
+
+    return count;
+}
+
 bool trainerHasPokemonNoNeeded(t_trainer* trainerAux, char* pokemonNeeded){
     pokemonCompareDeadlock = malloc(strlen(pokemonNeeded));
     strcpy(pokemonCompareDeadlock, pokemonNeeded);
-    bool result = (list_any_satisfy(trainerAux->pokemonOwned, comparePokemonDeadlock)) && (!list_any_satisfy(trainerAux->pokemonNeeded, comparePokemonDeadlock));
+    bool result = list_count_satisfying(trainerAux->pokemonOwned, comparePokemonDeadlock) > list_count_satisfying(trainerAux->pokemonNeeded, comparePokemonDeadlock);
     free(pokemonCompareDeadlock);
     return result;
 }

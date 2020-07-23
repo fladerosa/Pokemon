@@ -33,7 +33,7 @@ on_request request;
 //hilo puerto escucha gameboy
 pthread_t listening_gameboy;
 
-void connection_broker_global_suscribe();
+void* connection_broker_global_suscribe();
 void connection_broker_suscribe_to_appeared_pokemon(op_code);
 void connection_broker_suscribe_to_caught_pokemon(op_code);
 void connection_broker_suscribe_to_localized_pokemon(op_code);
