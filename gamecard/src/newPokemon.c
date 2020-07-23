@@ -155,7 +155,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
         addBlockMetadata(metadata, block, newPokemon);
         
         free(block);
-        for(int i = 0; i<cantidadBloques-1; i++){
+        for(int i = 0; i<cantidadBloques; i++){
             free(bloques[i]);
         }
         free(bloques);
