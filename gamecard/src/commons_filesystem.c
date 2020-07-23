@@ -366,11 +366,9 @@ void cerrarMetadata(char* metadata, char* pokemon){
 
 void intentarAbrirMetadata(char* metadata, char* pokemon){
     //pthread_mutex_lock(&metadata_create);
-    bloquearMetadata(pokemon);
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
     pthread_mutex_unlock(&metadata_create);
-    desbloquearMetadata(pokemon);
     //pthread_mutex_unlock(&metadata_create);
 
     char* valorOpen = malloc(sizeof(char)*5 + 1);
@@ -387,9 +385,7 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
         
         config_destroy(configMetadataTallGrass);
         pthread_mutex_lock(&metadata_create);
-        bloquearMetadata(pokemon);
         configMetadataTallGrass = config_create(metadata);
-        desbloquearMetadata(pokemon);
         pthread_mutex_unlock(&metadata_create);
         strcpy(valorOpen, "");
         strcat(valorOpen, config_get_string_value(configMetadataTallGrass, "OPEN"));
