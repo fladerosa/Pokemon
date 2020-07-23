@@ -337,7 +337,12 @@ void send_appeared(appeared_pokemon* appearedPokemon, uint32_t socket, uint32_t*
 
     void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
-	send(socket, a_enviar, bytes, 0);
+	ssize_t bytesSent = send(socket, a_enviar, bytes, 0);
+    if (bytesSent == -1){
+        log_error(obligatory_logger, "No se pudo enviar el mensaje APPEARED POKEMON.");
+    } else {
+        log_info(obligatory_logger, "El mensaje APPEARED POKEMON se ha enviado con exito.");
+    }
 
 	free(a_enviar);
     free_package(paquete);
@@ -358,7 +363,12 @@ void send_caught(caught_pokemon* caughtPokemon, uint32_t socket, uint32_t* id_me
 
     void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
-	send(socket, a_enviar, bytes, 0);
+	ssize_t bytesSent = send(socket, a_enviar, bytes, 0);
+    if (bytesSent == -1){
+        log_error(obligatory_logger, "No se pudo enviar el mensaje CAUGHT POKEMON.");
+    } else {
+        log_info(obligatory_logger, "El mensaje CAUGHT POKEMON se ha enviado con exito.");
+    }
 
 	free(a_enviar);
     free_package(paquete);
@@ -379,7 +389,12 @@ void send_localized(localized_pokemon* localizedPokemon, uint32_t socket, uint32
 
     void* a_enviar = (void *) serializar_paquete(paquete, bytes);
 
-	send(socket, a_enviar, bytes, 0);
+	ssize_t bytesSent = send(socket, a_enviar, bytes, 0);
+    if (bytesSent == -1){
+        log_error(obligatory_logger, "No se pudo enviar el mensaje LOCALIZED POKEMON.");
+    } else {
+        log_info(obligatory_logger, "El mensaje LOCALIZED POKEMON se ha enviado con exito.");
+    }
 
 	free(a_enviar);
     free_package(paquete);
