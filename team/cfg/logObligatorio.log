@@ -178,3 +178,18 @@
 [INFO] 16:39:08:771 TEAM/(22579:22579): Entrenador 1 entra a cola NEW.
 [INFO] 16:39:08:902 TEAM/(22579:22579): Entrenador 2 entra a cola NEW.
 [INFO] 16:39:09:40 TEAM/(22579:22579): Entrenador 3 entra a cola NEW.
+[INFO] 17:06:14:497 TEAM/(23180:23180): Obligatory Log was created successfully
+
+[INFO] 17:06:15:11 TEAM/(23180:23180): Entrenador 1 entra a cola NEW.
+[INFO] 17:06:15:97 TEAM/(23180:23180): Entrenador 2 entra a cola NEW.
+[INFO] 17:06:15:223 TEAM/(23180:23180): Entrenador 3 entra a cola NEW.
+[INFO] 17:10:49:720 TEAM/(23247:23247): Obligatory Log was created successfully
+
+[INFO] 17:10:50:214 TEAM/(23247:23247): Entrenador 1 entra a cola NEW.
+[INFO] 17:10:50:304 TEAM/(23247:23247): Entrenador 2 entra a cola NEW.
+[INFO] 17:10:50:400 TEAM/(23247:23247): Entrenador 3 entra a cola NEW.
+[INFO] 17:15:55:613 TEAM/(23334:23334): Obligatory Log was created successfully
+
+[INFO] 17:15:56:417 TEAM/(23334:23334): Entrenador 1 entra a cola NEW.
+[INFO] 17:15:57:28 TEAM/(23334:23334): Entrenador 2 entra a cola NEW.
+[INFO] 17:15:58:554 TEAM/(23334:23334): Entrenador 3 entra a cola NEW.
