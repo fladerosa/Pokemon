@@ -158,3 +158,23 @@
 [INFO] 23:45:45:598 TEAM/(21209:21209): Total Cycle CPU by TEAM: 54
 [INFO] 23:45:45:598 TEAM/(21209:21209): Total Context Switch by Team: 14
 [INFO] 23:45:45:598 TEAM/(21209:21209): Total Deadlocks by Team: 2
+[INFO] 16:17:40:837 TEAM/(22091:22091): Obligatory Log was created successfully
+
+[INFO] 16:17:41:300 TEAM/(22091:22091): Entrenador 1 entra a cola NEW.
+[INFO] 16:17:41:382 TEAM/(22091:22091): Entrenador 2 entra a cola NEW.
+[INFO] 16:17:41:442 TEAM/(22091:22091): Entrenador 3 entra a cola NEW.
+[INFO] 16:29:28:772 TEAM/(22503:22503): Obligatory Log was created successfully
+
+[INFO] 16:29:29:313 TEAM/(22503:22503): Entrenador 1 entra a cola NEW.
+[INFO] 16:29:29:390 TEAM/(22503:22503): Entrenador 2 entra a cola NEW.
+[INFO] 16:29:29:461 TEAM/(22503:22503): Entrenador 3 entra a cola NEW.
+[INFO] 16:37:01:826 TEAM/(22559:22559): Obligatory Log was created successfully
+
+[INFO] 16:37:02:286 TEAM/(22559:22559): Entrenador 1 entra a cola NEW.
+[INFO] 16:37:02:370 TEAM/(22559:22559): Entrenador 2 entra a cola NEW.
+[INFO] 16:37:02:444 TEAM/(22559:22559): Entrenador 3 entra a cola NEW.
+[INFO] 16:39:07:141 TEAM/(22579:22579): Obligatory Log was created successfully
+
+[INFO] 16:39:08:771 TEAM/(22579:22579): Entrenador 1 entra a cola NEW.
+[INFO] 16:39:08:902 TEAM/(22579:22579): Entrenador 2 entra a cola NEW.
+[INFO] 16:39:09:40 TEAM/(22579:22579): Entrenador 3 entra a cola NEW.
