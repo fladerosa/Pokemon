@@ -398,27 +398,36 @@ char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon){
 
 bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux){
 	log_info(obligatory_logger, "Atrapar pokemon: %s, en posicion: (%d,%d)", pokemon->pokemon, pokemon->position.posx, pokemon->position.posy);
-	uint32_t socketPetition = team_connect_petition(config_values.ip_broker, config_values.puerto_broker);
+	uint32_t client_fd = crear_conexion(config_values.ip_broker, config_values.puerto_broker);
+    //send_new_connection(client_fd); 
 	bool result = true;
-	if(socketPetition != -1){
+	if(client_fd != -1){
 		threadTrainerAux->state = BLOCKED;
 		threadTrainerAux->contextSwitchCount++;
 		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque espera resultado de catch", threadTrainerAux->idTrainer);
 		
 		uint32_t* id_message = malloc(sizeof(uint32_t));
-		catch_pokemon* catchPokemonMessage = malloc(sizeof(catch_pokemon));
-		catchPokemonMessage->sizePokemon = strlen(pokemon->pokemon);
-		catchPokemonMessage->pokemon = malloc(strlen(pokemon->pokemon));
-		strcpy(catchPokemonMessage->pokemon, pokemon->pokemon);
-		catchPokemonMessage->position.posx = pokemon->position.posx;
-		catchPokemonMessage->position.posy = pokemon->position.posy;
+/*
 		void* stream = catch_pokemon_to_stream(catchPokemonMessage, id_message);
 		t_paquete* packageToSend = stream_to_package(CATCH_POKEMON, stream, strlen(pokemon->pokemon) + sizeof(uint32_t)*3);
-		int bytes = packageToSend->buffer->size + 2*sizeof(uint32_t);
-		void* a_enviar = (void *) serializar_paquete(packageToSend, bytes);
+		*/
 
-		send(socketPetition, a_enviar, bytes, 0);
-		close(socketPetition);
+		catch_pokemon* catchPokemonMessage = init_catch_pokemon(pokemon->pokemon, pokemon->position.posx, pokemon->position.posy);
+		*id_message = -1;
+		t_paquete* packageToSend = stream_to_package(CATCH_POKEMON, catch_pokemon_to_stream(catchPokemonMessage, id_message), size_of_catch_pokemon(catchPokemonMessage));
+		int bytes = packageToSend->buffer->size + 2*sizeof(uint32_t);
+		void* buffer = (void *) serializar_paquete(packageToSend, bytes);
+
+		send(client_fd, buffer, bytes, 0);
+		
+		uint32_t sizeOfBuffer = sizeof(uint32_t) * 3;
+		buffer = malloc(sizeOfBuffer);
+		recv(client_fd, buffer, sizeOfBuffer, MSG_WAITALL);
+		ack* acknowledgementMessage = stream_to_ack(buffer+8);
+		log_info(optional_logger, "Id mensaje catch: %d", acknowledgementMessage->id_message);
+		threadTrainerAux->idMessageCatch = acknowledgementMessage->id_message;
+
+		close(client_fd);
 		sem_post(&plannerSemaphore);
 	}else{
 		log_info(obligatory_logger, "Falló conexión con broker, se ejecutará función por default de appeared");
@@ -431,30 +440,20 @@ void catch_succesfull(uint32_t id_trainer){
 	t_trainer* trainerAux = (t_trainer*)list_get(trainers, id_trainer-1);
 	t_threadTrainer* threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, id_trainer-1);
 
-	//Set the pokemon as catched
 	t_pokemon_on_map* pokemonOnMapAux = getPokemonByPosition(threadTrainerAux->positionTo);
-	t_pokemon_on_map* pokemonOnMapToRemove;
-	bool continueFor = true;
-	pokemonOnMapAux->state = P_CATCHED;
-	for(int i=0; i<list_size(pokemonsOnMap) && continueFor; i++){
-		pokemonOnMapToRemove = (t_pokemon_on_map*)list_get(pokemonsOnMap, i);
-		if(pokemonOnMapToRemove->id == pokemonOnMapAux->id){
-			list_remove(pokemonsOnMap, i);
-			continueFor = false;
-		}
-	}
-
+	
 	//Remove the global objetive
 	pokemonCompareGlobalObjetive = malloc(strlen(pokemonOnMapAux->pokemon));
 	strcpy(pokemonCompareGlobalObjetive, pokemonOnMapAux->pokemon);
 	list_remove_by_condition(globalObjetive, analyzePokemonInGlobal);
 	free(pokemonCompareGlobalObjetive);
-log_info(optional_logger, "Quedan %d objetivos globales", list_size(globalObjetive));
-log_info(optional_logger, "Quedan %d pokemones en el mapa", list_size(pokemonsOnMap));
+	
 	//Add pokemon owned
 	char* newPokemonOwned = malloc(strlen(pokemonOnMapAux->pokemon));
 	strcpy(newPokemonOwned, pokemonOnMapAux->pokemon);
 	list_add(trainerAux->pokemonOwned, newPokemonOwned);
+
+	removePokemonOnMap(threadTrainerAux->positionTo);
 
 	//Validate trainer objetive complete
 	if(trainerCompleteOwnObjetives(trainerAux)){
@@ -468,6 +467,23 @@ log_info(optional_logger, "Quedan %d pokemones en el mapa", list_size(pokemonsOn
 		sem_post(&plannerSemaphore);
 	}
 }
+
+void removePokemonOnMap(t_position position){
+	t_pokemon_on_map* pokemonOnMapAux = getPokemonByPosition(position);
+	t_pokemon_on_map* pokemonOnMapToRemove;
+	bool continueFor = true;
+	pokemonOnMapAux->state = P_CATCHED;
+	for(int i=0; i<list_size(pokemonsOnMap) && continueFor; i++){
+		pokemonOnMapToRemove = (t_pokemon_on_map*)list_get(pokemonsOnMap, i);
+		if(pokemonOnMapToRemove->id == pokemonOnMapAux->id){
+			list_remove(pokemonsOnMap, i);
+			continueFor = false;
+		}
+	}
+}
+
+
+
 //// algoritmos de planifiacion
 //despues de  setTrainerToExec_FirstCome() obtengo el threadTrainerChosen y el pokemonOnMap
 void execThreadTrainerSetedFCFS(t_threadTrainer* threadTrainerChosen){

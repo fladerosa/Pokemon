@@ -20,7 +20,7 @@ void initialize_team() {
     pthread_create(&brokerSuscriptionThread, NULL, connection_broker_global_suscribe, NULL);
     request = &reception_message_queue_subscription;
     listen_to_gameboy();
-    send_get_pokemon_global_team(socket_team, globalObjetive);
+    send_get_pokemon_global_team(globalObjetive);
     sem_init(&plannerSemaphore, 0, 0);
     pthread_create(&plannerThread, NULL, planTrainers, NULL);
     validateEndTeam();
@@ -115,14 +115,14 @@ void assign_data_trainer() {
 
             if(pokemonNeeds != NULL && pokemonNeeds[i] != NULL && !string_is_empty(pokemonNeeds[i])){
                 if(strchr(pokemonNeeds[i], '|') == NULL){
-                    dataAux = malloc(strlen(pokemonNeeds[i]));
+                    dataAux = malloc(strlen(pokemonNeeds[i])+1);
                     strcpy(dataAux, pokemonNeeds[i]);
                     list_add(data_trainer->pokemonNeeded, dataAux);
                 }else{
                     valorAux = string_split(pokemonNeeds[i], "|");
 
                     while(*valorAux != NULL){
-                        dataAux = malloc(strlen(*valorAux));
+                        dataAux = malloc(strlen(*valorAux)+1);
                         strcpy(dataAux, *valorAux);
                         list_add(data_trainer->pokemonNeeded, dataAux);
                         valorAux++;
@@ -158,14 +158,14 @@ void assign_data_trainer() {
         data_trainer = (t_trainer*)list_get(trainers, i);
         if(!string_is_empty(pokemonOwns[i])){
             if(strchr(pokemonOwns[i], '|') == NULL){
-                dataAux = malloc(strlen(pokemonOwns[i]));
+                dataAux = malloc(strlen(pokemonOwns[i])+1);
                 strcpy(dataAux, pokemonOwns[i]);
                 list_add(data_trainer->pokemonOwned, dataAux);
             }else{
                 valorAux = string_split(pokemonOwns[i], "|");
 
                 while(*valorAux != NULL){
-                    dataAux = malloc(strlen(*valorAux));
+                    dataAux = malloc(strlen(*valorAux)+1);
                     strcpy(dataAux, *valorAux);
                     list_add(data_trainer->pokemonOwned, dataAux);
                     valorAux++;
@@ -219,7 +219,7 @@ void calculate_global_objetives(){
         pokemonsOwnedCount = list_size(trainerAux->pokemonOwned);
         for(j = 0; j < pokemonsOwnedCount; j++){
             pokemonOwnedAux = (char*)list_get(trainerAux->pokemonOwned, j);
-            pokemonCompareGlobalObjetive = malloc(strlen(pokemonOwnedAux));
+            pokemonCompareGlobalObjetive = malloc(strlen(pokemonOwnedAux)+1);
             strcpy(pokemonCompareGlobalObjetive, pokemonOwnedAux);
             list_remove_by_condition(globalObjetive, analyzePokemonInGlobal);
             free(pokemonCompareGlobalObjetive);

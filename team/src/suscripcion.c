@@ -161,6 +161,7 @@ void listen_to_gameboy() {
 void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, uint32_t client_fd) {
 	void* stream = malloc(sizeofstruct);
     uint32_t* id_message = malloc(sizeof(uint32_t));
+    uint32_t* id_message_correlational = malloc(sizeof(uint32_t));
     recv(client_fd, stream, sizeofstruct, MSG_WAITALL);
 
     switch(code){
@@ -189,21 +190,28 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             free(pokemonCompareGlobalObjetive);
             break;
         case CAUGHT_POKEMON:;
-			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, id_message, NULL, false);
+			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, id_message, id_message_correlational, false);
             log_info(obligatory_logger, "Receiving Message Caught pokemon, Result %d", caught_Pokemon_Message->success);
+            processCaughtPokemon(*id_message_correlational, caught_Pokemon_Message->success);
+            
             send_ack(client_fd, *id_message);
             break;
         case LOCALIZED_POKEMON:;
             localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, id_message, NULL, false);
             localized_Pokemon_Message->pokemon[localized_Pokemon_Message->sizePokemon] = '\0';
-            log_info(obligatory_logger, "Receiving Message Localized pokemon");
-            log_info(obligatory_logger, "Pokemon %s", localized_Pokemon_Message->pokemon);
-            
-            for(int i = 0; i<list_size(localized_Pokemon_Message->positions); i++) {
-                t_position* positionAux = list_get(localized_Pokemon_Message->positions, i);
-                log_info(obligatory_logger,"Find in position: (%d,%d)", positionAux->posx, positionAux->posy);
+            int indexOfPokemonToLocalyze = getIndexPokemonToLocalizedByMessage(*id_message);
+            if(indexOfPokemonToLocalyze != -1){
+                list_remove(pokemonsToLocalize, indexOfPokemonToLocalyze);
+                log_info(obligatory_logger, "Receiving Message Localized pokemon");
+                log_info(obligatory_logger, "Pokemon %s", localized_Pokemon_Message->pokemon);
+                
+                for(int i = 0; i<list_size(localized_Pokemon_Message->positions); i++) {
+                    t_position* positionAux = list_get(localized_Pokemon_Message->positions, i);
+                    log_info(obligatory_logger,"Find in position: (%d,%d)", positionAux->posx, positionAux->posy);
+                }
+                send_ack(client_fd, *id_message);
             }
-            send_ack(client_fd, *id_message);
+            
             break;
          case CONNECTION:;
             connection* connectionMessage = stream_to_connection(stream);
@@ -244,34 +252,101 @@ uint32_t caught_default() {
 }
 
 uint32_t localized_default(char* pokemon) {
- t_list* positions = list_create();
- localized_pokemon* loca=  init_localized_pokemon(pokemon, positions);
- loca->pokemon = pokemon;
- uint32_t position_default = list_size(loca->positions);
-return  position_default;
-
+    t_list* positions = list_create();
+    localized_pokemon* loca=  init_localized_pokemon(pokemon, positions);
+    loca->pokemon = pokemon;
+    uint32_t position_default = list_size(loca->positions);
+    return  position_default;
 }
 
-void send_get_pokemon_global_team(uint32_t client_fd, t_list* globalObjetive){
-   //send for each pokemon needed by team
-   uint32_t* id_message = malloc(sizeof(uint32_t));
-   get_pokemon* getPokemonMessage;
-   void* stream;
-   uint32_t total_global = list_size(globalObjetive);
-   char* pokemonToSend;
-	
-   for(int i=0; i< total_global; i++) {
-	    pokemonToSend = (char*)list_get(globalObjetive, i);
+void send_get_pokemon_global_team(t_list* globalObjetive){
+    //send for each pokemon needed by team
+    uint32_t client_fd = crear_conexion(config_values.ip_broker, config_values.puerto_broker);
+    //send_new_connection(client_fd); 
+    uint32_t* id_message = malloc(sizeof(uint32_t));
+    get_pokemon* getPokemonMessage;
+    void* stream;
+    uint32_t total_global = list_size(globalObjetive);
+    char* pokemonToSend;
+    pokemonsToLocalize = list_create();
+    
+
+    for(int i=0; i< total_global; i++) {
+        pokemonToSend = (char*)list_get(globalObjetive, i);
         getPokemonMessage = malloc(sizeof(get_pokemon));
         getPokemonMessage->pokemon = malloc(strlen(pokemonToSend));
         strcpy(getPokemonMessage->pokemon, pokemonToSend);
         getPokemonMessage->sizePokemon = strlen(getPokemonMessage->pokemon);
-        
+        *id_message = -1;
         stream =get_pokemon_to_stream(getPokemonMessage, id_message);
-        send(client_fd, stream, getPokemonMessage->sizePokemon + sizeof(int), MSG_WAITALL);
-        log_info(optional_logger, "Sending Message Get pokemon.");
-	    log_info(optional_logger, "Pokemon %s: ", pokemonToSend);
-      
+
+        t_paquete* packageToSend = stream_to_package(GET_POKEMON, stream, size_of_get_pokemon(getPokemonMessage));
+        int bytes = packageToSend->buffer->size + 2*sizeof(uint32_t);
+        void* buffer = (void *) serializar_paquete(packageToSend, bytes);
+
+        send(client_fd, buffer, bytes, 0);
+        free(buffer);
+        log_info(optional_logger, "Pokemon %s: ", pokemonToSend);
+
+        uint32_t sizeOfBuffer = sizeof(uint32_t) * 3;
+        buffer = malloc(sizeOfBuffer);
+        recv(client_fd, buffer, sizeOfBuffer, MSG_WAITALL);
+        ack* acknowledgementMessage = stream_to_ack(buffer+8);
+        log_info(optional_logger, "Id mensaje get: %d", acknowledgementMessage->id_message);
+
+        addPokemonToLocalize(pokemonToSend, acknowledgementMessage->id_message);
+    }
+}
+
+void addPokemonToLocalize(char* pokemon, uint32_t idMessage){
+    t_pokemonToLocalized* pokemonToLocalizeAux;
+    bool pokemonExists = false;
+
+    for(int i=0; i<list_size(pokemonsToLocalize) && !pokemonExists;i++){
+        pokemonToLocalizeAux = (t_pokemonToLocalized*)list_get(pokemonsToLocalize, i);
+        if(strcmp(pokemon, pokemonToLocalizeAux->pokemon) == 0){
+            pokemonExists = true;
+        }
     }
 
+    if(!pokemonExists){
+        pokemonToLocalizeAux = malloc(sizeof(t_pokemonToLocalized));
+        pokemonToLocalizeAux->idMessage = idMessage;
+        pokemonToLocalizeAux->pokemon = malloc(strlen(pokemon));
+        strcpy(pokemonToLocalizeAux->pokemon, pokemon);
+        list_add(pokemonsToLocalize, pokemonToLocalizeAux);
+    }
+}
+
+int getIndexPokemonToLocalizedByMessage(uint32_t id_message){
+    int result = -1;
+    t_pokemonToLocalized* pokemonToLocalizeAux;
+
+    for(int i=0; i<list_size(pokemonsToLocalize) && result == -1; i++){
+        pokemonToLocalizeAux = (t_pokemonToLocalized*)list_get(pokemonsToLocalize, i);
+        if(pokemonToLocalizeAux->idMessage == id_message){
+            result = i;
+        }
+    }
+
+    return result;
+}
+
+void processCaughtPokemon(uint32_t id_message, uint32_t success){
+    t_threadTrainer* threadTrainerAux;
+    for(int i=0; i<list_size(threadsTrainers); i++){
+        threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+        if(threadTrainerAux->idMessageCatch == id_message){
+            if(success == 1){
+                //catch_succesfull
+                catch_succesfull(threadTrainerAux->idTrainer);
+                return;
+            }else{
+                //I switch state BLOCKED_BY_BROKER to BLOCKED
+                //And delete pokemon
+                threadTrainerAux->state = BLOCKED;
+                removePokemonOnMap(threadTrainerAux->positionTo);
+            }
+        }
+    }
 }

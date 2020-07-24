@@ -14,6 +14,12 @@ typedef struct
     uint32_t idConnection;
 
 } threadSubscribe;
+
+typedef struct{
+    uint32_t idMessage;
+    char* pokemon;
+} t_pokemonToLocalized;
+
 //hilos colas de suscripcion
 pthread_t suscripcionAppearedPokemon;
 pthread_t suscripcionCaughtPokemon;
@@ -32,6 +38,7 @@ on_request request;
 
 //hilo puerto escucha gameboy
 pthread_t listening_gameboy;
+t_list* pokemonsToLocalize;
 
 void* connection_broker_global_suscribe();
 void connection_broker_suscribe_to_appeared_pokemon(op_code);
@@ -46,7 +53,11 @@ void close_sockets();
 void retry_on_x_time();
 uint32_t caught_default();
 uint32_t localized_default(char*);
-void send_get_pokemon_global_team(uint32_t, t_list*);
+void send_get_pokemon_global_team(t_list*);
 void connect_client(uint32_t socket,op_code codeOperation);
+void addPokemonToLocalize(char* pokemon, uint32_t idMessage);
+int getIndexPokemonToLocalizedByMessage(uint32_t id_message);
+void removePokemonOnMap(t_position position);
+void processCaughtPokemon(uint32_t id_message, uint32_t success);
 
 #endif

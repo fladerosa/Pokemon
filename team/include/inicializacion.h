@@ -12,6 +12,7 @@ typedef enum{
 	READY,
 	EXEC,
 	BLOCKED,
+    BLOCKED_BY_BROKER,
 	E_P_EXIT
 } enum_process_state;
 /* Estructura de posición */
@@ -46,6 +47,7 @@ typedef struct {
     t_position positionTo;
     bool destinyIsTrainer;
     uint32_t interchangeCycleCount;
+    uint32_t idMessageCatch;
 } t_threadTrainer;
 
 /* Estructura con los datos del archivo de configuración */
