@@ -39,7 +39,7 @@ typedef struct {
     uint32_t idTrainer;
     enum_process_state state;
     pthread_t threadTrainer;
-    pthread_mutex_t mutexAction;
+    sem_t semaphoreAction;
     time_t incomingTime;
     double valueEstimator; //Needed for SJF 
     uint32_t contextSwitchCount;
@@ -70,6 +70,9 @@ t_list* threadsTrainers;
 t_list* globalObjetive;
 uint32_t deadlockCount;
 sem_t plannerSemaphore;
+pthread_t plannerThread;
+pthread_t brokerSuscriptionThread;
+pthread_t sendGetPokemonThread;
 char* pokemonCompareGlobalObjetive; //Variable used ONLY to calculate global objetive
 
 void* planTrainers();
@@ -83,6 +86,8 @@ void assign_data_trainer();
 void* trainerDo(void* ptrIdTrainer);
 void release_resources();
 void destroy_pointer(void*);
+void destroy_trainer(void* pointer);
+void destroy_threadTrainer(void* pointer);
 void destroy_lists_and_loaded_elements();
 
 void calculate_global_objetives();

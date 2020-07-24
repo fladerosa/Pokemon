@@ -112,7 +112,7 @@ void setTrainerToExec_FirstCome(){
 	if(indexFirstTrainer != -1){
 		threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
 		threadTrainerAux->state = EXEC;
-		pthread_mutex_unlock(&(threadTrainerAux->mutexAction));
+		sem_post(&(threadTrainerAux->semaphoreAction));
 		log_info(obligatory_logger, "Entrenador %d, cambia de READY a EXEC, porque es el siguiente a ejecutar", threadTrainerAux->idTrainer);
 	}
 }
@@ -146,7 +146,7 @@ void setTrainerToExec_SJF(){
 	if(indexFirstTrainer != -1){
 		threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, indexFirstTrainer);
 		threadTrainerAux->state = EXEC;
-		pthread_mutex_unlock(&(threadTrainerAux->mutexAction));
+		sem_post(&(threadTrainerAux->semaphoreAction));
 		log_info(obligatory_logger, "Entrenador %d, cambia de READY a EXEC, porque es el siguiente a ejecutar", threadTrainerAux->idTrainer);
 	}
 }
@@ -213,7 +213,7 @@ bool compareStrings(void* string1, void* string2){
 void calculateTrainersInExit(){
 	for(int i=0; i<list_size(threadsTrainers); i++){
 		t_threadTrainer* threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
-		if(threadTrainerAux->state == E_P_EXIT) pthread_mutex_unlock(&threadTrainerAux->mutexAction);
+		if(threadTrainerAux->state == E_P_EXIT) sem_post(&threadTrainerAux->semaphoreAction);
 	}
 }
 
@@ -224,7 +224,7 @@ void calculateTrainerInExit(uint32_t idTrainer){
 		writeTrainerMetrics(idTrainer);
 		sem_post(&plannerSemaphore);
 		pthread_cancel(threadTrainerAux->threadTrainer);
-		pthread_exit(NULL);
+		pthread_exit(&threadTrainerAux->threadTrainer);
 	}
 }
 

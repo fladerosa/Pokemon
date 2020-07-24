@@ -7,8 +7,6 @@
 char* pokemonCompareDeadlock; //variable used ONLY to detect pokemon needed in deadlock
 bool flagExistsDeadlock;
 
-void testDeadlock();
-void* detectDeadlock();
 void detectDeadlock_do();
 t_list* getPokemonsNeeded(t_trainer* trainerAux);
 bool comparePokemonDeadlock(void* pokemonOwn);

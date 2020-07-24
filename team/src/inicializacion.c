@@ -6,7 +6,6 @@
 #include "deadlock.h"
 
 void initialize_team() { 
-    pthread_t plannerThread;
     read_config();
     create_obligatory_logger();
     create_optional_logger();
@@ -15,13 +14,10 @@ void initialize_team() {
     calculate_global_objetives();
     pokemonsOnMap = list_create();
     flagExistsDeadlock = false;
-
-    pthread_t brokerSuscriptionThread;
     request = &reception_message_queue_subscription;
     pthread_create(&brokerSuscriptionThread, NULL, connection_broker_global_suscribe, NULL);
     
     listen_to_gameboy();
-    pthread_t sendGetPokemonThread;
     pthread_create(&sendGetPokemonThread, NULL, send_get_pokemon_global_team, NULL);
     //send_get_pokemon_global_team();
     sem_init(&plannerSemaphore, 0, 0);
@@ -147,7 +143,7 @@ void assign_data_trainer() {
             threadTrainerAux->cpuCycleCount = 0;
             threadTrainerAux->destinyIsTrainer = false;
             
-            pthread_mutex_init(&(threadTrainerAux->mutexAction), NULL);
+            sem_init(&(threadTrainerAux->semaphoreAction), 0, 0);
 
             list_add(threadsTrainers, (void*)threadTrainerAux);
             pthread_create(&threadTrainerAux->threadTrainer, NULL, trainerDo, (void*)&threadTrainerAux->idTrainer);
@@ -186,7 +182,7 @@ void* trainerDo(void* ptrIdTrainer){
     while(true){
         
         t_threadTrainer* threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, trainerId - 1);
-        pthread_mutex_lock(&(threadTrainerAux->mutexAction));
+        sem_wait(&(threadTrainerAux->semaphoreAction));
         //Actions according state
         if(threadTrainerAux->state == READY){
             calculateTrainerFromReadyToExec();
@@ -251,14 +247,44 @@ void release_resources() {
 
     destroy_lists_and_loaded_elements();
     close_sockets();
-}
+    pthread_cancel(plannerThread);
+    pthread_exit(&plannerThread);
+    sem_destroy(&plannerSemaphore);
 
+    pthread_cancel(sendGetPokemonThread);
+    pthread_cancel(brokerSuscriptionThread);
+    pthread_cancel(server);
+
+    pthread_exit(&sendGetPokemonThread);
+    pthread_exit(&brokerSuscriptionThread);
+    pthread_exit(&server);
+
+    pthread_cancel(suscripcionAppearedPokemon);
+    pthread_cancel(suscripcionCaughtPokemon);
+    pthread_cancel(suscripcionLocalizedPokemon);
+
+    pthread_exit(&suscripcionAppearedPokemon);
+    pthread_exit(&suscripcionCaughtPokemon);
+    pthread_exit(&suscripcionLocalizedPokemon);
+}
 void destroy_pointer(void* pointer){   
     free(pointer);
 }
+void destroy_trainer(void* pointer){   
+    t_trainer* trainerAux = (t_trainer*)pointer;
+    list_destroy_and_destroy_elements(trainerAux->pokemonOwned, (void*)destroy_pointer);
+    list_destroy_and_destroy_elements(trainerAux->pokemonNeeded, (void*)destroy_pointer);
+    free(pointer);
+}
+void destroy_threadTrainer(void* pointer){
+    t_threadTrainer* threadTrainerAux = (t_threadTrainer*)pointer;
+    sem_destroy(&threadTrainerAux->semaphoreAction);
+    free(pointer);
+}
 
-void destroy_lists_and_loaded_elements(){   
-     list_destroy_and_destroy_elements(trainers, (void*)destroy_pointer);
-     list_destroy_and_destroy_elements(threadsTrainers, (void*)destroy_pointer);
+void destroy_lists_and_loaded_elements(){
+    list_destroy_and_destroy_elements(trainers, (void*)destroy_trainer);
+    list_destroy_and_destroy_elements(threadsTrainers, (void*)destroy_threadTrainer);
+    list_destroy_and_destroy_elements(threadSubscribeList, (void*)destroy_pointer);
 }
 
