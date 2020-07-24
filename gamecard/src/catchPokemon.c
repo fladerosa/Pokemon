@@ -126,7 +126,7 @@ void sacarDatosYOrdenarBloques(char* metadata, catch_pokemon* catchPokemon){
         log_info(optional_logger, "No estaba esa posicion");
     }
 
-    char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, catchPokemon->pokemon, catchPokemon->position.posx, catchPokemon->position.posy, 1, metadata);
+    char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, stream, catchPokemon->position.posx, catchPokemon->position.posy, 1, metadata);
 
     int cantidadBloquesUpdated = ceil((float) atoi(sizeMetadata)/configM.blockSize);
 
@@ -219,7 +219,7 @@ void removeLastBlock(char* metadata, catch_pokemon* catchPokemon, positionQuanti
     config_destroy(configMetadataTallGrass);
 
     free(bloquesConfig);
-    for(int i = 0; i<cantidadBloques; i++){
+    for(int i = 0; i<cantidadBloques -1 ; i++){
         free(bloques[i]);
     }
     free(bloques);

@@ -60,8 +60,8 @@ void newPokemonTallGrass(threadPokemonMessage* threadPokemonMessage){
 
     free(id_message);
     free(stream);
-    free(threadPokemonMessage->pokemon);
     free(newPokemon->pokemon);
+    free(threadPokemonMessage->pokemon);
     free(threadPokemonMessage->id_mensaje);
     free(threadPokemonMessage);
 }
@@ -74,13 +74,11 @@ void createMetadataPokemon(char* directory, new_pokemon* newPokemon){
     strcat(directorioMetadata, metadata);
 
     FILE* file = fopen(directorioMetadata,"ab+");
-    flock(fileno(file), LOCK_EX);
     
     fseek(file, 0, SEEK_END);
     int sizeFile = ftell(file);
     fseek(file, 0, SEEK_SET);
     
-    flock(fileno(file), LOCK_UN);
     fclose(file);
 
     char* stream = malloc(newPokemon->sizePokemon + 1);
@@ -191,7 +189,7 @@ void agregarDatosYOrdenarBloques(char* metadata, new_pokemon* newPokemon){
             list_add(lista, posicionNewPokemon);
         }
 
-        char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, newPokemon->pokemon, newPokemon->position.posx, newPokemon->position.posy, newPokemon->quantity, metadata);
+        char* sizeMetadata = bajarBloquesADisco(lista, bloques, cantidadBloques, stream, newPokemon->position.posx, newPokemon->position.posy, newPokemon->quantity, metadata);
 
         pthread_mutex_lock(&metadata_create);
         t_config* configMetadataUpdated = config_create(metadata);

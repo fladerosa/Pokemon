@@ -333,7 +333,7 @@ void abrirMetadata(char* metadata, char* pokemon){
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
     pthread_mutex_unlock(&metadata_create);
-
+    
     config_set_value(configMetadataTallGrass, "OPEN", "Y");
 
     pthread_mutex_lock(&metadata_create);
@@ -346,8 +346,6 @@ void abrirMetadata(char* metadata, char* pokemon){
 }
 
 void cerrarMetadata(char* metadata, char* pokemon){
-
-    //bloquearMetadata(pokemon);
 
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
@@ -368,9 +366,9 @@ void cerrarMetadata(char* metadata, char* pokemon){
 
 void intentarAbrirMetadata(char* metadata, char* pokemon){
     //pthread_mutex_lock(&metadata_create);
-    bloquearMetadata(pokemon);
+    pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
-    desbloquearMetadata(pokemon);
+    pthread_mutex_unlock(&metadata_create);
     //pthread_mutex_unlock(&metadata_create);
 
     char* valorOpen = malloc(sizeof(char)*5 + 1);
@@ -381,15 +379,13 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
     uint32_t tiempoReintento = config_get_int_value(config, "TIEMPO_DE_REINTENTO_OPERACION");
 
     while(strcmp(valorOpen, "Y") == 0){
-        desbloquearMetadata(pokemon);
+        //desbloquearMetadata(pokemon);
         log_error(obligatory_logger, "Un proceso intento abrir un archivo que esta abierto (Reintentando en %d segundos)", tiempoReintento);
         sleep(tiempoReintento);
         
         config_destroy(configMetadataTallGrass);
         pthread_mutex_lock(&metadata_create);
-        bloquearMetadata(pokemon);
         configMetadataTallGrass = config_create(metadata);
-        //desbloquearMetadata(pokemon);
         pthread_mutex_unlock(&metadata_create);
         strcpy(valorOpen, "");
         strcat(valorOpen, config_get_string_value(configMetadataTallGrass, "OPEN"));
@@ -400,10 +396,6 @@ void intentarAbrirMetadata(char* metadata, char* pokemon){
 }
 
 void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
-    char* stream = malloc(newPokemon->sizePokemon);
-    memcpy(stream, newPokemon->pokemon, newPokemon->sizePokemon); 
-    stream[newPokemon->sizePokemon] = '\0';
-
     pthread_mutex_lock(&metadata_create);
     t_config* configMetadataTallGrass = config_create(metadata);
     pthread_mutex_unlock(&metadata_create);
@@ -446,7 +438,7 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     size += sizeFile;
     size --;
 
-    char* sizeChar = malloc(sizeof(uint32_t));
+    char* sizeChar = malloc(10);
     strcpy(sizeChar, "");
     sprintf(sizeChar, "%d", size);
 
@@ -459,7 +451,6 @@ void addBlockMetadata(char* metadata,char* block, new_pokemon* newPokemon){
     log_info(obligatory_logger, "Se ha agregado un nuevo bloque al pokemon");
     config_destroy(configMetadataTallGrass);
     
-    free(stream);
     free(bloque);
     free(bloquesConfig);
     for(int i = 0; i<cantidadBloques; i++){

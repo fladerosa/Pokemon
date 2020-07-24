@@ -22,4 +22,10 @@ make -C ./gameboy
 make -C ./gamecard
 make -C ./team
 
+git config --global user.email "dariokozicki@gmail.com"
+git config --global user.name "Dario"
+
+git add .
+git stash
+
 echo -e "\n\nDeploy done!\n\n"
