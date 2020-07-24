@@ -53,7 +53,7 @@ void close_sockets();
 void retry_on_x_time();
 uint32_t caught_default();
 uint32_t localized_default(char*);
-void send_get_pokemon_global_team(t_list*);
+void* send_get_pokemon_global_team();
 void connect_client(uint32_t socket,op_code codeOperation);
 void addPokemonToLocalize(char* pokemon, uint32_t idMessage);
 int getIndexPokemonToLocalizedByMessage(uint32_t id_message);

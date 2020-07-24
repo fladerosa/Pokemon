@@ -374,13 +374,13 @@ char* getPokemonNotNeeded(t_trainer* trainerAux){
 	copyOfOwned = list_duplicate(trainerAux->pokemonOwned);
 	for(int j = 0; j < list_size(trainerAux->pokemonNeeded) && continueFor; j++){
 		result = (char*)list_get(trainerAux->pokemonNeeded, j);
-		pokemonCompareGlobalObjetive = malloc(strlen(result));
+		pokemonCompareGlobalObjetive = malloc(strlen(result)+1);
 		strcpy(pokemonCompareGlobalObjetive, result);
 		list_remove_by_condition(copyOfOwned, analyzePokemonInGlobal);
 		free(pokemonCompareGlobalObjetive);
 	}
 	result = (char*)list_get(copyOfOwned, 0);
-	pokemonCompareGlobalObjetive = malloc(strlen(result));
+	pokemonCompareGlobalObjetive = malloc(strlen(result)+1);
 	strcpy(pokemonCompareGlobalObjetive, result);
 	list_remove_by_condition(trainerAux->pokemonOwned, analyzePokemonInGlobal);
 	free(pokemonCompareGlobalObjetive);
@@ -388,7 +388,7 @@ char* getPokemonNotNeeded(t_trainer* trainerAux){
 }
 char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon){
 	char* result;
-	pokemonCompareGlobalObjetive = malloc(strlen(pokemon));
+	pokemonCompareGlobalObjetive = malloc(strlen(pokemon)+1);
 	strcpy(pokemonCompareGlobalObjetive, pokemon);
 	result = (char*)list_remove_by_condition(trainerAux->pokemonOwned, analyzePokemonInGlobal);
 	free(pokemonCompareGlobalObjetive);
@@ -398,19 +398,27 @@ char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon){
 
 bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux){
 	log_info(obligatory_logger, "Atrapar pokemon: %s, en posicion: (%d,%d)", pokemon->pokemon, pokemon->position.posx, pokemon->position.posy);
-	uint32_t client_fd = crear_conexion(config_values.ip_broker, config_values.puerto_broker);
-    //send_new_connection(client_fd); 
+	//uint32_t client_fd = crear_conexion(config_values.ip_broker, config_values.puerto_broker);
+
+	struct addrinfo hints;
+	struct addrinfo *server_info;
+
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
+
+	getaddrinfo(config_values.ip_broker, config_values.puerto_broker, &hints, &server_info);
+
+	uint32_t client_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
+
 	bool result = true;
-	if(client_fd != -1){
+	if(connect(client_fd, server_info->ai_addr, server_info->ai_addrlen) != -1){
 		threadTrainerAux->state = BLOCKED;
 		threadTrainerAux->contextSwitchCount++;
 		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque espera resultado de catch", threadTrainerAux->idTrainer);
 		
 		uint32_t* id_message = malloc(sizeof(uint32_t));
-/*
-		void* stream = catch_pokemon_to_stream(catchPokemonMessage, id_message);
-		t_paquete* packageToSend = stream_to_package(CATCH_POKEMON, stream, strlen(pokemon->pokemon) + sizeof(uint32_t)*3);
-		*/
 
 		catch_pokemon* catchPokemonMessage = init_catch_pokemon(pokemon->pokemon, pokemon->position.posx, pokemon->position.posy);
 		*id_message = -1;
@@ -443,13 +451,13 @@ void catch_succesfull(uint32_t id_trainer){
 	t_pokemon_on_map* pokemonOnMapAux = getPokemonByPosition(threadTrainerAux->positionTo);
 	
 	//Remove the global objetive
-	pokemonCompareGlobalObjetive = malloc(strlen(pokemonOnMapAux->pokemon));
+	pokemonCompareGlobalObjetive = malloc(strlen(pokemonOnMapAux->pokemon)+1);
 	strcpy(pokemonCompareGlobalObjetive, pokemonOnMapAux->pokemon);
 	list_remove_by_condition(globalObjetive, analyzePokemonInGlobal);
 	free(pokemonCompareGlobalObjetive);
 	
 	//Add pokemon owned
-	char* newPokemonOwned = malloc(strlen(pokemonOnMapAux->pokemon));
+	char* newPokemonOwned = malloc(strlen(pokemonOnMapAux->pokemon)+1);
 	strcpy(newPokemonOwned, pokemonOnMapAux->pokemon);
 	list_add(trainerAux->pokemonOwned, newPokemonOwned);
 

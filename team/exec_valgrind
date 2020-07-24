@@ -4,7 +4,7 @@ echo "Compiling & Executing with Valgrind:"
 make $FILE
 if test -f "./$FILE"; then
    #valgrind --log-file=mem_leaks.txt --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 ./$FILE 
-    valgrind --log-file=threads_races.txt --tool=helgrind ./$FILE
+   valgrind --log-file=threads_races.txt --tool=helgrind ./$FILE
 
 fi
 echo "Finished executing with Valgrind."

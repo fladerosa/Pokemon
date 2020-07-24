@@ -17,13 +17,17 @@ void initialize_team() {
     flagExistsDeadlock = false;
 
     pthread_t brokerSuscriptionThread;
-    pthread_create(&brokerSuscriptionThread, NULL, connection_broker_global_suscribe, NULL);
     request = &reception_message_queue_subscription;
+    pthread_create(&brokerSuscriptionThread, NULL, connection_broker_global_suscribe, NULL);
+    
     listen_to_gameboy();
-    send_get_pokemon_global_team(globalObjetive);
+    pthread_t sendGetPokemonThread;
+    pthread_create(&sendGetPokemonThread, NULL, send_get_pokemon_global_team, NULL);
+    //send_get_pokemon_global_team();
     sem_init(&plannerSemaphore, 0, 0);
     pthread_create(&plannerThread, NULL, planTrainers, NULL);
     validateEndTeam();
+    pthread_join(sendGetPokemonThread,NULL);
     pthread_join(plannerThread,NULL);
     pthread_join(brokerSuscriptionThread,NULL);
     pthread_join(server,NULL);

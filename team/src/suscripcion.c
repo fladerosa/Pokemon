@@ -84,11 +84,10 @@ args_pthread* thread_suscribe_arguments(op_code code, uint32_t socket) {
 
 void suscribeOnThreadList(args_pthread* arguments){
     suscribirseA(arguments->codigoCola,*arguments->socket);
-    structAppearedPokemon = malloc(sizeof(threadSubscribe));
-    structCaughtPokemon = malloc(sizeof(threadSubscribe));
-    structLocalizedPokemon = malloc(sizeof(threadSubscribe));
+    
     switch(arguments->codigoCola){
         case APPEARED_POKEMON:
+            structAppearedPokemon = malloc(sizeof(threadSubscribe));
             structAppearedPokemon->idQueue = APPEARED_POKEMON;
             structAppearedPokemon->socket = *arguments->socket;
             list_add(threadSubscribeList, structAppearedPokemon);
@@ -96,6 +95,7 @@ void suscribeOnThreadList(args_pthread* arguments){
             connect_client(*arguments->socket,APPEARED_POKEMON);
             break;
         case CAUGHT_POKEMON:
+            structCaughtPokemon = malloc(sizeof(threadSubscribe));
             structCaughtPokemon->idQueue = CAUGHT_POKEMON;
             structCaughtPokemon->socket = *arguments->socket;
             list_add(threadSubscribeList, structCaughtPokemon);
@@ -103,6 +103,7 @@ void suscribeOnThreadList(args_pthread* arguments){
             connect_client(*arguments->socket,CAUGHT_POKEMON);
             break;
         case LOCALIZED_POKEMON:
+            structLocalizedPokemon = malloc(sizeof(threadSubscribe));
             structLocalizedPokemon->idQueue = LOCALIZED_POKEMON;
             structLocalizedPokemon->socket = *arguments->socket;
             list_add(threadSubscribeList, structLocalizedPokemon);
@@ -167,19 +168,20 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
     switch(code){
         case APPEARED_POKEMON:;
             appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, NULL, false); 
+            appeared_pokemon_Message->pokemon = realloc(appeared_pokemon_Message->pokemon, appeared_pokemon_Message->sizePokemon+1);
             appeared_pokemon_Message->pokemon[appeared_pokemon_Message->sizePokemon] = '\0';
             log_info(obligatory_logger, "Receiving Message Appeared pokemon.");
             log_info(obligatory_logger, "Pokemon Appeared: %s, position: (%d,%d)", appeared_pokemon_Message->pokemon, appeared_pokemon_Message->position.posx, appeared_pokemon_Message->position.posy);
             send_ack(client_fd, *id_message);
 
-            pokemonCompareGlobalObjetive = malloc(strlen(appeared_pokemon_Message->pokemon));
+            pokemonCompareGlobalObjetive = malloc(strlen(appeared_pokemon_Message->pokemon)+1);
             strcpy(pokemonCompareGlobalObjetive, appeared_pokemon_Message->pokemon);
             if(list_any_satisfy(globalObjetive, analyzePokemonInGlobal)){
                 t_pokemon_on_map* newPokemonAppeared = malloc(sizeof(t_pokemon_on_map));
                 newPokemonAppeared->state = P_FREE;
                 newPokemonAppeared->position.posx = appeared_pokemon_Message->position.posx;
                 newPokemonAppeared->position.posy = appeared_pokemon_Message->position.posy;
-                newPokemonAppeared->pokemon = malloc(strlen(appeared_pokemon_Message->pokemon));
+                newPokemonAppeared->pokemon = malloc(strlen(appeared_pokemon_Message->pokemon)+1);
                 newPokemonAppeared->id = list_size(pokemonsOnMap) + 1;
                 strcpy(newPokemonAppeared->pokemon, appeared_pokemon_Message->pokemon);
 
@@ -197,7 +199,7 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             send_ack(client_fd, *id_message);
             break;
         case LOCALIZED_POKEMON:;
-            localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, id_message, NULL, false);
+            localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, id_message, id_message_correlational, false);
             localized_Pokemon_Message->pokemon[localized_Pokemon_Message->sizePokemon] = '\0';
             int indexOfPokemonToLocalyze = getIndexPokemonToLocalizedByMessage(*id_message);
             if(indexOfPokemonToLocalyze != -1){
@@ -259,10 +261,8 @@ uint32_t localized_default(char* pokemon) {
     return  position_default;
 }
 
-void send_get_pokemon_global_team(t_list* globalObjetive){
-    //send for each pokemon needed by team
+void* send_get_pokemon_global_team(){
     uint32_t client_fd = crear_conexion(config_values.ip_broker, config_values.puerto_broker);
-    //send_new_connection(client_fd); 
     uint32_t* id_message = malloc(sizeof(uint32_t));
     get_pokemon* getPokemonMessage;
     void* stream;
@@ -270,7 +270,6 @@ void send_get_pokemon_global_team(t_list* globalObjetive){
     char* pokemonToSend;
     pokemonsToLocalize = list_create();
     
-
     for(int i=0; i< total_global; i++) {
         pokemonToSend = (char*)list_get(globalObjetive, i);
         getPokemonMessage = malloc(sizeof(get_pokemon));
@@ -296,6 +295,7 @@ void send_get_pokemon_global_team(t_list* globalObjetive){
 
         addPokemonToLocalize(pokemonToSend, acknowledgementMessage->id_message);
     }
+    return NULL;
 }
 
 void addPokemonToLocalize(char* pokemon, uint32_t idMessage){

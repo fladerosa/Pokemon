@@ -1,42 +1,168 @@
-[INFO] 22:54:26:408 TEAM/(15441:15441): Obligatory Log was created successfully
+[INFO] 01:28:01:621 TEAM/(20536:20536): Obligatory Log was created successfully
 
-[INFO] 22:54:26:408 TEAM/(15441:15441): Entrenador 1 entra a cola NEW.
-[INFO] 22:54:26:419 TEAM/(15441:15448): Conectado con exito con el proceso en 127.0.0.1 :6009
-[INFO] 22:54:26:419 TEAM/(15441:15448): Connection to broker succesfully
+[INFO] 01:28:01:699 TEAM/(20536:20536): Entrenador 1 entra a cola NEW.
+[INFO] 01:28:03:464 TEAM/(20536:20541): Se conectó un proceso en el socket 8
+[INFO] 01:28:03:523 TEAM/(20536:20545): Receiving Message Appeared pokemon.
+[INFO] 01:28:03:523 TEAM/(20536:20545): Pokemon Appeared: Pikachu, position: (1,2)
+[INFO] 01:28:03:551 TEAM/(20536:20543): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 01:28:03:578 TEAM/(20536:20539): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,2)
+[INFO] 01:28:03:578 TEAM/(20536:20543): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 01:28:03:581 TEAM/(20536:20543): Inicia algoritmo de detección de deadlock.
+[INFO] 01:28:03:582 TEAM/(20536:20543): No se detectó deadlock.
+[INFO] 01:28:03:584 TEAM/(20536:20543): Inicia algoritmo de detección de deadlock.
+[INFO] 01:28:03:593 TEAM/(20536:20543): No se detectó deadlock.
+[INFO] 01:28:05:620 TEAM/(20536:20539): Atrapar pokemon: Pikachu, en posicion: (1,2)
+[INFO] 01:28:05:622 TEAM/(20536:20539): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 01:28:05:648 TEAM/(20536:20539): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 01:28:05:653 TEAM/(20536:20539): Trainer: 1
+[INFO] 01:28:05:654 TEAM/(20536:20539): Total Cycle CPU by Trainer 1: 1
+[INFO] 01:28:05:656 TEAM/(20536:20543): Inicia algoritmo de detección de deadlock.
+[INFO] 01:28:05:656 TEAM/(20536:20543): No se detectó deadlock.
+[INFO] 01:28:05:700 TEAM/(20536:20536): Algorithm: FIFO 
+[INFO] 01:28:05:701 TEAM/(20536:20536): Total Cycle CPU by TEAM: 1
+[INFO] 01:28:05:701 TEAM/(20536:20536): Total Context Switch by Team: 1
+[INFO] 01:28:05:705 TEAM/(20536:20536): Total Deadlocks by Team: 0
+[INFO] 01:35:39:790 TEAM/(20668:20668): Obligatory Log was created successfully
 
-[INFO] 22:54:26:425 TEAM/(15441:15441): Conectado con exito con el proceso en 127.0.0.1 :6009
-[INFO] 22:54:26:427 TEAM/(15441:15448): Conectado con exito con el proceso en 127.0.0.1 :6009
-[INFO] 22:54:26:433 TEAM/(15441:15448): Connection to broker succesfully
+[INFO] 01:35:40:55 TEAM/(20668:20668): Entrenador 1 entra a cola NEW.
+[INFO] 01:35:42:486 TEAM/(20668:20673): Se conectó un proceso en el socket 9
+[INFO] 01:35:42:494 TEAM/(20668:20677): Receiving Message Appeared pokemon.
+[INFO] 01:35:42:495 TEAM/(20668:20677): Pokemon Appeared: Pikachu, position: (1,2)
+[INFO] 01:35:42:538 TEAM/(20668:20675): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 01:35:42:554 TEAM/(20668:20671): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,2)
+[INFO] 01:35:42:557 TEAM/(20668:20675): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 01:35:42:558 TEAM/(20668:20675): Inicia algoritmo de detección de deadlock.
+[INFO] 01:35:42:558 TEAM/(20668:20675): No se detectó deadlock.
+[INFO] 01:35:42:559 TEAM/(20668:20675): Inicia algoritmo de detección de deadlock.
+[INFO] 01:35:42:559 TEAM/(20668:20675): No se detectó deadlock.
+[INFO] 01:35:44:562 TEAM/(20668:20671): Atrapar pokemon: Pikachu, en posicion: (1,2)
+[INFO] 01:35:44:565 TEAM/(20668:20671): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 01:35:44:602 TEAM/(20668:20671): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 01:35:44:603 TEAM/(20668:20671): Trainer: 1
+[INFO] 01:35:44:607 TEAM/(20668:20671): Total Cycle CPU by Trainer 1: 1
+[INFO] 01:35:44:610 TEAM/(20668:20675): Inicia algoritmo de detección de deadlock.
+[INFO] 01:35:44:610 TEAM/(20668:20675): No se detectó deadlock.
+[INFO] 01:35:44:700 TEAM/(20668:20668): Algorithm: FIFO 
+[INFO] 01:35:44:701 TEAM/(20668:20668): Total Cycle CPU by TEAM: 1
+[INFO] 01:35:44:701 TEAM/(20668:20668): Total Context Switch by Team: 1
+[INFO] 01:35:44:702 TEAM/(20668:20668): Total Deadlocks by Team: 0
+[INFO] 01:39:14:719 TEAM/(20795:20795): Obligatory Log was created successfully
 
-[INFO] 22:54:26:437 TEAM/(15441:15448): Conectado con exito con el proceso en 127.0.0.1 :6009
-[INFO] 22:54:26:437 TEAM/(15441:15448): Connection to broker succesfully
+[INFO] 01:39:14:874 TEAM/(20795:20795): Entrenador 1 entra a cola NEW.
+[INFO] 01:39:16:803 TEAM/(20795:20801): Se conectó un proceso en el socket 9
+[INFO] 01:39:16:838 TEAM/(20795:20805): Receiving Message Appeared pokemon.
+[INFO] 01:39:16:839 TEAM/(20795:20805): Pokemon Appeared: Pikachu, position: (1,2)
+[INFO] 01:39:16:862 TEAM/(20795:20803): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 01:39:16:870 TEAM/(20795:20799): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,2)
+[INFO] 01:39:16:886 TEAM/(20795:20803): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 01:39:16:901 TEAM/(20795:20803): Inicia algoritmo de detección de deadlock.
+[INFO] 01:39:16:901 TEAM/(20795:20803): No se detectó deadlock.
+[INFO] 01:39:16:906 TEAM/(20795:20803): Inicia algoritmo de detección de deadlock.
+[INFO] 01:39:16:907 TEAM/(20795:20803): No se detectó deadlock.
+[INFO] 01:39:18:887 TEAM/(20795:20799): Atrapar pokemon: Pikachu, en posicion: (1,2)
+[INFO] 01:39:18:889 TEAM/(20795:20799): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 01:39:18:923 TEAM/(20795:20799): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 01:39:18:924 TEAM/(20795:20799): Trainer: 1
+[INFO] 01:39:18:924 TEAM/(20795:20799): Total Cycle CPU by Trainer 1: 1
+[INFO] 01:39:18:925 TEAM/(20795:20803): Inicia algoritmo de detección de deadlock.
+[INFO] 01:39:18:925 TEAM/(20795:20803): No se detectó deadlock.
+[INFO] 01:39:19:51 TEAM/(20795:20795): Algorithm: FIFO 
+[INFO] 01:39:19:56 TEAM/(20795:20795): Total Cycle CPU by TEAM: 1
+[INFO] 01:39:19:58 TEAM/(20795:20795): Total Context Switch by Team: 1
+[INFO] 01:39:19:60 TEAM/(20795:20795): Total Deadlocks by Team: 0
+[INFO] 01:40:08:940 TEAM/(20857:20857): Obligatory Log was created successfully
 
-[INFO] 22:54:31:766 TEAM/(15441:15452): Receiving Message Appeared pokemon.
-[INFO] 22:54:31:766 TEAM/(15441:15452): Pokemon Appeared: Squirtle, position: (1,1)
-[INFO] 22:54:31:767 TEAM/(15441:15458): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
-[INFO] 22:54:31:767 TEAM/(15441:15458): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
-[INFO] 22:54:31:767 TEAM/(15441:15447): Entrenador 1 - Posicion actual: (1,3) - Posicion destino: (1,2)
-[INFO] 22:54:31:767 TEAM/(15441:15458): Inicia algoritmo de detección de deadlock.
-[INFO] 22:54:31:767 TEAM/(15441:15458): No se detectó deadlock.
-[INFO] 22:54:31:767 TEAM/(15441:15458): Inicia algoritmo de detección de deadlock.
-[INFO] 22:54:31:767 TEAM/(15441:15458): No se detectó deadlock.
-[INFO] 22:54:33:769 TEAM/(15441:15447): Entrenador 1 - Posicion actual: (1,2) - Posicion destino: (1,1)
-[INFO] 22:54:35:771 TEAM/(15441:15447): Atrapar pokemon: Squirtle, en posicion: (1,1)
-[INFO] 22:54:35:771 TEAM/(15441:15447): Conectado con exito con el proceso en 127.0.0.1 :6009
-[INFO] 22:54:35:771 TEAM/(15441:15447): Entrenador 1, cambia de EXEC a BLOCKED, porque espera resultado de catch
-[INFO] 22:54:35:784 TEAM/(15441:15458): Inicia algoritmo de detección de deadlock.
-[INFO] 22:54:35:784 TEAM/(15441:15458): No se detectó deadlock.
-[INFO] 22:54:42:638 TEAM/(15441:15455): Receiving Message Caught pokemon, Result 1
-[INFO] 22:54:59:454 TEAM/(15441:15455): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
-[INFO] 22:54:59:454 TEAM/(15441:15455): Trainer: 1
-[INFO] 22:54:59:454 TEAM/(15441:15455): Total Cycle CPU by Trainer 1: 2
-[INFO] 22:54:59:455 TEAM/(15441:15458): Inicia algoritmo de detección de deadlock.
-[INFO] 22:54:59:455 TEAM/(15441:15447): Trainer: 1
-[INFO] 22:54:59:455 TEAM/(15441:15458): No se detectó deadlock.
-[INFO] 22:54:59:455 TEAM/(15441:15447): Total Cycle CPU by Trainer 1: 2
-[INFO] 22:54:59:455 TEAM/(15441:15458): Inicia algoritmo de detección de deadlock.
-[INFO] 22:54:59:455 TEAM/(15441:15458): No se detectó deadlock.
-[INFO] 22:54:59:472 TEAM/(15441:15441): Algorithm: FIFO 
-[INFO] 22:54:59:472 TEAM/(15441:15441): Total Cycle CPU by TEAM: 2
-[INFO] 22:54:59:472 TEAM/(15441:15441): Total Context Switch by Team: 2
-[INFO] 22:54:59:472 TEAM/(15441:15441): Total Deadlocks by Team: 0
+[INFO] 01:40:09:76 TEAM/(20857:20857): Entrenador 1 entra a cola NEW.
+[INFO] 01:40:10:432 TEAM/(20857:20863): Se conectó un proceso en el socket 9
+[INFO] 01:40:10:445 TEAM/(20857:20867): Receiving Message Appeared pokemon.
+[INFO] 01:40:10:455 TEAM/(20857:20867): Pokemon Appeared: Pikachu, position: (1,2)
+[INFO] 01:40:10:491 TEAM/(20857:20865): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 01:40:10:511 TEAM/(20857:20861): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,2)
+[INFO] 01:40:10:512 TEAM/(20857:20865): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 01:40:10:512 TEAM/(20857:20865): Inicia algoritmo de detección de deadlock.
+[INFO] 01:40:10:513 TEAM/(20857:20865): No se detectó deadlock.
+[INFO] 01:40:10:514 TEAM/(20857:20865): Inicia algoritmo de detección de deadlock.
+[INFO] 01:40:10:514 TEAM/(20857:20865): No se detectó deadlock.
+[INFO] 01:40:12:514 TEAM/(20857:20861): Atrapar pokemon: Pikachu, en posicion: (1,2)
+[INFO] 01:40:12:516 TEAM/(20857:20861): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 01:40:12:578 TEAM/(20857:20861): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 01:40:12:594 TEAM/(20857:20861): Trainer: 1
+[INFO] 01:40:12:598 TEAM/(20857:20861): Total Cycle CPU by Trainer 1: 1
+[INFO] 01:40:12:607 TEAM/(20857:20865): Inicia algoritmo de detección de deadlock.
+[INFO] 01:40:12:607 TEAM/(20857:20865): No se detectó deadlock.
+[INFO] 01:40:12:812 TEAM/(20857:20857): Algorithm: FIFO 
+[INFO] 01:40:12:812 TEAM/(20857:20857): Total Cycle CPU by TEAM: 1
+[INFO] 01:40:12:812 TEAM/(20857:20857): Total Context Switch by Team: 1
+[INFO] 01:40:12:815 TEAM/(20857:20857): Total Deadlocks by Team: 0
+[INFO] 01:40:47:264 TEAM/(20918:20918): Obligatory Log was created successfully
+
+[INFO] 01:40:47:470 TEAM/(20918:20918): Entrenador 1 entra a cola NEW.
+[INFO] 01:40:50:108 TEAM/(20918:20921): Se conectó un proceso en el socket 9
+[INFO] 01:40:50:119 TEAM/(20918:20925): Receiving Message Appeared pokemon.
+[INFO] 01:40:50:138 TEAM/(20918:20925): Pokemon Appeared: Pikachu, position: (1,2)
+[INFO] 01:40:50:154 TEAM/(20918:20923): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 01:40:50:199 TEAM/(20918:20919): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,2)
+[INFO] 01:40:50:199 TEAM/(20918:20923): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 01:40:50:200 TEAM/(20918:20923): Inicia algoritmo de detección de deadlock.
+[INFO] 01:40:50:201 TEAM/(20918:20923): No se detectó deadlock.
+[INFO] 01:40:50:211 TEAM/(20918:20923): Inicia algoritmo de detección de deadlock.
+[INFO] 01:40:50:213 TEAM/(20918:20923): No se detectó deadlock.
+[INFO] 01:40:52:204 TEAM/(20918:20919): Atrapar pokemon: Pikachu, en posicion: (1,2)
+[INFO] 01:40:52:205 TEAM/(20918:20919): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 01:40:52:226 TEAM/(20918:20919): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 01:40:52:227 TEAM/(20918:20919): Trainer: 1
+[INFO] 01:40:52:227 TEAM/(20918:20919): Total Cycle CPU by Trainer 1: 1
+[INFO] 01:40:52:228 TEAM/(20918:20923): Inicia algoritmo de detección de deadlock.
+[INFO] 01:40:52:228 TEAM/(20918:20923): No se detectó deadlock.
+[INFO] 01:40:52:305 TEAM/(20918:20918): Algorithm: FIFO 
+[INFO] 01:40:52:305 TEAM/(20918:20918): Total Cycle CPU by TEAM: 1
+[INFO] 01:40:52:305 TEAM/(20918:20918): Total Context Switch by Team: 1
+[INFO] 01:40:52:306 TEAM/(20918:20918): Total Deadlocks by Team: 0
+[INFO] 01:41:54:972 TEAM/(21003:21003): Obligatory Log was created successfully
+
+[INFO] 01:41:55:168 TEAM/(21003:21003): Entrenador 1 entra a cola NEW.
+[INFO] 01:41:56:850 TEAM/(21003:21006): Se conectó un proceso en el socket 9
+[INFO] 01:41:56:893 TEAM/(21003:21010): Receiving Message Appeared pokemon.
+[INFO] 01:41:56:914 TEAM/(21003:21010): Pokemon Appeared: Pikachu, position: (1,2)
+[INFO] 01:41:56:936 TEAM/(21003:21008): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 01:41:56:967 TEAM/(21003:21004): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,2)
+[INFO] 01:41:56:988 TEAM/(21003:21008): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 01:41:56:996 TEAM/(21003:21008): Inicia algoritmo de detección de deadlock.
+[INFO] 01:41:57:19 TEAM/(21003:21008): No se detectó deadlock.
+[INFO] 01:41:57:20 TEAM/(21003:21008): Inicia algoritmo de detección de deadlock.
+[INFO] 01:41:57:24 TEAM/(21003:21008): No se detectó deadlock.
+[INFO] 01:41:58:970 TEAM/(21003:21004): Atrapar pokemon: Pikachu, en posicion: (1,2)
+[INFO] 01:41:58:971 TEAM/(21003:21004): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 01:41:58:977 TEAM/(21003:21004): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 01:41:58:992 TEAM/(21003:21004): Trainer: 1
+[INFO] 01:41:58:992 TEAM/(21003:21004): Total Cycle CPU by Trainer 1: 1
+[INFO] 01:41:58:993 TEAM/(21003:21008): Inicia algoritmo de detección de deadlock.
+[INFO] 01:41:58:993 TEAM/(21003:21008): No se detectó deadlock.
+[INFO] 01:41:59:96 TEAM/(21003:21003): Algorithm: FIFO 
+[INFO] 01:41:59:96 TEAM/(21003:21003): Total Cycle CPU by TEAM: 1
+[INFO] 01:41:59:97 TEAM/(21003:21003): Total Context Switch by Team: 1
+[INFO] 01:41:59:97 TEAM/(21003:21003): Total Deadlocks by Team: 0
+[INFO] 01:42:43:197 TEAM/(21046:21046): Obligatory Log was created successfully
+
+[INFO] 01:42:43:439 TEAM/(21046:21046): Entrenador 1 entra a cola NEW.
+[INFO] 01:42:44:542 TEAM/(21046:21051): Se conectó un proceso en el socket 8
+[INFO] 01:42:44:655 TEAM/(21046:21055): Receiving Message Appeared pokemon.
+[INFO] 01:42:44:656 TEAM/(21046:21055): Pokemon Appeared: Pikachu, position: (1,2)
+[INFO] 01:42:44:684 TEAM/(21046:21053): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 01:42:44:691 TEAM/(21046:21049): Entrenador 1 - Posicion actual: (1,1) - Posicion destino: (1,2)
+[INFO] 01:42:44:703 TEAM/(21046:21053): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 01:42:44:710 TEAM/(21046:21053): Inicia algoritmo de detección de deadlock.
+[INFO] 01:42:44:717 TEAM/(21046:21053): No se detectó deadlock.
+[INFO] 01:42:44:726 TEAM/(21046:21053): Inicia algoritmo de detección de deadlock.
+[INFO] 01:42:44:727 TEAM/(21046:21053): No se detectó deadlock.
+[INFO] 01:42:46:716 TEAM/(21046:21049): Atrapar pokemon: Pikachu, en posicion: (1,2)
+[INFO] 01:42:46:718 TEAM/(21046:21049): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 01:42:46:746 TEAM/(21046:21049): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 01:42:46:747 TEAM/(21046:21049): Trainer: 1
+[INFO] 01:42:46:747 TEAM/(21046:21049): Total Cycle CPU by Trainer 1: 1
+[INFO] 01:42:46:748 TEAM/(21046:21053): Inicia algoritmo de detección de deadlock.
+[INFO] 01:42:46:749 TEAM/(21046:21053): No se detectó deadlock.
+[INFO] 01:42:46:806 TEAM/(21046:21046): Algorithm: FIFO 
+[INFO] 01:42:46:807 TEAM/(21046:21046): Total Cycle CPU by TEAM: 1
+[INFO] 01:42:46:807 TEAM/(21046:21046): Total Context Switch by Team: 1
+[INFO] 01:42:46:808 TEAM/(21046:21046): Total Deadlocks by Team: 0
