@@ -23,12 +23,12 @@ void detectDeadlock_do(){
                 cycleDeadLock = list_create();
                 deadlockNode = malloc(sizeof(t_cycleDeadlock));
                 deadlockNode->idTrainer = trainerAux->id_trainer;
-                deadlockNode->pokemon = malloc(strlen(pokemonNeededAux));
+                deadlockNode->pokemon = malloc(strlen(pokemonNeededAux)+1);
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
                 if(!completeCycleDeadlock()){
-                    list_remove(cycleDeadLock, 0);
-                    list_destroy(cycleDeadLock);
+                    list_remove_and_destroy_element(cycleDeadLock, 0, (void*)destroy_cycleNode);
+                    list_destroy_and_destroy_elements(cycleDeadLock, (void*)destroy_cycleNode);
                 }else{
                     if(existsDeadlock()){
                         log_info(obligatory_logger, "Existe deadlock.");
@@ -37,10 +37,11 @@ void detectDeadlock_do(){
                         setInterchangePokemon();
                         continueAnalize = false;
                     }else{
-                        list_destroy(cycleDeadLock);
+                        list_destroy_and_destroy_elements(cycleDeadLock, (void*)destroy_cycleNode);
                     }
                 }
             }
+            list_destroy(pokemonsNeeded);
         }
     }
 
@@ -57,13 +58,21 @@ t_list* getPokemonsNeeded(t_trainer* trainerAux){
 
     for (int i=0; i<list_size(trainerAux->pokemonOwned); i++){
         pokemonOwnedAux = (char*)list_get(trainerAux->pokemonOwned, i);
-        pokemonCompareDeadlock = malloc(strlen(pokemonOwnedAux));
+        pokemonCompareDeadlock = malloc(strlen(pokemonOwnedAux)+1);
         strcpy(pokemonCompareDeadlock, pokemonOwnedAux);
         list_remove_by_condition(pokemonsNeeded, comparePokemonDeadlock);
         free(pokemonCompareDeadlock);
     }
 
     return pokemonsNeeded;
+}
+
+void* destroy_cycleNode(void* pointer){
+    t_cycleDeadlock* cycleDeadLockNode = (t_cycleDeadlock*)pointer;
+    free(cycleDeadLockNode->pokemon);
+    free(cycleDeadLockNode);
+
+    return NULL;
 }
 
 bool comparePokemonDeadlock(void* pokemonOwn){
@@ -95,15 +104,15 @@ bool completeCycleDeadlock(){
                 char* pokemonNeededAux = (char*)list_get(pokemonsNeeded, j);
                 t_cycleDeadlock* deadlockNode = malloc(sizeof(t_cycleDeadlock));
                 deadlockNode->idTrainer = trainerAux->id_trainer;
-                deadlockNode->pokemon = malloc(strlen(pokemonNeededAux));
+                deadlockNode->pokemon = malloc(strlen(pokemonNeededAux)+1);
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
-log_cycle();
+
                 if(existsDeadlock()){
                     return true;
                 }else{
                     if(!completeCycleDeadlock()){
-                        list_remove(cycleDeadLock, list_size(cycleDeadLock)-1);
+                        list_remove_and_destroy_element(cycleDeadLock, list_size(cycleDeadLock)-1, (void*)destroy_cycleNode);
                     }else{
                         return true;
                     }
@@ -112,14 +121,6 @@ log_cycle();
         }
     }
     return false;
-}
-
-void log_cycle(){
-    log_info(optional_logger, "Ciclo: ");
-    for(int i=0; i<list_size(cycleDeadLock); i++){
-        t_cycleDeadlock* cycleNode = (t_cycleDeadlock*)list_get(cycleDeadLock, i);
-        log_info(optional_logger, "Trainer: %d, Pokemon: %s", cycleNode->idTrainer, cycleNode->pokemon);
-    }
 }
 
 int trainerAlreadyInCycleCount(uint32_t idTrainer){
@@ -135,7 +136,7 @@ int trainerAlreadyInCycleCount(uint32_t idTrainer){
 }
 
 bool trainerHasPokemonNoNeeded(t_trainer* trainerAux, char* pokemonNeeded){
-    pokemonCompareDeadlock = malloc(strlen(pokemonNeeded));
+    pokemonCompareDeadlock = malloc(strlen(pokemonNeeded)+1);
     strcpy(pokemonCompareDeadlock, pokemonNeeded);
     bool result = list_count_satisfying(trainerAux->pokemonOwned, comparePokemonDeadlock) > list_count_satisfying(trainerAux->pokemonNeeded, comparePokemonDeadlock);
     free(pokemonCompareDeadlock);

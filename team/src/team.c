@@ -258,7 +258,7 @@ void writeTeamMetrics(){
 
 void finishTeam(){
     release_resources();
-	exit(1);
+	//exit(1);
 }
 
 void executeAlgorithm() {
@@ -349,7 +349,7 @@ void interchangePokemon(t_trainer* trainerFrom){
 			list_add(trainerFrom->pokemonOwned, pokemonOwnedTrainerTo);
 			list_add(trainerTo->pokemonOwned, pokemonOwnedTrainerFrom);
 
-			list_destroy(cycleDeadLock);
+			list_destroy_and_destroy_elements(cycleDeadLock, (void*)destroy_cycleNode);
 			flagExistsDeadlock = false;
 			continueFor = false;
 			if(trainerCompleteOwnObjetives(trainerFrom)){
@@ -436,12 +436,16 @@ bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux){
 		threadTrainerAux->idMessageCatch = acknowledgementMessage->id_message;
 
 		close(client_fd);
+		free(id_message);
+		free(catchPokemonMessage->pokemon);
+		free(catchPokemonMessage);
 		sem_post(&plannerSemaphore);
 	}else{
 		log_info(obligatory_logger, "Falló conexión con broker, se ejecutará función por default de appeared");
 		result = false;
 	}
 
+	free(server_info);
 	return result;
 }
 void catch_succesfull(uint32_t id_trainer){
@@ -484,7 +488,9 @@ void removePokemonOnMap(t_position position){
 	for(int i=0; i<list_size(pokemonsOnMap) && continueFor; i++){
 		pokemonOnMapToRemove = (t_pokemon_on_map*)list_get(pokemonsOnMap, i);
 		if(pokemonOnMapToRemove->id == pokemonOnMapAux->id){
-			list_remove(pokemonsOnMap, i);
+			pokemonOnMapToRemove = (t_pokemon_on_map*)list_remove(pokemonsOnMap, i);
+			free(pokemonOnMapToRemove->pokemon);
+			free(pokemonOnMapToRemove);
 			continueFor = false;
 		}
 	}

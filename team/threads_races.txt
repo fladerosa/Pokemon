@@ -1,479 +1,479 @@
-==6170== Helgrind, a thread error detector
-==6170== Copyright (C) 2007-2015, and GNU GPL'd, by OpenWorks LLP et al.
-==6170== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
-==6170== Command: ./team
-==6170== Parent PID: 6168
-==6170== 
-==6170== ---Thread-Announcement------------------------------------------
-==6170== 
-==6170== Thread #6 was created
-==6170==    at 0x4175091: clone (clone.S:88)
-==6170==    by 0x40651AD: create_thread (createthread.c:102)
-==6170==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
-==6170==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x80495C1: initialize_team (inicializacion.c:24)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== ---Thread-Announcement------------------------------------------
-==6170== 
-==6170== Thread #2 was created
-==6170==    at 0x4175091: clone (clone.S:88)
-==6170==    by 0x40651AD: create_thread (createthread.c:102)
-==6170==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
-==6170==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x8049C2B: assign_data_trainer (inicializacion.c:149)
-==6170==    by 0x8049549: initialize_team (inicializacion.c:13)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== ---Thread-Announcement------------------------------------------
-==6170== 
-==6170== Thread #7 was created
-==6170==    at 0x4175091: clone (clone.S:88)
-==6170==    by 0x40651AD: create_thread (createthread.c:102)
-==6170==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
-==6170==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x804EA3A: pthread_create_and_detach (common_connections.c:217)
-==6170==    by 0x804E42B: receive_new_connections (common_connections.c:85)
-==6170==    by 0x804E375: run_server (common_connections.c:66)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during read of size 4 at 0x424A6B4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x804B76C: calculateTrainerToReady (team.c:25)
-==6170==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
-==6170==    by 0x8049699: planTrainers (inicializacion.c:45)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170== 
-==6170== This conflicts with a previous write of size 4 by thread #2
-==6170== Locks held: none
-==6170==    at 0x804CCC6: execThreadTrainerSetedFCFS (team.c:503)
-==6170==    by 0x804C1B6: executeAlgorithm (team.c:268)
-==6170==    by 0x8049E56: trainerDo (inicializacion.c:190)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x424a6b4 is 12 bytes inside a block of size 20 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x804A7B6: reception_message_queue_subscription (suscripcion.c:180)
-==6170==    by 0x804E53A: serve_client (common_connections.c:106)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Block was alloc'd by thread #7
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x8055250 by thread #2
-==6170== Locks held: none
-==6170==    at 0x804CAB4: catch_succesfull (team.c:454)
-==6170==    by 0x804C467: move_to_objetive (team.c:327)
-==6170==    by 0x804CCF8: execThreadTrainerSetedFCFS (team.c:508)
-==6170==    by 0x804C1B6: executeAlgorithm (team.c:268)
-==6170==    by 0x8049E56: trainerDo (inicializacion.c:190)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #7
-==6170== Locks held: none
-==6170==    at 0x804A85D: reception_message_queue_subscription (suscripcion.c:192)
-==6170==    by 0x804E53A: serve_client (common_connections.c:106)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x8055250 is 0 bytes inside data symbol "pokemonCompareGlobalObjetive"
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x424A6B4 by thread #2
-==6170== Locks held: none
-==6170==    at 0x804CC0B: removePokemonOnMap (team.c:483)
-==6170==    by 0x804CB53: catch_succesfull (team.c:464)
-==6170==    by 0x804C467: move_to_objetive (team.c:327)
-==6170==    by 0x804CCF8: execThreadTrainerSetedFCFS (team.c:508)
-==6170==    by 0x804C1B6: executeAlgorithm (team.c:268)
-==6170==    by 0x8049E56: trainerDo (inicializacion.c:190)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x804B76C: calculateTrainerToReady (team.c:25)
-==6170==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
-==6170==    by 0x8049699: planTrainers (inicializacion.c:45)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x424a6b4 is 12 bytes inside a block of size 20 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x804A7B6: reception_message_queue_subscription (suscripcion.c:180)
-==6170==    by 0x804E53A: serve_client (common_connections.c:106)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Block was alloc'd by thread #7
-==6170== 
-==6170== ---Thread-Announcement------------------------------------------
-==6170== 
-==6170== Thread #1 is the program's root thread
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x424A038 by thread #2
-==6170== Locks held: none
-==6170==    at 0x405A1B6: list_remove (in /usr/lib/libcommons.so)
-==6170==    by 0x804CC52: removePokemonOnMap (team.c:487)
-==6170==    by 0x804CB53: catch_succesfull (team.c:464)
-==6170==    by 0x804C467: move_to_objetive (team.c:327)
-==6170==    by 0x804CCF8: execThreadTrainerSetedFCFS (team.c:508)
-==6170==    by 0x804C1B6: executeAlgorithm (team.c:268)
-==6170==    by 0x8049E56: trainerDo (inicializacion.c:190)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x405A951: list_get_element (in /usr/lib/libcommons.so)
-==6170==    by 0x4059F65: list_get (in /usr/lib/libcommons.so)
-==6170==    by 0x804B762: calculateTrainerToReady (team.c:24)
-==6170==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
-==6170==    by 0x8049699: planTrainers (inicializacion.c:45)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x424a038 is 0 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x8049553: initialize_team (inicializacion.c:15)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x424A03C by thread #2
-==6170== Locks held: none
-==6170==    at 0x405A1F3: list_remove (in /usr/lib/libcommons.so)
-==6170==    by 0x804CC52: removePokemonOnMap (team.c:487)
-==6170==    by 0x804CB53: catch_succesfull (team.c:464)
-==6170==    by 0x804C467: move_to_objetive (team.c:327)
-==6170==    by 0x804CCF8: execThreadTrainerSetedFCFS (team.c:508)
-==6170==    by 0x804C1B6: executeAlgorithm (team.c:268)
-==6170==    by 0x8049E56: trainerDo (inicializacion.c:190)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x405A315: list_size (in /usr/lib/libcommons.so)
-==6170==    by 0x804B73B: calculateTrainerToReady (team.c:18)
-==6170==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
-==6170==    by 0x8049699: planTrainers (inicializacion.c:45)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x424a03c is 4 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x8049553: initialize_team (inicializacion.c:15)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x4249E64 by thread #2
-==6170== Locks held: none
-==6170==    at 0x804CB6C: catch_succesfull (team.c:468)
-==6170==    by 0x804C467: move_to_objetive (team.c:327)
-==6170==    by 0x804CCF8: execThreadTrainerSetedFCFS (team.c:508)
-==6170==    by 0x804C1B6: executeAlgorithm (team.c:268)
-==6170==    by 0x8049E56: trainerDo (inicializacion.c:190)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x804AF72: detectDeadlock_do (deadlock.c:19)
-==6170==    by 0x80496A8: planTrainers (inicializacion.c:48)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x4249e64 is 4 bytes inside a block of size 68 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x8049B78: assign_data_trainer (inicializacion.c:136)
-==6170==    by 0x8049549: initialize_team (inicializacion.c:13)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ---Thread-Announcement------------------------------------------
-==6170== 
-==6170== Thread #5 was created
-==6170==    at 0x4175091: clone (clone.S:88)
-==6170==    by 0x40651AD: create_thread (createthread.c:102)
-==6170==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
-==6170==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x8049597: initialize_team (inicializacion.c:21)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x4246278 by thread #1
-==6170== Locks held: none
-==6170==    at 0x405AFBC: internal_dictionary_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405AD3F: dictionary_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405AE01: dictionary_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405B62F: config_destroy (in /usr/lib/libcommons.so)
-==6170==    by 0x804A00A: release_resources (inicializacion.c:240)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #5
-==6170== Locks held: none
-==6170==    at 0x405B08E: dictionary_get_element (in /usr/lib/libcommons.so)
-==6170==    by 0x405ABF5: dictionary_get (in /usr/lib/libcommons.so)
-==6170==    by 0x405B4F1: config_get_string_value (in /usr/lib/libcommons.so)
-==6170==    by 0x405B519: config_get_int_value (in /usr/lib/libcommons.so)
-==6170==    by 0x804E85B: crear_conexion (common_connections.c:179)
-==6170==    by 0x804AB4E: send_get_pokemon_global_team (suscripcion.c:265)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==  Address 0x4246278 is 8 bytes inside a block of size 80 alloc'd
-==6170==    at 0x402F2A8: calloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x405AA18: dictionary_create (in /usr/lib/libcommons.so)
-==6170==    by 0x405B3B6: config_create (in /usr/lib/libcommons.so)
-==6170==    by 0x80496C2: read_config (inicializacion.c:54)
-==6170==    by 0x8049535: initialize_team (inicializacion.c:9)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x4247C38 by thread #1
-==6170== Locks held: none
-==6170==    at 0x405A36F: list_clean (in /usr/lib/libcommons.so)
-==6170==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x804A113: destroy_lists_and_loaded_elements (inicializacion.c:286)
-==6170==    by 0x804A046: release_resources (inicializacion.c:248)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x405A951: list_get_element (in /usr/lib/libcommons.so)
-==6170==    by 0x4059F65: list_get (in /usr/lib/libcommons.so)
-==6170==    by 0x804AF68: detectDeadlock_do (deadlock.c:17)
-==6170==    by 0x80496A8: planTrainers (inicializacion.c:48)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x4247c38 is 0 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x8049904: assign_data_trainer (inicializacion.c:95)
-==6170==    by 0x8049549: initialize_team (inicializacion.c:13)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x4247C3C by thread #1
-==6170== Locks held: none
-==6170==    at 0x405A38B: list_clean (in /usr/lib/libcommons.so)
-==6170==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x804A113: destroy_lists_and_loaded_elements (inicializacion.c:286)
-==6170==    by 0x804A046: release_resources (inicializacion.c:248)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x405A315: list_size (in /usr/lib/libcommons.so)
-==6170==    by 0x804BAF4: setTrainerToExec_FirstCome (team.c:104)
-==6170==    by 0x804BA1A: setTrainerToExec (team.c:93)
-==6170==    by 0x804B9DF: calculateTrainerFromReadyToExec (team.c:85)
-==6170==    by 0x80496A3: planTrainers (inicializacion.c:47)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x4247c3c is 4 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x8049904: assign_data_trainer (inicializacion.c:95)
-==6170==    by 0x8049549: initialize_team (inicializacion.c:13)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x4248738 by thread #1
-==6170== Locks held: none
-==6170==    at 0x405A36F: list_clean (in /usr/lib/libcommons.so)
-==6170==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x804A129: destroy_lists_and_loaded_elements (inicializacion.c:287)
-==6170==    by 0x804A046: release_resources (inicializacion.c:248)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x405A124: list_iterate (in /usr/lib/libcommons.so)
-==6170==    by 0x405A5AF: list_filter (in /usr/lib/libcommons.so)
-==6170==    by 0x405A7C2: list_count_satisfying (in /usr/lib/libcommons.so)
-==6170==    by 0x405A808: list_any_satisfy (in /usr/lib/libcommons.so)
-==6170==    by 0x804B9D3: calculateTrainerFromReadyToExec (team.c:81)
-==6170==    by 0x80496A3: planTrainers (inicializacion.c:47)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==  Address 0x4248738 is 0 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x804990E: assign_data_trainer (inicializacion.c:96)
-==6170==    by 0x8049549: initialize_team (inicializacion.c:13)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x424873C by thread #1
-==6170== Locks held: none
-==6170==    at 0x405A38B: list_clean (in /usr/lib/libcommons.so)
-==6170==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x804A129: destroy_lists_and_loaded_elements (inicializacion.c:287)
-==6170==    by 0x804A046: release_resources (inicializacion.c:248)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== This conflicts with a previous read of size 4 by thread #6
-==6170== Locks held: none
-==6170==    at 0x405A315: list_size (in /usr/lib/libcommons.so)
-==6170==    by 0x804BF8D: calculateTrainersInExit (team.c:214)
-==6170==    by 0x8049694: planTrainers (inicializacion.c:44)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x424873c is 4 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x804990E: assign_data_trainer (inicializacion.c:96)
-==6170==    by 0x8049549: initialize_team (inicializacion.c:13)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Block was alloc'd by thread #1
-==6170== 
-==6170== ---Thread-Announcement------------------------------------------
-==6170== 
-==6170== Thread #3 was created
-==6170==    at 0x4175091: clone (clone.S:88)
-==6170==    by 0x40651AD: create_thread (createthread.c:102)
-==6170==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
-==6170==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x804957C: initialize_team (inicializacion.c:18)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during read of size 4 at 0x805523C by thread #1
-==6170== Locks held: none
-==6170==    at 0x804A12D: destroy_lists_and_loaded_elements (inicializacion.c:288)
-==6170==    by 0x804A046: release_resources (inicializacion.c:248)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170== 
-==6170== This conflicts with a previous write of size 4 by thread #3
-==6170== Locks held: none
-==6170==    at 0x804A151: connection_broker_global_suscribe (suscripcion.c:6)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Address 0x805523c is 0 bytes inside data symbol "threadSubscribeList"
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during read of size 4 at 0x424A128 by thread #1
-==6170== Locks held: none
-==6170==    at 0x405A124: list_iterate (in /usr/lib/libcommons.so)
-==6170==    by 0x405A3B7: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x804A13F: destroy_lists_and_loaded_elements (inicializacion.c:288)
-==6170==    by 0x804A046: release_resources (inicializacion.c:248)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Address 0x424a128 is 0 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x804A150: connection_broker_global_suscribe (suscripcion.c:6)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Block was alloc'd by thread #3
-==6170== 
-==6170== ----------------------------------------------------------------
-==6170== 
-==6170== Possible data race during write of size 4 at 0x424A12C by thread #1
-==6170== Locks held: none
-==6170==    at 0x405A38B: list_clean (in /usr/lib/libcommons.so)
-==6170==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
-==6170==    by 0x804A13F: destroy_lists_and_loaded_elements (inicializacion.c:288)
-==6170==    by 0x804A046: release_resources (inicializacion.c:248)
-==6170==    by 0x804C14F: finishTeam (team.c:260)
-==6170==    by 0x8049676: validateEndTeam (inicializacion.c:38)
-==6170==    by 0x80495C9: initialize_team (inicializacion.c:25)
-==6170==    by 0x804B703: main (team.c:5)
-==6170==  Address 0x424a12c is 4 bytes inside a block of size 8 alloc'd
-==6170==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
-==6170==    by 0x804A150: connection_broker_global_suscribe (suscripcion.c:6)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  Block was alloc'd by thread #3
-==6170== 
-==6170== 
-==6170== Process terminating with default action of signal 11 (SIGSEGV)
-==6170==  Access not within mapped region at address 0x0
-==6170==    at 0x40BE11B: ____strtol_l_internal (strtol_l.c:293)
-==6170==    by 0x40BDF1F: strtol (strtol.c:106)
-==6170==    by 0x40BB25F: atoi (atoi.c:27)
-==6170==    by 0x405B52A: config_get_int_value (in /usr/lib/libcommons.so)
-==6170==    by 0x804E85B: crear_conexion (common_connections.c:179)
-==6170==    by 0x804A1D7: connection_broker_suscribe_to_appeared_pokemon (suscripcion.c:20)
-==6170==    by 0x804A15F: connection_broker_global_suscribe (suscripcion.c:7)
-==6170==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
-==6170==    by 0x4066294: start_thread (pthread_create.c:333)
-==6170==    by 0x41750AD: clone (clone.S:114)
-==6170==  If you believe this happened as a result of a stack
-==6170==  overflow in your program's main thread (unlikely but
-==6170==  possible), you can try to increase the size of the
-==6170==  main thread stack using the --main-stacksize= flag.
-==6170== 
-==6170== For counts of detected and suppressed errors, rerun with: -v
-==6170== Use --history-level=approx or =none to gain increased speed, at
-==6170== the cost of reduced accuracy of conflicting-access information
-==6170== ERROR SUMMARY: 14 errors from 14 contexts (suppressed: 3404 from 117)
+==6077== Helgrind, a thread error detector
+==6077== Copyright (C) 2007-2015, and GNU GPL'd, by OpenWorks LLP et al.
+==6077== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==6077== Command: ./team
+==6077== Parent PID: 6075
+==6077== 
+==6077== ---Thread-Announcement------------------------------------------
+==6077== 
+==6077== Thread #6 was created
+==6077==    at 0x4175091: clone (clone.S:88)
+==6077==    by 0x40651AD: create_thread (createthread.c:102)
+==6077==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
+==6077==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x80495C1: initialize_team (inicializacion.c:24)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== ---Thread-Announcement------------------------------------------
+==6077== 
+==6077== Thread #2 was created
+==6077==    at 0x4175091: clone (clone.S:88)
+==6077==    by 0x40651AD: create_thread (createthread.c:102)
+==6077==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
+==6077==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x8049C2B: assign_data_trainer (inicializacion.c:149)
+==6077==    by 0x8049549: initialize_team (inicializacion.c:13)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== ---Thread-Announcement------------------------------------------
+==6077== 
+==6077== Thread #7 was created
+==6077==    at 0x4175091: clone (clone.S:88)
+==6077==    by 0x40651AD: create_thread (createthread.c:102)
+==6077==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
+==6077==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x804EA3A: pthread_create_and_detach (common_connections.c:217)
+==6077==    by 0x804E42B: receive_new_connections (common_connections.c:85)
+==6077==    by 0x804E375: run_server (common_connections.c:66)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during read of size 4 at 0x424A6B4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x804B76C: calculateTrainerToReady (team.c:25)
+==6077==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
+==6077==    by 0x8049699: planTrainers (inicializacion.c:45)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077== 
+==6077== This conflicts with a previous write of size 4 by thread #2
+==6077== Locks held: none
+==6077==    at 0x804CD65: execThreadTrainerSetedRR (team.c:519)
+==6077==    by 0x804C1E0: executeAlgorithm (team.c:269)
+==6077==    by 0x8049E56: trainerDo (inicializacion.c:190)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x424a6b4 is 12 bytes inside a block of size 20 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x804A7B6: reception_message_queue_subscription (suscripcion.c:180)
+==6077==    by 0x804E53A: serve_client (common_connections.c:106)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Block was alloc'd by thread #7
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x8055250 by thread #2
+==6077== Locks held: none
+==6077==    at 0x804CAB4: catch_succesfull (team.c:454)
+==6077==    by 0x804C467: move_to_objetive (team.c:327)
+==6077==    by 0x804CD9E: execThreadTrainerSetedRR (team.c:525)
+==6077==    by 0x804C1E0: executeAlgorithm (team.c:269)
+==6077==    by 0x8049E56: trainerDo (inicializacion.c:190)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #7
+==6077== Locks held: none
+==6077==    at 0x804A85D: reception_message_queue_subscription (suscripcion.c:192)
+==6077==    by 0x804E53A: serve_client (common_connections.c:106)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x8055250 is 0 bytes inside data symbol "pokemonCompareGlobalObjetive"
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x424A6B4 by thread #2
+==6077== Locks held: none
+==6077==    at 0x804CC0B: removePokemonOnMap (team.c:483)
+==6077==    by 0x804CB53: catch_succesfull (team.c:464)
+==6077==    by 0x804C467: move_to_objetive (team.c:327)
+==6077==    by 0x804CD9E: execThreadTrainerSetedRR (team.c:525)
+==6077==    by 0x804C1E0: executeAlgorithm (team.c:269)
+==6077==    by 0x8049E56: trainerDo (inicializacion.c:190)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x804B76C: calculateTrainerToReady (team.c:25)
+==6077==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
+==6077==    by 0x8049699: planTrainers (inicializacion.c:45)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x424a6b4 is 12 bytes inside a block of size 20 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x804A7B6: reception_message_queue_subscription (suscripcion.c:180)
+==6077==    by 0x804E53A: serve_client (common_connections.c:106)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Block was alloc'd by thread #7
+==6077== 
+==6077== ---Thread-Announcement------------------------------------------
+==6077== 
+==6077== Thread #1 is the program's root thread
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x424A038 by thread #2
+==6077== Locks held: none
+==6077==    at 0x405A1B6: list_remove (in /usr/lib/libcommons.so)
+==6077==    by 0x804CC52: removePokemonOnMap (team.c:487)
+==6077==    by 0x804CB53: catch_succesfull (team.c:464)
+==6077==    by 0x804C467: move_to_objetive (team.c:327)
+==6077==    by 0x804CD9E: execThreadTrainerSetedRR (team.c:525)
+==6077==    by 0x804C1E0: executeAlgorithm (team.c:269)
+==6077==    by 0x8049E56: trainerDo (inicializacion.c:190)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x405A951: list_get_element (in /usr/lib/libcommons.so)
+==6077==    by 0x4059F65: list_get (in /usr/lib/libcommons.so)
+==6077==    by 0x804B762: calculateTrainerToReady (team.c:24)
+==6077==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
+==6077==    by 0x8049699: planTrainers (inicializacion.c:45)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x424a038 is 0 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x8049553: initialize_team (inicializacion.c:15)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x424A03C by thread #2
+==6077== Locks held: none
+==6077==    at 0x405A1F3: list_remove (in /usr/lib/libcommons.so)
+==6077==    by 0x804CC52: removePokemonOnMap (team.c:487)
+==6077==    by 0x804CB53: catch_succesfull (team.c:464)
+==6077==    by 0x804C467: move_to_objetive (team.c:327)
+==6077==    by 0x804CD9E: execThreadTrainerSetedRR (team.c:525)
+==6077==    by 0x804C1E0: executeAlgorithm (team.c:269)
+==6077==    by 0x8049E56: trainerDo (inicializacion.c:190)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x405A315: list_size (in /usr/lib/libcommons.so)
+==6077==    by 0x804B73B: calculateTrainerToReady (team.c:18)
+==6077==    by 0x804B721: calculateTrainerFromNewToReady (team.c:13)
+==6077==    by 0x8049699: planTrainers (inicializacion.c:45)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x424a03c is 4 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x8049553: initialize_team (inicializacion.c:15)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x4249E64 by thread #2
+==6077== Locks held: none
+==6077==    at 0x804CB6C: catch_succesfull (team.c:468)
+==6077==    by 0x804C467: move_to_objetive (team.c:327)
+==6077==    by 0x804CD9E: execThreadTrainerSetedRR (team.c:525)
+==6077==    by 0x804C1E0: executeAlgorithm (team.c:269)
+==6077==    by 0x8049E56: trainerDo (inicializacion.c:190)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x804AF72: detectDeadlock_do (deadlock.c:19)
+==6077==    by 0x80496A8: planTrainers (inicializacion.c:48)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x4249e64 is 4 bytes inside a block of size 68 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x8049B78: assign_data_trainer (inicializacion.c:136)
+==6077==    by 0x8049549: initialize_team (inicializacion.c:13)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ---Thread-Announcement------------------------------------------
+==6077== 
+==6077== Thread #5 was created
+==6077==    at 0x4175091: clone (clone.S:88)
+==6077==    by 0x40651AD: create_thread (createthread.c:102)
+==6077==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
+==6077==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x8049597: initialize_team (inicializacion.c:21)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x4246278 by thread #1
+==6077== Locks held: none
+==6077==    at 0x405AFBC: internal_dictionary_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405AD3F: dictionary_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405AE01: dictionary_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405B62F: config_destroy (in /usr/lib/libcommons.so)
+==6077==    by 0x804A00A: release_resources (inicializacion.c:240)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #5
+==6077== Locks held: none
+==6077==    at 0x405B08E: dictionary_get_element (in /usr/lib/libcommons.so)
+==6077==    by 0x405ABF5: dictionary_get (in /usr/lib/libcommons.so)
+==6077==    by 0x405B4F1: config_get_string_value (in /usr/lib/libcommons.so)
+==6077==    by 0x405B519: config_get_int_value (in /usr/lib/libcommons.so)
+==6077==    by 0x804E85B: crear_conexion (common_connections.c:179)
+==6077==    by 0x804AB4E: send_get_pokemon_global_team (suscripcion.c:265)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==  Address 0x4246278 is 8 bytes inside a block of size 80 alloc'd
+==6077==    at 0x402F2A8: calloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x405AA18: dictionary_create (in /usr/lib/libcommons.so)
+==6077==    by 0x405B3B6: config_create (in /usr/lib/libcommons.so)
+==6077==    by 0x80496C2: read_config (inicializacion.c:54)
+==6077==    by 0x8049535: initialize_team (inicializacion.c:9)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x4247C38 by thread #1
+==6077== Locks held: none
+==6077==    at 0x405A36F: list_clean (in /usr/lib/libcommons.so)
+==6077==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x804A113: destroy_lists_and_loaded_elements (inicializacion.c:286)
+==6077==    by 0x804A046: release_resources (inicializacion.c:248)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x405A951: list_get_element (in /usr/lib/libcommons.so)
+==6077==    by 0x4059F65: list_get (in /usr/lib/libcommons.so)
+==6077==    by 0x804AF68: detectDeadlock_do (deadlock.c:17)
+==6077==    by 0x80496A8: planTrainers (inicializacion.c:48)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x4247c38 is 0 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x8049904: assign_data_trainer (inicializacion.c:95)
+==6077==    by 0x8049549: initialize_team (inicializacion.c:13)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x4247C3C by thread #1
+==6077== Locks held: none
+==6077==    at 0x405A38B: list_clean (in /usr/lib/libcommons.so)
+==6077==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x804A113: destroy_lists_and_loaded_elements (inicializacion.c:286)
+==6077==    by 0x804A046: release_resources (inicializacion.c:248)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x405A315: list_size (in /usr/lib/libcommons.so)
+==6077==    by 0x804BAF4: setTrainerToExec_FirstCome (team.c:104)
+==6077==    by 0x804BA3B: setTrainerToExec (team.c:94)
+==6077==    by 0x804B9DF: calculateTrainerFromReadyToExec (team.c:85)
+==6077==    by 0x80496A3: planTrainers (inicializacion.c:47)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x4247c3c is 4 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x8049904: assign_data_trainer (inicializacion.c:95)
+==6077==    by 0x8049549: initialize_team (inicializacion.c:13)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x4248738 by thread #1
+==6077== Locks held: none
+==6077==    at 0x405A36F: list_clean (in /usr/lib/libcommons.so)
+==6077==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x804A129: destroy_lists_and_loaded_elements (inicializacion.c:287)
+==6077==    by 0x804A046: release_resources (inicializacion.c:248)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x405A124: list_iterate (in /usr/lib/libcommons.so)
+==6077==    by 0x405A5AF: list_filter (in /usr/lib/libcommons.so)
+==6077==    by 0x405A7C2: list_count_satisfying (in /usr/lib/libcommons.so)
+==6077==    by 0x405A808: list_any_satisfy (in /usr/lib/libcommons.so)
+==6077==    by 0x804B9D3: calculateTrainerFromReadyToExec (team.c:81)
+==6077==    by 0x80496A3: planTrainers (inicializacion.c:47)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==  Address 0x4248738 is 0 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x804990E: assign_data_trainer (inicializacion.c:96)
+==6077==    by 0x8049549: initialize_team (inicializacion.c:13)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x424873C by thread #1
+==6077== Locks held: none
+==6077==    at 0x405A38B: list_clean (in /usr/lib/libcommons.so)
+==6077==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x804A129: destroy_lists_and_loaded_elements (inicializacion.c:287)
+==6077==    by 0x804A046: release_resources (inicializacion.c:248)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== This conflicts with a previous read of size 4 by thread #6
+==6077== Locks held: none
+==6077==    at 0x405A315: list_size (in /usr/lib/libcommons.so)
+==6077==    by 0x804BF8D: calculateTrainersInExit (team.c:214)
+==6077==    by 0x8049694: planTrainers (inicializacion.c:44)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x424873c is 4 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x804990E: assign_data_trainer (inicializacion.c:96)
+==6077==    by 0x8049549: initialize_team (inicializacion.c:13)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Block was alloc'd by thread #1
+==6077== 
+==6077== ---Thread-Announcement------------------------------------------
+==6077== 
+==6077== Thread #3 was created
+==6077==    at 0x4175091: clone (clone.S:88)
+==6077==    by 0x40651AD: create_thread (createthread.c:102)
+==6077==    by 0x406699E: pthread_create@@GLIBC_2.1 (pthread_create.c:679)
+==6077==    by 0x4032043: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x804957C: initialize_team (inicializacion.c:18)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during read of size 4 at 0x805523C by thread #1
+==6077== Locks held: none
+==6077==    at 0x804A12D: destroy_lists_and_loaded_elements (inicializacion.c:288)
+==6077==    by 0x804A046: release_resources (inicializacion.c:248)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077== 
+==6077== This conflicts with a previous write of size 4 by thread #3
+==6077== Locks held: none
+==6077==    at 0x804A151: connection_broker_global_suscribe (suscripcion.c:6)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Address 0x805523c is 0 bytes inside data symbol "threadSubscribeList"
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during read of size 4 at 0x424A128 by thread #1
+==6077== Locks held: none
+==6077==    at 0x405A124: list_iterate (in /usr/lib/libcommons.so)
+==6077==    by 0x405A3B7: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x804A13F: destroy_lists_and_loaded_elements (inicializacion.c:288)
+==6077==    by 0x804A046: release_resources (inicializacion.c:248)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Address 0x424a128 is 0 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x804A150: connection_broker_global_suscribe (suscripcion.c:6)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Block was alloc'd by thread #3
+==6077== 
+==6077== ----------------------------------------------------------------
+==6077== 
+==6077== Possible data race during write of size 4 at 0x424A12C by thread #1
+==6077== Locks held: none
+==6077==    at 0x405A38B: list_clean (in /usr/lib/libcommons.so)
+==6077==    by 0x405A3C5: list_clean_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x405A422: list_destroy_and_destroy_elements (in /usr/lib/libcommons.so)
+==6077==    by 0x804A13F: destroy_lists_and_loaded_elements (inicializacion.c:288)
+==6077==    by 0x804A046: release_resources (inicializacion.c:248)
+==6077==    by 0x804C14F: finishTeam (team.c:260)
+==6077==    by 0x8049676: validateEndTeam (inicializacion.c:38)
+==6077==    by 0x80495C9: initialize_team (inicializacion.c:25)
+==6077==    by 0x804B703: main (team.c:5)
+==6077==  Address 0x424a12c is 4 bytes inside a block of size 8 alloc'd
+==6077==    at 0x402D36C: malloc (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4059E01: list_create (in /usr/lib/libcommons.so)
+==6077==    by 0x804A150: connection_broker_global_suscribe (suscripcion.c:6)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  Block was alloc'd by thread #3
+==6077== 
+==6077== 
+==6077== Process terminating with default action of signal 11 (SIGSEGV)
+==6077==  Access not within mapped region at address 0x0
+==6077==    at 0x40BE11B: ____strtol_l_internal (strtol_l.c:293)
+==6077==    by 0x40BDF1F: strtol (strtol.c:106)
+==6077==    by 0x40BB25F: atoi (atoi.c:27)
+==6077==    by 0x405B52A: config_get_int_value (in /usr/lib/libcommons.so)
+==6077==    by 0x804E85B: crear_conexion (common_connections.c:179)
+==6077==    by 0x804A1D7: connection_broker_suscribe_to_appeared_pokemon (suscripcion.c:20)
+==6077==    by 0x804A15F: connection_broker_global_suscribe (suscripcion.c:7)
+==6077==    by 0x40321E2: ??? (in /usr/lib/valgrind/vgpreload_helgrind-x86-linux.so)
+==6077==    by 0x4066294: start_thread (pthread_create.c:333)
+==6077==    by 0x41750AD: clone (clone.S:114)
+==6077==  If you believe this happened as a result of a stack
+==6077==  overflow in your program's main thread (unlikely but
+==6077==  possible), you can try to increase the size of the
+==6077==  main thread stack using the --main-stacksize= flag.
+==6077== 
+==6077== For counts of detected and suppressed errors, rerun with: -v
+==6077== Use --history-level=approx or =none to gain increased speed, at
+==6077== the cost of reduced accuracy of conflicting-access information
+==6077== ERROR SUMMARY: 14 errors from 14 contexts (suppressed: 4013 from 121)

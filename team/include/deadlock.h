@@ -16,6 +16,6 @@ bool trainerHasPokemonNoNeeded(t_trainer* trainerAux, char* pokemonNeeded);
 bool existsDeadlock();
 void setInterchangePokemon();
 int trainerAlreadyInCycleCount(uint32_t idTrainer);
-void log_cycle();
+void* destroy_cycleNode(void* pointer);
 
 #endif

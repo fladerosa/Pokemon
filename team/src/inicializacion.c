@@ -112,21 +112,19 @@ void assign_data_trainer() {
             valorAux = string_split(init_position[i], "|");
             data_trainer->position.posx = (uint32_t)atoi(valorAux[0]);
             data_trainer->position.posy = (uint32_t)atoi(valorAux[1]);
+            freeArrayConfigValue(valorAux);
+            free(valorAux);
 
             if(pokemonNeeds != NULL && pokemonNeeds[i] != NULL && !string_is_empty(pokemonNeeds[i])){
                 if(strchr(pokemonNeeds[i], '|') == NULL){
-                    dataAux = malloc(strlen(pokemonNeeds[i])+1);
+                    dataAux = malloc(strlen(pokemonNeeds[i])*sizeof(char)+1);
                     strcpy(dataAux, pokemonNeeds[i]);
                     list_add(data_trainer->pokemonNeeded, dataAux);
                 }else{
                     valorAux = string_split(pokemonNeeds[i], "|");
-
-                    while(*valorAux != NULL){
-                        dataAux = malloc(strlen(*valorAux)+1);
-                        strcpy(dataAux, *valorAux);
-                        list_add(data_trainer->pokemonNeeded, dataAux);
-                        valorAux++;
-                    };
+                    addValuesToListFromArray(valorAux, data_trainer->pokemonNeeded);
+                    freeArrayConfigValue(valorAux);
+                    free(valorAux);
                 }
             }
 
@@ -163,18 +161,39 @@ void assign_data_trainer() {
                 list_add(data_trainer->pokemonOwned, dataAux);
             }else{
                 valorAux = string_split(pokemonOwns[i], "|");
-
-                while(*valorAux != NULL){
-                    dataAux = malloc(strlen(*valorAux)+1);
-                    strcpy(dataAux, *valorAux);
-                    list_add(data_trainer->pokemonOwned, dataAux);
-                    valorAux++;
-                };
+                addValuesToListFromArray(valorAux, data_trainer->pokemonOwned);
+                freeArrayConfigValue(valorAux);
+                free(valorAux);
             }
         }
     }
 
-   return;
+    freeArrayConfigValue(init_position);
+    free(init_position);
+    freeArrayConfigValue(pokemonOwns);
+    free(pokemonOwns);
+    freeArrayConfigValue(pokemonNeeds);
+    free(pokemonNeeds);
+    //freeArrayConfigValue(valorAux);
+    //free(valorAux);
+    return;
+}
+
+void addValuesToListFromArray(char** valorAux, t_list* listDestiny){
+    char* dataAux;
+    while(*valorAux != NULL){
+        dataAux = malloc(strlen(*valorAux)*sizeof(char)+1);
+        strcpy(dataAux, *valorAux);
+        list_add(listDestiny, dataAux);
+        valorAux++;
+    };
+}
+
+void freeArrayConfigValue(char** valorAux){
+    while(*valorAux != NULL){
+        free(*valorAux);
+        valorAux++;
+    };
 }
 
 void* trainerDo(void* ptrIdTrainer){
@@ -228,7 +247,7 @@ void calculate_global_objetives(){
 }
 
 bool analyzePokemonInGlobal(void* objetiveGlobal){
-    if(strcmp((char*)objetiveGlobal, pokemonCompareGlobalObjetive) == 0){
+    if(strcmp(objetiveGlobal, pokemonCompareGlobalObjetive) == 0){
         return 1;
     }else{
         return 0;
@@ -248,24 +267,24 @@ void release_resources() {
     destroy_lists_and_loaded_elements();
     close_sockets();
     pthread_cancel(plannerThread);
-    pthread_exit(&plannerThread);
+    //pthread_exit(&plannerThread);
     sem_destroy(&plannerSemaphore);
 
     pthread_cancel(sendGetPokemonThread);
     pthread_cancel(brokerSuscriptionThread);
     pthread_cancel(server);
 
-    pthread_exit(&sendGetPokemonThread);
-    pthread_exit(&brokerSuscriptionThread);
-    pthread_exit(&server);
+    //pthread_exit(&sendGetPokemonThread);
+    //pthread_exit(&brokerSuscriptionThread);
+    //pthread_exit(&server);
 
     pthread_cancel(suscripcionAppearedPokemon);
     pthread_cancel(suscripcionCaughtPokemon);
     pthread_cancel(suscripcionLocalizedPokemon);
 
-    pthread_exit(&suscripcionAppearedPokemon);
-    pthread_exit(&suscripcionCaughtPokemon);
-    pthread_exit(&suscripcionLocalizedPokemon);
+    //pthread_exit(&suscripcionAppearedPokemon);
+    //pthread_exit(&suscripcionCaughtPokemon);
+    //pthread_exit(&suscripcionLocalizedPokemon);
 }
 void destroy_pointer(void* pointer){   
     free(pointer);
@@ -281,10 +300,17 @@ void destroy_threadTrainer(void* pointer){
     sem_destroy(&threadTrainerAux->semaphoreAction);
     free(pointer);
 }
+void destroy_pokemonsOnMap(void* pointer){
+    t_pokemon_on_map* pokemonOnMapAux = (t_pokemon_on_map*)pointer;
+    free(pokemonOnMapAux->pokemon);
+    free(pointer);
+}
 
 void destroy_lists_and_loaded_elements(){
     list_destroy_and_destroy_elements(trainers, (void*)destroy_trainer);
     list_destroy_and_destroy_elements(threadsTrainers, (void*)destroy_threadTrainer);
     list_destroy_and_destroy_elements(threadSubscribeList, (void*)destroy_pointer);
+    list_destroy_and_destroy_elements(pokemonsOnMap, (void*)destroy_pokemonsOnMap);
+    list_destroy_and_destroy_elements(globalObjetive, free);
 }
 

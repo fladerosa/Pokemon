@@ -83,12 +83,15 @@ void create_optional_logger();
 void create_obligatory_logger();
 void load_values_config();
 void assign_data_trainer();
+void freeArrayConfigValue(char** valorAux);
 void* trainerDo(void* ptrIdTrainer);
 void release_resources();
 void destroy_pointer(void*);
 void destroy_trainer(void* pointer);
 void destroy_threadTrainer(void* pointer);
 void destroy_lists_and_loaded_elements();
+void destroy_pokemonsOnMap(void* pointer);
+void addValuesToListFromArray(char** valorAux, t_list* listDestiny);
 
 void calculate_global_objetives();
 bool analyzePokemonInGlobal(void* );

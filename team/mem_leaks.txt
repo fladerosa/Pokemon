@@ -1,278 +1,197 @@
-==21003== Memcheck, a memory error detector
-==21003== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
-==21003== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
-==21003== Command: ./team
-==21003== Parent PID: 20994
-==21003== 
-==21003== 
-==21003== HEAP SUMMARY:
-==21003==     in use at exit: 895 bytes in 31 blocks
-==21003==   total heap usage: 702 allocs, 671 frees, 41,782 bytes allocated
-==21003== 
-==21003== 4 bytes in 1 blocks are indirectly lost in loss record 1 of 30
-==21003==    at 0x402E2CC: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x405445E: string_trim_right (in /usr/lib/libcommons.so)
-==21003==    by 0x4054354: string_trim (in /usr/lib/libcommons.so)
-==21003==    by 0x405473D: string_get_string_as_array (in /usr/lib/libcommons.so)
-==21003==    by 0x40565D5: config_get_array_value (in /usr/lib/libcommons.so)
-==21003==    by 0x8049939: assign_data_trainer (inicializacion.c:103)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 4 bytes in 2 blocks are indirectly lost in loss record 2 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x40FE2C5: strdup (strdup.c:42)
-==21003==    by 0x405409A: string_duplicate (in /usr/lib/libcommons.so)
-==21003==    by 0x4054B44: _string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x40545F3: string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x80499DB: assign_data_trainer (inicializacion.c:116)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 4 bytes in 1 blocks are definitely lost in loss record 3 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x402E370: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054BC4: _string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x40545F3: string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x4054716: string_get_string_as_array (in /usr/lib/libcommons.so)
-==21003==    by 0x40565D5: config_get_array_value (in /usr/lib/libcommons.so)
-==21003==    by 0x8049952: assign_data_trainer (inicializacion.c:104)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 4 bytes in 1 blocks are definitely lost in loss record 4 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804A5BA: reception_message_queue_subscription (suscripcion.c:164)
-==21003==    by 0x804E97D: serve_client (common_connections.c:106)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 4 bytes in 1 blocks are definitely lost in loss record 5 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804A5CA: reception_message_queue_subscription (suscripcion.c:165)
-==21003==    by 0x804E97D: serve_client (common_connections.c:106)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 8 bytes in 1 blocks are still reachable in loss record 6 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
-==21003==    by 0x8049E92: calculate_global_objetives (inicializacion.c:205)
-==21003==    by 0x8049559: initialize_team (inicializacion.c:15)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 8 bytes in 1 blocks are still reachable in loss record 7 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
-==21003==    by 0x804955E: initialize_team (inicializacion.c:16)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 8 bytes in 1 blocks are still reachable in loss record 8 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
-==21003==    by 0x804A0B6: connection_broker_global_suscribe (suscripcion.c:6)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 8 bytes in 1 blocks are indirectly lost in loss record 9 of 30
-==21003==    at 0x402E2CC: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x405445E: string_trim_right (in /usr/lib/libcommons.so)
-==21003==    by 0x4054354: string_trim (in /usr/lib/libcommons.so)
-==21003==    by 0x405473D: string_get_string_as_array (in /usr/lib/libcommons.so)
-==21003==    by 0x40565D5: config_get_array_value (in /usr/lib/libcommons.so)
-==21003==    by 0x804996B: assign_data_trainer (inicializacion.c:105)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 8 bytes in 1 blocks are indirectly lost in loss record 10 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x8049AAD: assign_data_trainer (inicializacion.c:122)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 8 bytes in 1 blocks are indirectly lost in loss record 11 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4055905: list_create_element (in /usr/lib/libcommons.so)
-==21003==    by 0x4054E3D: list_add (in /usr/lib/libcommons.so)
-==21003==    by 0x8049AE5: assign_data_trainer (inicializacion.c:124)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 8 bytes in 1 blocks are indirectly lost in loss record 12 of 30
-==21003==    at 0x402E2CC: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804A646: reception_message_queue_subscription (suscripcion.c:171)
-==21003==    by 0x804E97D: serve_client (common_connections.c:106)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 8 bytes in 1 blocks are indirectly lost in loss record 13 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804A762: reception_message_queue_subscription (suscripcion.c:184)
-==21003==    by 0x804E97D: serve_client (common_connections.c:106)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 8 bytes in 1 blocks are indirectly lost in loss record 14 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804CF56: catch_succesfull (team.c:460)
-==21003==    by 0x804C8AA: move_to_objetive (team.c:327)
-==21003==    by 0x804D13B: execThreadTrainerSetedFCFS (team.c:508)
-==21003==    by 0x804C5F9: executeAlgorithm (team.c:268)
-==21003==    by 0x8049E67: trainerDo (inicializacion.c:194)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 8 bytes in 1 blocks are indirectly lost in loss record 15 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4055905: list_create_element (in /usr/lib/libcommons.so)
-==21003==    by 0x4054E3D: list_add (in /usr/lib/libcommons.so)
-==21003==    by 0x804CF82: catch_succesfull (team.c:462)
-==21003==    by 0x804C8AA: move_to_objetive (team.c:327)
-==21003==    by 0x804D13B: execThreadTrainerSetedFCFS (team.c:508)
-==21003==    by 0x804C5F9: executeAlgorithm (team.c:268)
-==21003==    by 0x8049E67: trainerDo (inicializacion.c:194)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 12 (8 direct, 4 indirect) bytes in 1 blocks are definitely lost in loss record 16 of 30
-==21003==    at 0x402E2CC: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054BC4: _string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x40545F3: string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x4054716: string_get_string_as_array (in /usr/lib/libcommons.so)
-==21003==    by 0x40565D5: config_get_array_value (in /usr/lib/libcommons.so)
-==21003==    by 0x8049939: assign_data_trainer (inicializacion.c:103)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 16 (8 direct, 8 indirect) bytes in 1 blocks are definitely lost in loss record 17 of 30
-==21003==    at 0x402E2CC: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054BC4: _string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x40545F3: string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x4054716: string_get_string_as_array (in /usr/lib/libcommons.so)
-==21003==    by 0x40565D5: config_get_array_value (in /usr/lib/libcommons.so)
-==21003==    by 0x804996B: assign_data_trainer (inicializacion.c:105)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 16 (12 direct, 4 indirect) bytes in 1 blocks are definitely lost in loss record 18 of 30
-==21003==    at 0x402E2CC: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054BC4: _string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x40545F3: string_split (in /usr/lib/libcommons.so)
-==21003==    by 0x80499DB: assign_data_trainer (inicializacion.c:116)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 24 (8 direct, 16 indirect) bytes in 1 blocks are definitely lost in loss record 19 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
-==21003==    by 0x80499A7: assign_data_trainer (inicializacion.c:113)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 24 (8 direct, 16 indirect) bytes in 1 blocks are definitely lost in loss record 20 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
-==21003==    by 0x80499B4: assign_data_trainer (inicializacion.c:114)
-==21003==    by 0x8049554: initialize_team (inicializacion.c:14)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 24 (16 direct, 8 indirect) bytes in 1 blocks are definitely lost in loss record 21 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804D6FD: stream_to_appeared_pokemon (common_utils.c:52)
-==21003==    by 0x804A628: reception_message_queue_subscription (suscripcion.c:170)
-==21003==    by 0x804E97D: serve_client (common_connections.c:106)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 27 bytes in 1 blocks are definitely lost in loss record 22 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804A5AA: reception_message_queue_subscription (suscripcion.c:163)
-==21003==    by 0x804E97D: serve_client (common_connections.c:106)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 28 (20 direct, 8 indirect) bytes in 1 blocks are definitely lost in loss record 23 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x804A71C: reception_message_queue_subscription (suscripcion.c:180)
-==21003==    by 0x804E97D: serve_client (common_connections.c:106)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 48 bytes in 1 blocks are still reachable in loss record 24 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4156A1D: gaih_inet (getaddrinfo.c:1223)
-==21003==    by 0x41583E2: getaddrinfo (getaddrinfo.c:2425)
-==21003==    by 0x804EC4A: crear_conexion (common_connections.c:173)
-==21003==    by 0x804A13D: connection_broker_suscribe_to_appeared_pokemon (suscripcion.c:20)
-==21003==    by 0x804A0C5: connection_broker_global_suscribe (suscripcion.c:7)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 48 bytes in 1 blocks are still reachable in loss record 25 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4156A1D: gaih_inet (getaddrinfo.c:1223)
-==21003==    by 0x41583E2: getaddrinfo (getaddrinfo.c:2425)
-==21003==    by 0x804EC4A: crear_conexion (common_connections.c:173)
-==21003==    by 0x804AAB4: send_get_pokemon_global_team (suscripcion.c:265)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 48 bytes in 1 blocks are definitely lost in loss record 26 of 30
-==21003==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4156A1D: gaih_inet (getaddrinfo.c:1223)
-==21003==    by 0x41583E2: getaddrinfo (getaddrinfo.c:2425)
-==21003==    by 0x804CC94: sendCatch (team.c:411)
-==21003==    by 0x804C892: move_to_objetive (team.c:326)
-==21003==    by 0x804D13B: execThreadTrainerSetedFCFS (team.c:508)
-==21003==    by 0x804C5F9: executeAlgorithm (team.c:268)
-==21003==    by 0x8049E67: trainerDo (inicializacion.c:194)
-==21003==    by 0x4061294: start_thread (pthread_create.c:333)
-==21003==    by 0x41700AD: clone (clone.S:114)
-==21003== 
-==21003== 136 bytes in 1 blocks are possibly lost in loss record 27 of 30
-==21003==    at 0x402E0B8: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4011726: allocate_dtv (dl-tls.c:322)
-==21003==    by 0x401214B: _dl_allocate_tls (dl-tls.c:539)
-==21003==    by 0x4061CC3: allocate_stack (allocatestack.c:588)
-==21003==    by 0x4061CC3: pthread_create@@GLIBC_2.1 (pthread_create.c:539)
-==21003==    by 0x8049586: initialize_team (inicializacion.c:21)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 136 bytes in 1 blocks are possibly lost in loss record 28 of 30
-==21003==    at 0x402E0B8: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4011726: allocate_dtv (dl-tls.c:322)
-==21003==    by 0x401214B: _dl_allocate_tls (dl-tls.c:539)
-==21003==    by 0x4061CC3: allocate_stack (allocatestack.c:588)
-==21003==    by 0x4061CC3: pthread_create@@GLIBC_2.1 (pthread_create.c:539)
-==21003==    by 0x804E729: start_server (common_connections.c:54)
-==21003==    by 0x804A592: listen_to_gameboy (suscripcion.c:157)
-==21003==    by 0x804958E: initialize_team (inicializacion.c:23)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 136 bytes in 1 blocks are possibly lost in loss record 29 of 30
-==21003==    at 0x402E0B8: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4011726: allocate_dtv (dl-tls.c:322)
-==21003==    by 0x401214B: _dl_allocate_tls (dl-tls.c:539)
-==21003==    by 0x4061CC3: allocate_stack (allocatestack.c:588)
-==21003==    by 0x4061CC3: pthread_create@@GLIBC_2.1 (pthread_create.c:539)
-==21003==    by 0x80495A0: initialize_team (inicializacion.c:25)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== 136 bytes in 1 blocks are possibly lost in loss record 30 of 30
-==21003==    at 0x402E0B8: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==21003==    by 0x4011726: allocate_dtv (dl-tls.c:322)
-==21003==    by 0x401214B: _dl_allocate_tls (dl-tls.c:539)
-==21003==    by 0x4061CC3: allocate_stack (allocatestack.c:588)
-==21003==    by 0x4061CC3: pthread_create@@GLIBC_2.1 (pthread_create.c:539)
-==21003==    by 0x80495C9: initialize_team (inicializacion.c:28)
-==21003==    by 0x804BB4B: main (team.c:5)
-==21003== 
-==21003== LEAK SUMMARY:
-==21003==    definitely lost: 167 bytes in 12 blocks
-==21003==    indirectly lost: 64 bytes in 10 blocks
-==21003==      possibly lost: 544 bytes in 4 blocks
-==21003==    still reachable: 120 bytes in 5 blocks
-==21003==         suppressed: 0 bytes in 0 blocks
-==21003== 
-==21003== For counts of detected and suppressed errors, rerun with: -v
-==21003== ERROR SUMMARY: 16 errors from 16 contexts (suppressed: 0 from 0)
+==13704== Memcheck, a memory error detector
+==13704== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==13704== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==13704== Command: ./team
+==13704== Parent PID: 13702
+==13704== 
+==13704== 
+==13704== HEAP SUMMARY:
+==13704==     in use at exit: 1,134 bytes in 12 blocks
+==13704==   total heap usage: 1,620 allocs, 1,608 frees, 75,803 bytes allocated
+==13704== 
+==13704== 8 bytes in 1 blocks are indirectly lost in loss record 1 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4055905: list_create_element (in /usr/lib/libcommons.so)
+==13704==    by 0x4054E3D: list_add (in /usr/lib/libcommons.so)
+==13704==    by 0x4054EBE: _add_in_list.2211 (in /usr/lib/libcommons.so)
+==13704==    by 0x4055148: list_iterate (in /usr/lib/libcommons.so)
+==13704==    by 0x4054F2D: list_add_all (in /usr/lib/libcommons.so)
+==13704==    by 0x4055873: list_duplicate (in /usr/lib/libcommons.so)
+==13704==    by 0x804B337: getPokemonsNeeded (deadlock.c:57)
+==13704==    by 0x804B53D: completeCycleDeadlock (deadlock.c:101)
+==13704==    by 0x804B219: detectDeadlock_do (deadlock.c:29)
+==13704==    by 0x80496F8: planTrainers (inicializacion.c:48)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 8 bytes in 1 blocks are indirectly lost in loss record 2 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4055905: list_create_element (in /usr/lib/libcommons.so)
+==13704==    by 0x4054E3D: list_add (in /usr/lib/libcommons.so)
+==13704==    by 0x4054EBE: _add_in_list.2211 (in /usr/lib/libcommons.so)
+==13704==    by 0x4055148: list_iterate (in /usr/lib/libcommons.so)
+==13704==    by 0x4054F2D: list_add_all (in /usr/lib/libcommons.so)
+==13704==    by 0x4055873: list_duplicate (in /usr/lib/libcommons.so)
+==13704==    by 0x804B337: getPokemonsNeeded (deadlock.c:57)
+==13704==    by 0x804B53D: completeCycleDeadlock (deadlock.c:101)
+==13704==    by 0x804B612: completeCycleDeadlock (deadlock.c:114)
+==13704==    by 0x804B219: detectDeadlock_do (deadlock.c:29)
+==13704==    by 0x80496F8: planTrainers (inicializacion.c:48)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 8 bytes in 1 blocks are indirectly lost in loss record 3 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4055905: list_create_element (in /usr/lib/libcommons.so)
+==13704==    by 0x4054E3D: list_add (in /usr/lib/libcommons.so)
+==13704==    by 0x4054EBE: _add_in_list.2211 (in /usr/lib/libcommons.so)
+==13704==    by 0x4055148: list_iterate (in /usr/lib/libcommons.so)
+==13704==    by 0x4054F2D: list_add_all (in /usr/lib/libcommons.so)
+==13704==    by 0x4055873: list_duplicate (in /usr/lib/libcommons.so)
+==13704==    by 0x804C7FE: getPokemonNotNeeded (team.c:374)
+==13704==    by 0x804C6C5: interchangePokemon (team.c:346)
+==13704==    by 0x804C5C6: move_to_objetive (team.c:318)
+==13704==    by 0x804CF1A: execThreadTrainerSetedFCFS (team.c:514)
+==13704==    by 0x804C370: executeAlgorithm (team.c:268)
+==13704==    by 0x8049F45: trainerDo (inicializacion.c:209)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 16 (8 direct, 8 indirect) bytes in 1 blocks are definitely lost in loss record 4 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
+==13704==    by 0x4055862: list_duplicate (in /usr/lib/libcommons.so)
+==13704==    by 0x804B337: getPokemonsNeeded (deadlock.c:57)
+==13704==    by 0x804B53D: completeCycleDeadlock (deadlock.c:101)
+==13704==    by 0x804B219: detectDeadlock_do (deadlock.c:29)
+==13704==    by 0x80496F8: planTrainers (inicializacion.c:48)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 16 (8 direct, 8 indirect) bytes in 1 blocks are definitely lost in loss record 5 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
+==13704==    by 0x4055862: list_duplicate (in /usr/lib/libcommons.so)
+==13704==    by 0x804B337: getPokemonsNeeded (deadlock.c:57)
+==13704==    by 0x804B53D: completeCycleDeadlock (deadlock.c:101)
+==13704==    by 0x804B612: completeCycleDeadlock (deadlock.c:114)
+==13704==    by 0x804B219: detectDeadlock_do (deadlock.c:29)
+==13704==    by 0x80496F8: planTrainers (inicializacion.c:48)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 16 (8 direct, 8 indirect) bytes in 1 blocks are definitely lost in loss record 6 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4054E01: list_create (in /usr/lib/libcommons.so)
+==13704==    by 0x4055862: list_duplicate (in /usr/lib/libcommons.so)
+==13704==    by 0x804C7FE: getPokemonNotNeeded (team.c:374)
+==13704==    by 0x804C6C5: interchangePokemon (team.c:346)
+==13704==    by 0x804C5C6: move_to_objetive (team.c:318)
+==13704==    by 0x804CF1A: execThreadTrainerSetedFCFS (team.c:514)
+==13704==    by 0x804C370: executeAlgorithm (team.c:268)
+==13704==    by 0x8049F45: trainerDo (inicializacion.c:209)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 34 bytes in 1 blocks are still reachable in loss record 7 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4018E85: strdup (strdup.c:42)
+==13704==    by 0x4015581: _dl_load_cache_lookup (dl-cache.c:311)
+==13704==    by 0x400889D: _dl_map_object (dl-load.c:2364)
+==13704==    by 0x4013511: dl_open_worker (dl-open.c:237)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x4013001: _dl_open (dl-open.c:660)
+==13704==    by 0x41A5F8B: do_dlopen (dl-libc.c:87)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x41A6059: dlerror_run (dl-libc.c:46)
+==13704==    by 0x41A60DB: __libc_dlopen_mode (dl-libc.c:163)
+==13704==    by 0x406BA5B: pthread_cancel_init (unwind-forcedunwind.c:52)
+==13704==    by 0x4067DC0: pthread_cancel (pthread_cancel.c:38)
+==13704==    by 0x804C1B4: calculateTrainerInExit (team.c:226)
+==13704==    by 0x8049F60: trainerDo (inicializacion.c:211)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 34 bytes in 1 blocks are still reachable in loss record 8 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x400AE06: _dl_new_object (dl-object.c:165)
+==13704==    by 0x4005472: _dl_map_object_from_fd (dl-load.c:1028)
+==13704==    by 0x400847C: _dl_map_object (dl-load.c:2498)
+==13704==    by 0x4013511: dl_open_worker (dl-open.c:237)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x4013001: _dl_open (dl-open.c:660)
+==13704==    by 0x41A5F8B: do_dlopen (dl-libc.c:87)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x41A6059: dlerror_run (dl-libc.c:46)
+==13704==    by 0x41A60DB: __libc_dlopen_mode (dl-libc.c:163)
+==13704==    by 0x406BA5B: pthread_cancel_init (unwind-forcedunwind.c:52)
+==13704==    by 0x4067DC0: pthread_cancel (pthread_cancel.c:38)
+==13704==    by 0x804C1B4: calculateTrainerInExit (team.c:226)
+==13704==    by 0x8049F60: trainerDo (inicializacion.c:211)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 48 bytes in 1 blocks are definitely lost in loss record 9 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4156A1D: gaih_inet (getaddrinfo.c:1223)
+==13704==    by 0x41583E2: getaddrinfo (getaddrinfo.c:2425)
+==13704==    by 0x804EA29: crear_conexion (common_connections.c:173)
+==13704==    by 0x804A38C: connection_broker_suscribe_to_appeared_pokemon (suscripcion.c:20)
+==13704==    by 0x804A314: connection_broker_global_suscribe (suscripcion.c:7)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 48 bytes in 1 blocks are definitely lost in loss record 10 of 12
+==13704==    at 0x402C17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x4156A1D: gaih_inet (getaddrinfo.c:1223)
+==13704==    by 0x41583E2: getaddrinfo (getaddrinfo.c:2425)
+==13704==    by 0x804EA29: crear_conexion (common_connections.c:173)
+==13704==    by 0x804AD10: send_get_pokemon_global_team (suscripcion.c:220)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 288 bytes in 1 blocks are still reachable in loss record 11 of 12
+==13704==    at 0x402E0B8: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x401096F: _dl_check_map_versions (dl-version.c:293)
+==13704==    by 0x4013AC5: dl_open_worker (dl-open.c:286)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x4013001: _dl_open (dl-open.c:660)
+==13704==    by 0x41A5F8B: do_dlopen (dl-libc.c:87)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x41A6059: dlerror_run (dl-libc.c:46)
+==13704==    by 0x41A60DB: __libc_dlopen_mode (dl-libc.c:163)
+==13704==    by 0x406BA5B: pthread_cancel_init (unwind-forcedunwind.c:52)
+==13704==    by 0x4067DC0: pthread_cancel (pthread_cancel.c:38)
+==13704==    by 0x804C1B4: calculateTrainerInExit (team.c:226)
+==13704==    by 0x8049F60: trainerDo (inicializacion.c:211)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== 634 bytes in 1 blocks are still reachable in loss record 12 of 12
+==13704==    at 0x402E0B8: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==13704==    by 0x400AB04: _dl_new_object (dl-object.c:75)
+==13704==    by 0x4005472: _dl_map_object_from_fd (dl-load.c:1028)
+==13704==    by 0x400847C: _dl_map_object (dl-load.c:2498)
+==13704==    by 0x4013511: dl_open_worker (dl-open.c:237)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x4013001: _dl_open (dl-open.c:660)
+==13704==    by 0x41A5F8B: do_dlopen (dl-libc.c:87)
+==13704==    by 0x400F303: _dl_catch_error (dl-error.c:187)
+==13704==    by 0x41A6059: dlerror_run (dl-libc.c:46)
+==13704==    by 0x41A60DB: __libc_dlopen_mode (dl-libc.c:163)
+==13704==    by 0x406BA5B: pthread_cancel_init (unwind-forcedunwind.c:52)
+==13704==    by 0x4067DC0: pthread_cancel (pthread_cancel.c:38)
+==13704==    by 0x804C1B4: calculateTrainerInExit (team.c:226)
+==13704==    by 0x8049F60: trainerDo (inicializacion.c:211)
+==13704==    by 0x4061294: start_thread (pthread_create.c:333)
+==13704==    by 0x41700AD: clone (clone.S:114)
+==13704== 
+==13704== LEAK SUMMARY:
+==13704==    definitely lost: 120 bytes in 5 blocks
+==13704==    indirectly lost: 24 bytes in 3 blocks
+==13704==      possibly lost: 0 bytes in 0 blocks
+==13704==    still reachable: 990 bytes in 4 blocks
+==13704==         suppressed: 0 bytes in 0 blocks
+==13704== 
+==13704== For counts of detected and suppressed errors, rerun with: -v
+==13704== ERROR SUMMARY: 5 errors from 5 contexts (suppressed: 0 from 0)
