@@ -443,7 +443,7 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
             sizeofdata, memory.configuration.size
         );
         pthread_mutex_unlock(&m_new_partition);
-        return NULL;
+        return (void*) 1;
     }
     freePartition = seekPartitionAvailable(sizeofdata);
     allocateData(sizeofdata, freePartition);
@@ -473,7 +473,7 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
             "No se va a agregar a la cola de mensajes %d el mensaje de la posicion %d porque el id_correlativo %d ya se encontraba en memoria.",
             id_queue, freePartition->offset, freePartition->id_correlational
         );
-        return NULL;
+        return (void*)1;
     } else {
         return freePartition;
     }

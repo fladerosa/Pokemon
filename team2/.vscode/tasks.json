@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Team w/ Valgrind",
+            "type": "shell",
+            "command": "./exec_valgrind",
+            "problemMatcher": []
+        },
+        {
+            "label": "Team normal",
+            "type": "shell",
+            "command": "./exec",
+            "problemMatcher": []
+        }
+    ]
+}
