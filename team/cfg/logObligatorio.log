@@ -158,3 +158,17 @@
 [INFO] 23:45:45:598 TEAM/(21209:21209): Total Cycle CPU by TEAM: 54
 [INFO] 23:45:45:598 TEAM/(21209:21209): Total Context Switch by Team: 14
 [INFO] 23:45:45:598 TEAM/(21209:21209): Total Deadlocks by Team: 2
+[INFO] 00:31:47:522 TEAM/(17607:17607): Obligatory Log was created successfully
+
+[INFO] 00:31:47:522 TEAM/(17607:17607): Entrenador 1 entra a cola NEW.
+[INFO] 00:31:47:522 TEAM/(17607:17607): Entrenador 2 entra a cola NEW.
+[INFO] 00:31:47:522 TEAM/(17607:17607): Entrenador 3 entra a cola NEW.
+[INFO] 00:31:47:524 TEAM/(17607:17611): Conectado con exito con el proceso en 127.0.0.1 :6009
+[INFO] 00:31:47:524 TEAM/(17607:17611): Connection to broker succesfully
+
+[INFO] 00:31:47:524 TEAM/(17607:17611): Conectado con exito con el proceso en 127.0.0.1 :6009
+[INFO] 00:31:47:524 TEAM/(17607:17611): Connection to broker succesfully
+
+[INFO] 00:31:47:524 TEAM/(17607:17611): Conectado con exito con el proceso en 127.0.0.1 :6009
+[INFO] 00:31:47:524 TEAM/(17607:17611): Connection to broker succesfully
+

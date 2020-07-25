@@ -13,34 +13,40 @@ helpFunction()
    exit 1 # Exit script after printing help
 }
 
+if [ -n "$1" ]
+then
+    truncate -s 0 ./cfg/broker.config
+    echo -e "IP_BROKER=127.0.0.1\nLOG_FILE=./cfg/obligatory.log\nOPTIONAL_LOG_FILE=./cfg/optional.log\nLOG_SHOW=1\nOPTIONAL_LOG_SHOW=0\nDUMP_FILE=./cfg/cache.tmp\nPUERTO_BROKER=6009" >>  ./cfg/broker.config
+fi
+
 case $1 in
     cons1)
-        cp cfg/broker1.config cfg/broker.config
         echo -e "Seteando config de Consolidacion de Particiones Parte 1"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=PARTICIONES\nALGORITMO_REEMPLAZO=FIFO\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=10" >>  ./cfg/broker.config
         ;;
     cons2)
-        cp cfg/broker2.config cfg/broker.config
         echo -e "Seteando config de Consolidacion de Particiones Parte 2"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=PARTICIONES\nALGORITMO_REEMPLAZO=LRU\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=10" >>  ./cfg/broker.config
         ;;
     comp1)
-        cp cfg/broker3.config cfg/broker.config
         echo -e "Seteando config de Compactacion de Particiones Parte 1"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=PARTICIONES\nALGORITMO_REEMPLAZO=FIFO\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
         ;;
     comp2)
-        cp cfg/broker4.config cfg/broker.config
         echo -e "Seteando config de Compactación de Particiones Parte 2"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=PARTICIONES\nALGORITMO_REEMPLAZO=LRU\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
         ;;
     bs1)
-        cp cfg/broker5.config cfg/broker.config
         echo -e "Seteando config de Buddy System Parte 1"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=BS\nALGORITMO_REEMPLAZO=FIFO\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
         ;;
     bs2)
-        cp cfg/broker6.config cfg/broker.config
         echo -e "Seteando config de Buddy System Parte 2"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=BS\nALGORITMO_REEMPLAZO=LRU\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
         ;;
     completa)
-        cp cfg/broker2.config cfg/broker.config
         echo -e "Seteando config de Prueba Integradora"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=BS\nALGORITMO_REEMPLAZO=FIFO\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
         ;;
     ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
 esac

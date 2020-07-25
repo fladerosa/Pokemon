@@ -433,13 +433,16 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
             sizeofdata = sizeofrawstream - 2 * sizeof(uint32_t);
             break;
         default:
+            log_info(optional_logger, "El id queue no es correcto y entró a la asignación de memoria. Algo salió horriblemente mal.");
+            pthread_mutex_unlock(&m_new_partition);
             return NULL;
     }
     if(sizeofdata > memory.configuration.size){
         log_info(optional_logger, 
-            "El tamano del mensaje (%db) es mayor a la capacidad de la memoria(%db). Se ingorara el mensaje.",
+            "El tamano del mensaje (%db) es mayor a la capacidad de la memoria(%db). Se ignorara el mensaje.",
             sizeofdata, memory.configuration.size
         );
+        pthread_mutex_unlock(&m_new_partition);
         return NULL;
     }
     freePartition = seekPartitionAvailable(sizeofdata);
