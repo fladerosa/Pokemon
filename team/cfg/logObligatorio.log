@@ -172,3 +172,463 @@
 [INFO] 00:31:47:524 TEAM/(17607:17611): Conectado con exito con el proceso en 127.0.0.1 :6009
 [INFO] 00:31:47:524 TEAM/(17607:17611): Connection to broker succesfully
 
+[INFO] 10:58:14:374 TEAM/(6053:6053): Obligatory Log was created successfully
+
+[INFO] 10:58:14:386 TEAM/(6053:6053): Entrenador 1 entra a cola NEW.
+[INFO] 10:58:14:389 TEAM/(6053:6053): Entrenador 2 entra a cola NEW.
+[INFO] 10:58:14:390 TEAM/(6053:6053): Entrenador 3 entra a cola NEW.
+[INFO] 10:58:17:739 TEAM/(6053:6058): Se conectó un proceso en el socket 9
+[INFO] 10:58:17:762 TEAM/(6053:6063): Receiving Message Appeared pokemon.
+[INFO] 10:58:17:763 TEAM/(6053:6063): Pokemon Appeared: Pikachu, position: (9,9)
+[INFO] 10:58:17:764 TEAM/(6053:6060): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 10:58:17:765 TEAM/(6053:6060): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 10:58:17:766 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:17:766 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (2,3) - Posicion destino: (3,3)
+[INFO] 10:58:17:767 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:17:767 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:17:768 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:17:799 TEAM/(6053:6058): Se conectó un proceso en el socket 10
+[INFO] 10:58:17:820 TEAM/(6053:6065): Receiving Message Appeared pokemon.
+[INFO] 10:58:17:822 TEAM/(6053:6065): Pokemon Appeared: Squirtle, position: (6,7)
+[INFO] 10:58:17:823 TEAM/(6053:6060): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 10:58:17:823 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:17:824 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:17:825 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:17:825 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:17:855 TEAM/(6053:6058): Se conectó un proceso en el socket 9
+[INFO] 10:58:17:874 TEAM/(6053:6067): Receiving Message Appeared pokemon.
+[INFO] 10:58:17:877 TEAM/(6053:6067): Pokemon Appeared: Onix, position: (2,8)
+[INFO] 10:58:17:878 TEAM/(6053:6060): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 10:58:17:879 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:17:879 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:17:880 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:17:881 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:17:911 TEAM/(6053:6058): Se conectó un proceso en el socket 10
+[INFO] 10:58:17:926 TEAM/(6053:6069): Receiving Message Appeared pokemon.
+[INFO] 10:58:17:932 TEAM/(6053:6069): Pokemon Appeared: Gengar, position: (6,6)
+[INFO] 10:58:17:933 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:17:934 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:17:973 TEAM/(6053:6058): Se conectó un proceso en el socket 9
+[INFO] 10:58:17:987 TEAM/(6053:6071): Receiving Message Appeared pokemon.
+[INFO] 10:58:17:998 TEAM/(6053:6071): Pokemon Appeared: Squirtle, position: (5,5)
+[INFO] 10:58:18:5 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:18:6 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:19:768 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (3,3) - Posicion destino: (4,3)
+[INFO] 10:58:21:771 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (4,3) - Posicion destino: (5,3)
+[INFO] 10:58:23:783 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (5,3) - Posicion destino: (6,3)
+[INFO] 10:58:25:788 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (6,3) - Posicion destino: (7,3)
+[INFO] 10:58:27:790 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (7,3) - Posicion destino: (8,3)
+[INFO] 10:58:29:791 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (8,3) - Posicion destino: (9,3)
+[INFO] 10:58:31:794 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (9,3) - Posicion destino: (9,4)
+[INFO] 10:58:33:797 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (9,4) - Posicion destino: (9,5)
+[INFO] 10:58:35:801 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (9,5) - Posicion destino: (9,6)
+[INFO] 10:58:37:805 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (9,6) - Posicion destino: (9,7)
+[INFO] 10:58:39:808 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (9,7) - Posicion destino: (9,8)
+[INFO] 10:58:41:812 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (9,8) - Posicion destino: (9,9)
+[INFO] 10:58:43:814 TEAM/(6053:6055): Atrapar pokemon: Pikachu, en posicion: (9,9)
+[INFO] 10:58:43:821 TEAM/(6053:6055): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 10:58:43:830 TEAM/(6053:6055): Entrenador 2, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 10:58:43:831 TEAM/(6053:6060): Entrenador 2, cambia de BLOCKED a READY, porque es el más cercano para realizar la captura
+[INFO] 10:58:43:833 TEAM/(6053:6060): Entrenador 3, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 10:58:43:835 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (3,2) - Posicion destino: (4,2)
+[INFO] 10:58:43:836 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:43:837 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:43:842 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:43:845 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:45:839 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (4,2) - Posicion destino: (5,2)
+[INFO] 10:58:47:841 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (5,2) - Posicion destino: (6,2)
+[INFO] 10:58:49:844 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (6,2) - Posicion destino: (6,3)
+[INFO] 10:58:51:846 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (6,3) - Posicion destino: (6,4)
+[INFO] 10:58:53:850 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (6,4) - Posicion destino: (6,5)
+[INFO] 10:58:55:860 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (6,5) - Posicion destino: (6,6)
+[INFO] 10:58:57:863 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (6,6) - Posicion destino: (6,7)
+[INFO] 10:58:59:865 TEAM/(6053:6056): Atrapar pokemon: Squirtle, en posicion: (6,7)
+[INFO] 10:58:59:867 TEAM/(6053:6056): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 10:58:59:870 TEAM/(6053:6056): Entrenador 3, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 10:58:59:873 TEAM/(6053:6060): Entrenador 3, cambia de BLOCKED a READY, porque es el más cercano para realizar la captura
+[INFO] 10:58:59:875 TEAM/(6053:6060): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 10:58:59:878 TEAM/(6053:6054): Entrenador 1 - Posicion actual: (1,3) - Posicion destino: (2,3)
+[INFO] 10:58:59:879 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:59:880 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:58:59:886 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:58:59:887 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:59:01:882 TEAM/(6053:6054): Entrenador 1 - Posicion actual: (2,3) - Posicion destino: (2,4)
+[INFO] 10:59:03:886 TEAM/(6053:6054): Entrenador 1 - Posicion actual: (2,4) - Posicion destino: (2,5)
+[INFO] 10:59:05:889 TEAM/(6053:6054): Entrenador 1 - Posicion actual: (2,5) - Posicion destino: (2,6)
+[INFO] 10:59:07:894 TEAM/(6053:6054): Entrenador 1 - Posicion actual: (2,6) - Posicion destino: (2,7)
+[INFO] 10:59:09:897 TEAM/(6053:6054): Entrenador 1 - Posicion actual: (2,7) - Posicion destino: (2,8)
+[INFO] 10:59:11:899 TEAM/(6053:6054): Atrapar pokemon: Onix, en posicion: (2,8)
+[INFO] 10:59:11:901 TEAM/(6053:6054): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 10:59:11:901 TEAM/(6053:6054): Entrenador 1, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 10:59:11:902 TEAM/(6053:6060): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 10:59:11:902 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:59:11:903 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:59:11:903 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (9,9) - Posicion destino: (8,9)
+[INFO] 10:59:13:908 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (8,9) - Posicion destino: (7,9)
+[INFO] 10:59:15:910 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (7,9) - Posicion destino: (6,9)
+[INFO] 10:59:17:913 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (6,9) - Posicion destino: (6,8)
+[INFO] 10:59:19:914 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (6,8) - Posicion destino: (6,7)
+[INFO] 10:59:21:917 TEAM/(6053:6055): Entrenador 2 - Posicion actual: (6,7) - Posicion destino: (6,6)
+[INFO] 10:59:23:919 TEAM/(6053:6055): Atrapar pokemon: Gengar, en posicion: (6,6)
+[INFO] 10:59:23:932 TEAM/(6053:6055): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 10:59:23:934 TEAM/(6053:6055): Entrenador 2, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 10:59:23:939 TEAM/(6053:6055): Trainer: 2
+[INFO] 10:59:23:949 TEAM/(6053:6055): Total Cycle CPU by Trainer 2: 19
+[INFO] 10:59:23:951 TEAM/(6053:6060): Entrenador 3, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 10:59:23:952 TEAM/(6053:6060): Inicia algoritmo de detección de deadlock.
+[INFO] 10:59:23:953 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (6,7) - Posicion destino: (5,7)
+[INFO] 10:59:23:953 TEAM/(6053:6060): No se detectó deadlock.
+[INFO] 10:59:25:954 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (5,7) - Posicion destino: (5,6)
+[INFO] 10:59:27:957 TEAM/(6053:6056): Entrenador 3 - Posicion actual: (5,6) - Posicion destino: (5,5)
+[INFO] 11:00:38:390 TEAM/(6259:6259): Obligatory Log was created successfully
+
+[INFO] 11:00:38:405 TEAM/(6259:6259): Entrenador 1 entra a cola NEW.
+[INFO] 11:00:38:409 TEAM/(6259:6259): Entrenador 2 entra a cola NEW.
+[INFO] 11:00:38:412 TEAM/(6259:6259): Entrenador 3 entra a cola NEW.
+[INFO] 11:00:46:341 TEAM/(6269:6269): Obligatory Log was created successfully
+
+[INFO] 11:00:46:349 TEAM/(6269:6269): Entrenador 1 entra a cola NEW.
+[INFO] 11:00:46:352 TEAM/(6269:6269): Entrenador 2 entra a cola NEW.
+[INFO] 11:00:46:354 TEAM/(6269:6269): Entrenador 3 entra a cola NEW.
+[INFO] 11:00:58:520 TEAM/(6259:6264): Se conectó un proceso en el socket 9
+[INFO] 11:00:58:542 TEAM/(6259:6276): Receiving Message Appeared pokemon.
+[INFO] 11:00:58:545 TEAM/(6259:6276): Pokemon Appeared: Pikachu, position: (9,9)
+[INFO] 11:00:58:552 TEAM/(6259:6266): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:00:58:553 TEAM/(6259:6266): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:00:58:554 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (2,3) - Posicion destino: (3,3)
+[INFO] 11:00:58:554 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:555 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:00:58:555 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:555 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:00:58:577 TEAM/(6259:6264): Se conectó un proceso en el socket 10
+[INFO] 11:00:58:593 TEAM/(6259:6278): Receiving Message Appeared pokemon.
+[INFO] 11:00:58:595 TEAM/(6259:6278): Pokemon Appeared: Squirtle, position: (6,7)
+[INFO] 11:00:58:602 TEAM/(6259:6266): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:00:58:603 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:603 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:00:58:603 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:604 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:00:58:633 TEAM/(6259:6264): Se conectó un proceso en el socket 9
+[INFO] 11:00:58:655 TEAM/(6259:6280): Receiving Message Appeared pokemon.
+[INFO] 11:00:58:657 TEAM/(6259:6280): Pokemon Appeared: Onix, position: (2,8)
+[INFO] 11:00:58:658 TEAM/(6259:6266): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:00:58:658 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:659 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:00:58:659 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:659 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:00:58:688 TEAM/(6259:6264): Se conectó un proceso en el socket 10
+[INFO] 11:00:58:706 TEAM/(6259:6282): Receiving Message Appeared pokemon.
+[INFO] 11:00:58:718 TEAM/(6259:6282): Pokemon Appeared: Gengar, position: (6,6)
+[INFO] 11:00:58:719 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:720 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:00:58:751 TEAM/(6259:6264): Se conectó un proceso en el socket 9
+[INFO] 11:00:58:770 TEAM/(6259:6284): Receiving Message Appeared pokemon.
+[INFO] 11:00:58:771 TEAM/(6259:6284): Pokemon Appeared: Squirtle, position: (5,5)
+[INFO] 11:00:58:774 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:00:58:774 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:01:00:555 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (3,3) - Posicion destino: (4,3)
+[INFO] 11:01:02:559 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (4,3) - Posicion destino: (5,3)
+[INFO] 11:01:04:562 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (5,3) - Posicion destino: (6,3)
+[INFO] 11:01:06:565 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (6,3) - Posicion destino: (7,3)
+[INFO] 11:01:08:575 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (7,3) - Posicion destino: (8,3)
+[INFO] 11:01:10:579 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (8,3) - Posicion destino: (9,3)
+[INFO] 11:01:12:582 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (9,3) - Posicion destino: (9,4)
+[INFO] 11:01:14:585 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (9,4) - Posicion destino: (9,5)
+[INFO] 11:01:16:587 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (9,5) - Posicion destino: (9,6)
+[INFO] 11:01:18:594 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (9,6) - Posicion destino: (9,7)
+[INFO] 11:01:20:597 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (9,7) - Posicion destino: (9,8)
+[INFO] 11:01:22:599 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (9,8) - Posicion destino: (9,9)
+[INFO] 11:01:24:602 TEAM/(6259:6261): Atrapar pokemon: Pikachu, en posicion: (9,9)
+[INFO] 11:01:24:609 TEAM/(6259:6261): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 11:01:24:611 TEAM/(6259:6261): Entrenador 2, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 11:01:24:614 TEAM/(6259:6266): Entrenador 2, cambia de BLOCKED a READY, porque es el más cercano para realizar la captura
+[INFO] 11:01:24:615 TEAM/(6259:6266): Entrenador 3, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:01:24:618 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (3,2) - Posicion destino: (4,2)
+[INFO] 11:01:24:620 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:01:24:625 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:01:24:626 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:01:24:627 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:01:26:621 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (4,2) - Posicion destino: (5,2)
+[INFO] 11:01:28:629 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (5,2) - Posicion destino: (6,2)
+[INFO] 11:01:30:630 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (6,2) - Posicion destino: (6,3)
+[INFO] 11:01:32:633 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (6,3) - Posicion destino: (6,4)
+[INFO] 11:01:34:636 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (6,4) - Posicion destino: (6,5)
+[INFO] 11:01:36:639 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (6,5) - Posicion destino: (6,6)
+[INFO] 11:01:38:641 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (6,6) - Posicion destino: (6,7)
+[INFO] 11:01:40:643 TEAM/(6259:6262): Atrapar pokemon: Squirtle, en posicion: (6,7)
+[INFO] 11:01:40:645 TEAM/(6259:6262): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 11:01:40:645 TEAM/(6259:6262): Entrenador 3, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 11:01:40:646 TEAM/(6259:6266): Entrenador 3, cambia de BLOCKED a READY, porque es el más cercano para realizar la captura
+[INFO] 11:01:40:646 TEAM/(6259:6266): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:01:40:647 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:01:40:648 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (1,3) - Posicion destino: (2,3)
+[INFO] 11:01:40:648 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:01:40:649 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:01:40:649 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:01:42:649 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (2,3) - Posicion destino: (2,4)
+[INFO] 11:01:44:651 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (2,4) - Posicion destino: (2,5)
+[INFO] 11:01:46:654 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (2,5) - Posicion destino: (2,6)
+[INFO] 11:01:48:661 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (2,6) - Posicion destino: (2,7)
+[INFO] 11:01:50:663 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (2,7) - Posicion destino: (2,8)
+[INFO] 11:01:52:666 TEAM/(6259:6260): Atrapar pokemon: Onix, en posicion: (2,8)
+[INFO] 11:01:52:670 TEAM/(6259:6260): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 11:01:52:675 TEAM/(6259:6260): Entrenador 1, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 11:01:52:677 TEAM/(6259:6266): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:01:52:678 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (9,9) - Posicion destino: (8,9)
+[INFO] 11:01:52:680 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:01:52:681 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:01:54:681 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (8,9) - Posicion destino: (7,9)
+[INFO] 11:01:56:682 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (7,9) - Posicion destino: (6,9)
+[INFO] 11:01:58:687 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (6,9) - Posicion destino: (6,8)
+[INFO] 11:02:00:690 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (6,8) - Posicion destino: (6,7)
+[INFO] 11:02:02:693 TEAM/(6259:6261): Entrenador 2 - Posicion actual: (6,7) - Posicion destino: (6,6)
+[INFO] 11:02:04:697 TEAM/(6259:6261): Atrapar pokemon: Gengar, en posicion: (6,6)
+[INFO] 11:02:04:712 TEAM/(6259:6261): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 11:02:04:724 TEAM/(6259:6261): Entrenador 2, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales
+[INFO] 11:02:04:735 TEAM/(6259:6261): Trainer: 2
+[INFO] 11:02:04:739 TEAM/(6259:6261): Total Cycle CPU by Trainer 2: 19
+[INFO] 11:02:04:749 TEAM/(6259:6266): Entrenador 3, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:02:04:751 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:02:04:751 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:02:04:752 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (6,7) - Posicion destino: (5,7)
+[INFO] 11:02:06:758 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (5,7) - Posicion destino: (5,6)
+[INFO] 11:02:08:767 TEAM/(6259:6262): Entrenador 3 - Posicion actual: (5,6) - Posicion destino: (5,5)
+[INFO] 11:02:10:770 TEAM/(6259:6262): Atrapar pokemon: Squirtle, en posicion: (5,5)
+[INFO] 11:02:10:809 TEAM/(6259:6262): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 11:02:10:813 TEAM/(6259:6262): Entrenador 3, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 11:02:10:816 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:02:10:817 TEAM/(6259:6266): El entrenador 1 intercambiará con el entrenador 3
+[INFO] 11:02:10:817 TEAM/(6259:6266): Entrenador 1, cambia de BLOCKED a READY, porque intercambiará por deadlock
+[INFO] 11:02:10:817 TEAM/(6259:6266): Se detectó deadlock.
+[INFO] 11:02:10:818 TEAM/(6259:6266): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:02:10:819 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (2,8) - Posicion destino: (3,8)
+[INFO] 11:02:12:822 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (3,8) - Posicion destino: (4,8)
+[INFO] 11:02:14:825 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (4,8) - Posicion destino: (5,8)
+[INFO] 11:02:16:827 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,8) - Posicion destino: (5,7)
+[INFO] 11:02:18:837 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,7) - Posicion destino: (5,6)
+[INFO] 11:02:20:840 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,6) - Posicion destino: (5,5)
+[INFO] 11:02:22:843 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,5) - Posicion destino: (5,5)
+[INFO] 11:02:24:845 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,5) - Posicion destino: (5,5)
+[INFO] 11:02:26:847 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,5) - Posicion destino: (5,5)
+[INFO] 11:02:28:855 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,5) - Posicion destino: (5,5)
+[INFO] 11:02:30:859 TEAM/(6259:6260): Entrenador 1 - Posicion actual: (5,5) - Posicion destino: (5,5)
+[INFO] 11:02:32:862 TEAM/(6259:6260): Entrenador 1, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio
+[INFO] 11:02:32:863 TEAM/(6259:6260): Entrenador 3, cambia de BLOCKED a EXIT, porque cumplió sus objetivos individuales
+[INFO] 11:02:32:865 TEAM/(6259:6262): Trainer: 3
+[INFO] 11:02:32:866 TEAM/(6259:6262): Total Cycle CPU by Trainer 3: 11
+[INFO] 11:02:32:867 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:02:32:868 TEAM/(6259:6260): Trainer: 1
+[INFO] 11:02:32:875 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:02:32:879 TEAM/(6259:6260): Total Cycle CPU by Trainer 1: 17
+[INFO] 11:02:32:881 TEAM/(6259:6266): Inicia algoritmo de detección de deadlock.
+[INFO] 11:02:32:882 TEAM/(6259:6266): No se detectó deadlock.
+[INFO] 11:02:32:893 TEAM/(6259:6259): Algorithm: FIFO 
+[INFO] 11:02:32:893 TEAM/(6259:6259): Total Cycle CPU by TEAM: 47
+[INFO] 11:02:32:894 TEAM/(6259:6259): Total Context Switch by Team: 10
+[INFO] 11:02:32:894 TEAM/(6259:6259): Total Deadlocks by Team: 1
+[INFO] 11:58:12:857 TEAM/(6975:6975): Obligatory Log was created successfully
+
+[INFO] 11:58:12:868 TEAM/(6975:6975): Entrenador 1 entra a cola NEW.
+[INFO] 11:58:12:873 TEAM/(6975:6975): Entrenador 2 entra a cola NEW.
+[INFO] 11:58:12:876 TEAM/(6975:6975): Entrenador 3 entra a cola NEW.
+[INFO] 11:58:22:255 TEAM/(6975:6980): Se conectó un proceso en el socket 9
+[INFO] 11:58:22:277 TEAM/(6975:6984): Receiving Message Appeared pokemon.
+[INFO] 11:58:22:281 TEAM/(6975:6984): Pokemon Appeared: Pikachu, position: (9,9)
+[INFO] 11:58:22:283 TEAM/(6975:6982): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:58:22:283 TEAM/(6975:6982): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:58:22:285 TEAM/(6975:6977): Entrenador 2 - Posicion actual: (2,3) - Posicion destino: (3,3)
+[INFO] 11:58:22:285 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:286 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:22:287 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:287 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:22:319 TEAM/(6975:6980): Se conectó un proceso en el socket 10
+[INFO] 11:58:22:350 TEAM/(6975:6985): Receiving Message Appeared pokemon.
+[INFO] 11:58:22:353 TEAM/(6975:6985): Pokemon Appeared: Squirtle, position: (6,7)
+[INFO] 11:58:22:354 TEAM/(6975:6982): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:58:22:354 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:355 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:22:355 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:356 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:22:412 TEAM/(6975:6980): Se conectó un proceso en el socket 9
+[INFO] 11:58:22:429 TEAM/(6975:6987): Receiving Message Appeared pokemon.
+[INFO] 11:58:22:430 TEAM/(6975:6987): Pokemon Appeared: Onix, position: (2,8)
+[INFO] 11:58:22:440 TEAM/(6975:6982): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:58:22:441 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:442 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:22:442 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:442 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:22:483 TEAM/(6975:6980): Se conectó un proceso en el socket 10
+[INFO] 11:58:22:505 TEAM/(6975:6989): Receiving Message Appeared pokemon.
+[INFO] 11:58:22:507 TEAM/(6975:6989): Pokemon Appeared: Gengar, position: (6,6)
+[INFO] 11:58:22:511 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:513 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:22:549 TEAM/(6975:6980): Se conectó un proceso en el socket 9
+[INFO] 11:58:22:589 TEAM/(6975:6991): Receiving Message Appeared pokemon.
+[INFO] 11:58:22:590 TEAM/(6975:6991): Pokemon Appeared: Squirtle, position: (5,5)
+[INFO] 11:58:22:591 TEAM/(6975:6982): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:22:592 TEAM/(6975:6982): No se detectó deadlock.
+[INFO] 11:58:24:288 TEAM/(6975:6977): Entrenador 2 - Posicion actual: (3,3) - Posicion destino: (4,3)
+[INFO] 11:58:26:292 TEAM/(6975:6977): Entrenador 2 - Posicion actual: (4,3) - Posicion destino: (5,3)
+[INFO] 11:58:28:295 TEAM/(6975:6977): Entrenador 2 - Posicion actual: (5,3) - Posicion destino: (6,3)
+[INFO] 11:58:45:927 TEAM/(6996:6996): Obligatory Log was created successfully
+
+[INFO] 11:58:45:935 TEAM/(6996:6996): Entrenador 1 entra a cola NEW.
+[INFO] 11:58:45:938 TEAM/(6996:6996): Entrenador 2 entra a cola NEW.
+[INFO] 11:58:45:941 TEAM/(6996:6996): Entrenador 3 entra a cola NEW.
+[INFO] 11:58:48:938 TEAM/(6996:7001): Se conectó un proceso en el socket 9
+[INFO] 11:58:48:969 TEAM/(6996:7004): Receiving Message Appeared pokemon.
+[INFO] 11:58:48:971 TEAM/(6996:7004): Pokemon Appeared: Pikachu, position: (9,9)
+[INFO] 11:58:48:980 TEAM/(6996:7003): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:58:48:981 TEAM/(6996:7003): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:58:48:982 TEAM/(6996:6998): Entrenador 2 - Posicion actual: (2,3) - Posicion destino: (3,3)
+[INFO] 11:58:48:985 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:48:987 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:48:4 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:49:9 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:49:31 TEAM/(6996:7001): Se conectó un proceso en el socket 10
+[INFO] 11:58:49:50 TEAM/(6996:7006): Receiving Message Appeared pokemon.
+[INFO] 11:58:49:59 TEAM/(6996:7006): Pokemon Appeared: Squirtle, position: (6,7)
+[INFO] 11:58:49:65 TEAM/(6996:7003): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:58:49:66 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:49:67 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:49:67 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:49:68 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:49:97 TEAM/(6996:7001): Se conectó un proceso en el socket 9
+[INFO] 11:58:49:119 TEAM/(6996:7008): Receiving Message Appeared pokemon.
+[INFO] 11:58:49:121 TEAM/(6996:7008): Pokemon Appeared: Onix, position: (2,8)
+[INFO] 11:58:49:129 TEAM/(6996:7003): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:58:49:130 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:49:130 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:49:131 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:49:131 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:49:168 TEAM/(6996:7001): Se conectó un proceso en el socket 10
+[INFO] 11:58:49:193 TEAM/(6996:7010): Receiving Message Appeared pokemon.
+[INFO] 11:58:49:197 TEAM/(6996:7010): Pokemon Appeared: Gengar, position: (6,6)
+[INFO] 11:58:49:198 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:49:200 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:49:253 TEAM/(6996:7001): Se conectó un proceso en el socket 9
+[INFO] 11:58:49:283 TEAM/(6996:7012): Receiving Message Appeared pokemon.
+[INFO] 11:58:49:285 TEAM/(6996:7012): Pokemon Appeared: Squirtle, position: (5,5)
+[INFO] 11:58:49:286 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:49:287 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:50:989 TEAM/(6996:6998): Entrenador 2 - Posicion actual: (3,3) - Posicion destino: (4,3)
+[INFO] 11:58:52:992 TEAM/(6996:6998): Entrenador 2, cambia de EXEC a READY, porque se le acabó el QUANTUM
+[INFO] 11:58:52:993 TEAM/(6996:7003): Entrenador 3, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:58:52:994 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:52:995 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:58:52:995 TEAM/(6996:6999): Entrenador 3 - Posicion actual: (3,2) - Posicion destino: (4,2)
+[INFO] 11:58:54:997 TEAM/(6996:6999): Entrenador 3 - Posicion actual: (4,2) - Posicion destino: (5,2)
+[INFO] 11:58:56:2 TEAM/(6996:6999): Entrenador 3, cambia de EXEC a READY, porque se le acabó el QUANTUM
+[INFO] 11:58:56:5 TEAM/(6996:7003): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:58:57:7 TEAM/(6996:6997): Entrenador 1 - Posicion actual: (1,3) - Posicion destino: (2,3)
+[INFO] 11:58:57:9 TEAM/(6996:7003): Inicia algoritmo de detección de deadlock.
+[INFO] 11:58:57:10 TEAM/(6996:7003): No se detectó deadlock.
+[INFO] 11:59:00:12 TEAM/(7013:7013): Obligatory Log was created successfully
+
+[INFO] 11:59:00:24 TEAM/(7013:7013): Entrenador 1 entra a cola NEW.
+[INFO] 11:59:00:29 TEAM/(7013:7013): Entrenador 2 entra a cola NEW.
+[INFO] 11:59:00:32 TEAM/(7013:7013): Entrenador 3 entra a cola NEW.
+[INFO] 11:59:17:517 TEAM/(7025:7025): Obligatory Log was created successfully
+
+[INFO] 11:59:17:525 TEAM/(7025:7025): Entrenador 1 entra a cola NEW.
+[INFO] 11:59:17:529 TEAM/(7025:7025): Entrenador 2 entra a cola NEW.
+[INFO] 11:59:17:534 TEAM/(7025:7025): Entrenador 3 entra a cola NEW.
+[INFO] 11:59:23:362 TEAM/(7025:7030): Se conectó un proceso en el socket 9
+[INFO] 11:59:23:375 TEAM/(7025:7033): Receiving Message Appeared pokemon.
+[INFO] 11:59:23:379 TEAM/(7025:7033): Pokemon Appeared: Pikachu, position: (9,9)
+[INFO] 11:59:23:380 TEAM/(7025:7032): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:59:23:381 TEAM/(7025:7032): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:59:23:382 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:382 TEAM/(7025:7027): Entrenador 2 - Posicion actual: (2,3) - Posicion destino: (3,3)
+[INFO] 11:59:23:383 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:23:383 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:384 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:23:418 TEAM/(7025:7030): Se conectó un proceso en el socket 10
+[INFO] 11:59:23:433 TEAM/(7025:7035): Receiving Message Appeared pokemon.
+[INFO] 11:59:23:437 TEAM/(7025:7035): Pokemon Appeared: Squirtle, position: (6,7)
+[INFO] 11:59:23:445 TEAM/(7025:7032): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:59:23:446 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:447 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:23:447 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:448 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:23:478 TEAM/(7025:7030): Se conectó un proceso en el socket 9
+[INFO] 11:59:23:498 TEAM/(7025:7037): Receiving Message Appeared pokemon.
+[INFO] 11:59:23:501 TEAM/(7025:7037): Pokemon Appeared: Onix, position: (2,8)
+[INFO] 11:59:23:507 TEAM/(7025:7032): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:59:23:508 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:509 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:23:509 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:509 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:23:537 TEAM/(7025:7030): Se conectó un proceso en el socket 10
+[INFO] 11:59:23:556 TEAM/(7025:7039): Receiving Message Appeared pokemon.
+[INFO] 11:59:23:559 TEAM/(7025:7039): Pokemon Appeared: Gengar, position: (6,6)
+[INFO] 11:59:23:560 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:561 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:23:589 TEAM/(7025:7030): Se conectó un proceso en el socket 9
+[INFO] 11:59:23:605 TEAM/(7025:7041): Receiving Message Appeared pokemon.
+[INFO] 11:59:23:606 TEAM/(7025:7041): Pokemon Appeared: Squirtle, position: (5,5)
+[INFO] 11:59:23:607 TEAM/(7025:7032): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:23:607 TEAM/(7025:7032): No se detectó deadlock.
+[INFO] 11:59:25:384 TEAM/(7025:7027): Entrenador 2 - Posicion actual: (3,3) - Posicion destino: (4,3)
+[INFO] 11:59:27:389 TEAM/(7025:7027): Entrenador 2 - Posicion actual: (4,3) - Posicion destino: (5,3)
+[INFO] 11:59:29:391 TEAM/(7025:7027): Entrenador 2 - Posicion actual: (5,3) - Posicion destino: (6,3)
+[INFO] 11:59:31:394 TEAM/(7025:7027): Entrenador 2 - Posicion actual: (6,3) - Posicion destino: (7,3)
+[INFO] 11:59:33:397 TEAM/(7025:7027): Entrenador 2 - Posicion actual: (7,3) - Posicion destino: (8,3)
+[INFO] 11:59:44:955 TEAM/(7046:7046): Obligatory Log was created successfully
+
+[INFO] 11:59:44:966 TEAM/(7046:7046): Entrenador 1 entra a cola NEW.
+[INFO] 11:59:44:970 TEAM/(7046:7046): Entrenador 2 entra a cola NEW.
+[INFO] 11:59:44:973 TEAM/(7046:7046): Entrenador 3 entra a cola NEW.
+[INFO] 11:59:51:573 TEAM/(7046:7051): Se conectó un proceso en el socket 9
+[INFO] 11:59:51:587 TEAM/(7046:7054): Receiving Message Appeared pokemon.
+[INFO] 11:59:51:593 TEAM/(7046:7054): Pokemon Appeared: Pikachu, position: (9,9)
+[INFO] 11:59:51:594 TEAM/(7046:7053): Entrenador 2, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:59:51:595 TEAM/(7046:7053): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:59:51:596 TEAM/(7046:7048): Entrenador 2 - Posicion actual: (2,3) - Posicion destino: (3,3)
+[INFO] 11:59:51:597 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:597 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:51:598 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:598 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:51:628 TEAM/(7046:7051): Se conectó un proceso en el socket 10
+[INFO] 11:59:51:647 TEAM/(7046:7056): Receiving Message Appeared pokemon.
+[INFO] 11:59:51:649 TEAM/(7046:7056): Pokemon Appeared: Squirtle, position: (6,7)
+[INFO] 11:59:51:650 TEAM/(7046:7053): Entrenador 3, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:59:51:651 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:651 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:51:652 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:653 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:51:684 TEAM/(7046:7051): Se conectó un proceso en el socket 9
+[INFO] 11:59:51:718 TEAM/(7046:7058): Receiving Message Appeared pokemon.
+[INFO] 11:59:51:719 TEAM/(7046:7058): Pokemon Appeared: Onix, position: (2,8)
+[INFO] 11:59:51:720 TEAM/(7046:7053): Entrenador 1, cambia de NEW a READY, porque es el más cercano para realizar la captura
+[INFO] 11:59:51:723 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:723 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:51:725 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:725 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:51:757 TEAM/(7046:7051): Se conectó un proceso en el socket 10
+[INFO] 11:59:51:777 TEAM/(7046:7060): Receiving Message Appeared pokemon.
+[INFO] 11:59:51:778 TEAM/(7046:7060): Pokemon Appeared: Gengar, position: (6,6)
+[INFO] 11:59:51:779 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:779 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:51:810 TEAM/(7046:7051): Se conectó un proceso en el socket 9
+[INFO] 11:59:51:825 TEAM/(7046:7062): Receiving Message Appeared pokemon.
+[INFO] 11:59:51:828 TEAM/(7046:7062): Pokemon Appeared: Squirtle, position: (5,5)
+[INFO] 11:59:51:829 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:51:830 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:53:599 TEAM/(7046:7048): Entrenador 2, cambia de EXEC a READY, porque apareció un entrenador con estimador menor que está en READY
+[INFO] 11:59:53:601 TEAM/(7046:7053): Entrenador 1, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 11:59:53:602 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 11:59:53:602 TEAM/(7046:7053): No se detectó deadlock.
+[INFO] 11:59:53:604 TEAM/(7046:7047): Entrenador 1 - Posicion actual: (1,3) - Posicion destino: (2,3)
+[INFO] 11:59:55:607 TEAM/(7046:7047): Entrenador 1 - Posicion actual: (2,3) - Posicion destino: (2,4)
+[INFO] 11:59:57:610 TEAM/(7046:7047): Entrenador 1 - Posicion actual: (2,4) - Posicion destino: (2,5)
+[INFO] 11:59:59:613 TEAM/(7046:7047): Entrenador 1 - Posicion actual: (2,5) - Posicion destino: (2,6)
+[INFO] 12:00:01:616 TEAM/(7046:7047): Entrenador 1 - Posicion actual: (2,6) - Posicion destino: (2,7)
+[INFO] 12:00:03:619 TEAM/(7046:7047): Entrenador 1 - Posicion actual: (2,7) - Posicion destino: (2,8)
+[INFO] 12:00:05:625 TEAM/(7046:7047): Atrapar pokemon: Onix, en posicion: (2,8)
+[INFO] 12:00:05:629 TEAM/(7046:7047): Falló conexión con broker, se ejecutará función por default de appeared
+[INFO] 12:00:05:630 TEAM/(7046:7047): Entrenador 1, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon
+[INFO] 12:00:05:635 TEAM/(7046:7053): Entrenador 2, cambia de READY a EXEC, porque es el siguiente a ejecutar
+[INFO] 12:00:05:637 TEAM/(7046:7048): Entrenador 2 - Posicion actual: (3,3) - Posicion destino: (4,3)
+[INFO] 12:00:05:639 TEAM/(7046:7053): Inicia algoritmo de detección de deadlock.
+[INFO] 12:00:05:640 TEAM/(7046:7053): No se detectó deadlock.
