@@ -26,13 +26,12 @@ void setTrainerToExec_FirstCome();
 void setTrainerToExec_SJF();
 //Called when a pokemon appear, on deadlock thread, and on message "caught pokemon"
 void calculateLeaveBlockedFromAppear();
-void calculateLeaveBlockedFromDeadlock(uint32_t idTrainer);
+void calculateLeaveBlockedFromDeadlock(t_threadTrainer*);
 void calculateLeaveBlockedFromCaught(uint32_t idTrainer);
 bool trainerCompleteOwnObjetives(t_trainer* trainerAux);
 bool compareStrings(void* string1, void* string2);
-void calculateTrainersInExit();
-void calculateTrainerInExit(uint32_t idTrainer);
-void writeTrainerMetrics(uint32_t idTrainer);
+void calculateTrainerInExit(t_threadTrainer*);
+void writeTrainerMetrics(t_threadTrainer*);
 bool trainerStateIsExit(void* threadTrainer);
 void writeTeamMetrics();
 void finishTeam();
@@ -45,15 +44,15 @@ void execThreadTrainerSetedRR(t_threadTrainer*);
 void execThreadTrainerSetedSJF_SD(t_threadTrainer*);
 void execThreadTrainerSetedSJF_CD(t_threadTrainer*);
 
+void setStateToPokemonOnMap(t_position positionTo, e_pokemon_catch_state state);
 t_pokemon_on_map* getPokemonByPosition(t_position pokemonPosition);
 bool pokemonsOnMapComparePosition(void* pokemonOnMapAux);
-bool move_to_objetive(t_trainer* trainerAux, t_position positionTo);
-void interchangePokemon(t_trainer* trainerFrom);
+bool move_to_objetive(t_threadTrainer*);
+void interchangePokemon(t_threadTrainer*);
 char* getPokemonNotNeeded(t_trainer* trainerAux);
 char* getPokemonSpecify(t_trainer* trainerAux, char* pokemon);
 bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux);
-void catch_succesfull(uint32_t id_trainer);
+void catch_succesfull(t_threadTrainer*);
 int calculatePokemonsOnReady();
-uint32_t team_connect_petition(char *ip, char* puerto);
 
 #endif

@@ -5,10 +5,10 @@
 #include "team.h"
 
 char* pokemonCompareDeadlock; //variable used ONLY to detect pokemon needed in deadlock
+pthread_mutex_t mutexPokemonCompareDeadlock;
 bool flagExistsDeadlock;
+pthread_mutex_t flagExistsDeadlock_mutex;
 
-void testDeadlock();
-void* detectDeadlock();
 void detectDeadlock_do();
 t_list* getPokemonsNeeded(t_trainer* trainerAux);
 bool comparePokemonDeadlock(void* pokemonOwn);
@@ -18,6 +18,7 @@ bool trainerHasPokemonNoNeeded(t_trainer* trainerAux, char* pokemonNeeded);
 bool existsDeadlock();
 void setInterchangePokemon();
 int trainerAlreadyInCycleCount(uint32_t idTrainer);
+void* destroy_cycleNode(void* pointer);
 void log_cycle();
 
 #endif

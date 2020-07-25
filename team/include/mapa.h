@@ -16,17 +16,12 @@ typedef enum{
 typedef struct {
     char* pokemon;
     t_position position;
-} t_pokemon_receive;
-
-typedef struct {
-    char* pokemon;
-    t_position position;
     e_pokemon_catch_state state;
     int id;
 } t_pokemon_on_map;
 // a medida que se reciban apariciones / localizaciones de pokemones se agregan a la lista de pokemon_on_map
 t_list* pokemonsOnMap;
-
+pthread_mutex_t pokemonsOnMap_mutex;
 
 
 #endif
