@@ -2,37 +2,37 @@
 
 void detectDeadlock_do(){
     //If exists a cycle of blocked trainers without disponible space for more pokemon, exists deadlock
-    int threadsTrainersCount = list_size(threadsTrainers);
     t_threadTrainer* threadTrainerAux;
-    t_trainer* trainerAux;
     t_cycleDeadlock* deadlockNode;
     char* pokemonNeededAux;
-    bool continueAnalize = true;
+    pthread_mutex_lock(&flagExistsDeadlock_mutex);
+    bool continueAnalize = !flagExistsDeadlock;
+    pthread_mutex_unlock(&flagExistsDeadlock_mutex);
 
-    if(flagExistsDeadlock) return;
+    if(!continueAnalize) return;
 
+    pthread_mutex_lock(&threadsTrainers_mutex);
     log_info(obligatory_logger, "Inicia algoritmo de detección de deadlock.");
-    for(int i = 0; i < threadsTrainersCount && continueAnalize; i++){
+    for(int i = 0; i < list_size(threadsTrainers) && continueAnalize; i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
-        trainerAux = (t_trainer*)list_get(trainers, i);
         
-        if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(trainerAux)){
-            t_list* pokemonsNeeded = getPokemonsNeeded(trainerAux);
+        if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(threadTrainerAux->trainer)){
+            t_list* pokemonsNeeded = getPokemonsNeeded(threadTrainerAux->trainer);
             for(int j = 0; j < list_size(pokemonsNeeded) && continueAnalize; j++){
                 pokemonNeededAux = (char*)list_get(pokemonsNeeded, j);
                 cycleDeadLock = list_create();
                 deadlockNode = malloc(sizeof(t_cycleDeadlock));
-                deadlockNode->idTrainer = trainerAux->id_trainer;
+                deadlockNode->idTrainer = threadTrainerAux->trainer->id_trainer;
                 deadlockNode->pokemon = malloc(strlen(pokemonNeededAux)+1);
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
                 if(!completeCycleDeadlock()){
-                    list_remove_and_destroy_element(cycleDeadLock, 0, (void*)destroy_cycleNode);
                     list_destroy_and_destroy_elements(cycleDeadLock, (void*)destroy_cycleNode);
                 }else{
                     if(existsDeadlock()){
-                        log_info(obligatory_logger, "Existe deadlock.");
+                        pthread_mutex_lock(&flagExistsDeadlock_mutex);
                         flagExistsDeadlock = true;
+                        pthread_mutex_unlock(&flagExistsDeadlock_mutex);
                         deadlockCount++;
                         setInterchangePokemon();
                         continueAnalize = false;
@@ -44,6 +44,7 @@ void detectDeadlock_do(){
             list_destroy(pokemonsNeeded);
         }
     }
+    pthread_mutex_unlock(&threadsTrainers_mutex);
 
     if(continueAnalize){
         log_info(obligatory_logger, "No se detectó deadlock.");
@@ -58,10 +59,12 @@ t_list* getPokemonsNeeded(t_trainer* trainerAux){
 
     for (int i=0; i<list_size(trainerAux->pokemonOwned); i++){
         pokemonOwnedAux = (char*)list_get(trainerAux->pokemonOwned, i);
+        pthread_mutex_lock(&mutexPokemonCompareDeadlock);
         pokemonCompareDeadlock = malloc(strlen(pokemonOwnedAux)+1);
         strcpy(pokemonCompareDeadlock, pokemonOwnedAux);
         list_remove_by_condition(pokemonsNeeded, comparePokemonDeadlock);
         free(pokemonCompareDeadlock);
+        pthread_mutex_unlock(&mutexPokemonCompareDeadlock);
     }
 
     return pokemonsNeeded;
@@ -80,47 +83,55 @@ bool comparePokemonDeadlock(void* pokemonOwn){
 }
 
 bool isCandidateDeadlock(t_trainer* blockedTrainer){
-    if(list_size(blockedTrainer->pokemonOwned) != list_size(blockedTrainer->pokemonNeeded)){
-        return false;
-    }
-
-    //If its on blocked state, and cant get another pokemon we assume that needs some pokemon that doesnot have
-    return true;
+    return list_size(blockedTrainer->pokemonOwned) == list_size(blockedTrainer->pokemonNeeded);
 }
 
 bool completeCycleDeadlock(){
     //the cycle already has the elements, so i look for the next to add
     t_cycleDeadlock* deadlockLastNode = (t_cycleDeadlock*)list_get(cycleDeadLock, list_size(cycleDeadLock) - 1);
-    int threadsTrainersCount = list_size(threadsTrainers);
     t_threadTrainer* threadTrainerAux;
-    t_trainer* trainerAux;
-    for(int i = 0; i<threadsTrainersCount; i++){
+
+    for(int i = 0; i<list_size(threadsTrainers); i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
-        trainerAux = (t_trainer*)list_get(trainers, i);
-        if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(trainerAux) && trainerHasPokemonNoNeeded(trainerAux, deadlockLastNode->pokemon)){
-            t_list* pokemonsNeeded = getPokemonsNeeded(trainerAux);
+
+        if(threadTrainerAux->state == BLOCKED && isCandidateDeadlock(threadTrainerAux->trainer) && trainerHasPokemonNoNeeded(threadTrainerAux->trainer, deadlockLastNode->pokemon)){
+            t_list* pokemonsNeeded = getPokemonsNeeded(threadTrainerAux->trainer);
             for(int j = 0; j < list_size(pokemonsNeeded); j++){
-                if(trainerAlreadyInCycleCount(threadTrainerAux->idTrainer) > list_size(pokemonsNeeded)+1) return false;
+                if(trainerAlreadyInCycleCount(threadTrainerAux->trainer->id_trainer) > list_size(pokemonsNeeded)+1){
+                    list_destroy(pokemonsNeeded);
+                    return false;
+                } 
                 char* pokemonNeededAux = (char*)list_get(pokemonsNeeded, j);
                 t_cycleDeadlock* deadlockNode = malloc(sizeof(t_cycleDeadlock));
-                deadlockNode->idTrainer = trainerAux->id_trainer;
+                deadlockNode->idTrainer = threadTrainerAux->trainer->id_trainer;
                 deadlockNode->pokemon = malloc(strlen(pokemonNeededAux)+1);
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
-
+//log_cycle();
                 if(existsDeadlock()){
+                    list_destroy(pokemonsNeeded);
                     return true;
                 }else{
                     if(!completeCycleDeadlock()){
                         list_remove_and_destroy_element(cycleDeadLock, list_size(cycleDeadLock)-1, (void*)destroy_cycleNode);
                     }else{
+                        list_destroy(pokemonsNeeded);
                         return true;
                     }
                 }
             }
+            list_destroy(pokemonsNeeded);
         }
     }
     return false;
+}
+
+void log_cycle(){
+    log_info(optional_logger, "Ciclo deadlock:");
+    for(int i=0; i<list_size(cycleDeadLock); i++){
+        t_cycleDeadlock* cycleNode = (t_cycleDeadlock*)list_get(cycleDeadLock, i);
+        log_info(optional_logger, "Entrenador: %d, Pokemon: %s", cycleNode->idTrainer, cycleNode->pokemon);
+    }
 }
 
 int trainerAlreadyInCycleCount(uint32_t idTrainer){
@@ -136,10 +147,12 @@ int trainerAlreadyInCycleCount(uint32_t idTrainer){
 }
 
 bool trainerHasPokemonNoNeeded(t_trainer* trainerAux, char* pokemonNeeded){
+    pthread_mutex_lock(&mutexPokemonCompareDeadlock);
     pokemonCompareDeadlock = malloc(strlen(pokemonNeeded)+1);
     strcpy(pokemonCompareDeadlock, pokemonNeeded);
     bool result = list_count_satisfying(trainerAux->pokemonOwned, comparePokemonDeadlock) > list_count_satisfying(trainerAux->pokemonNeeded, comparePokemonDeadlock);
     free(pokemonCompareDeadlock);
+    pthread_mutex_unlock(&mutexPokemonCompareDeadlock);    
     return result;
 }
 
@@ -154,13 +167,13 @@ void setInterchangePokemon(){
     t_cycleDeadlock* cycleDeadlockAux = (t_cycleDeadlock*)list_get(cycleDeadLock, 0);
     t_threadTrainer* threadTrainerToMove = (t_threadTrainer*)list_get(threadsTrainers, cycleDeadlockAux->idTrainer - 1);
     cycleDeadlockAux = (t_cycleDeadlock*)list_get(cycleDeadLock, 1);
-    t_trainer* trainerWithDestiny = (t_trainer*)list_get(trainers, cycleDeadlockAux->idTrainer - 1);
+    t_threadTrainer* threadTrainerWithDestiny = (t_threadTrainer*)list_get(threadsTrainers, cycleDeadlockAux->idTrainer - 1);
 
-    log_info(obligatory_logger, "El entrenador %d intercambiará con el entrenador %d", threadTrainerToMove->idTrainer, trainerWithDestiny->id_trainer);
+    log_info(obligatory_logger, "El entrenador %d intercambiará con el entrenador %d", threadTrainerToMove->trainer->id_trainer, threadTrainerWithDestiny->trainer->id_trainer);
 
-    threadTrainerToMove->positionTo.posx = trainerWithDestiny->position.posx;
-    threadTrainerToMove->positionTo.posy = trainerWithDestiny->position.posy;
+    threadTrainerToMove->positionTo.posx = threadTrainerWithDestiny->trainer->position.posx;
+    threadTrainerToMove->positionTo.posy = threadTrainerWithDestiny->trainer->position.posy;
     threadTrainerToMove->destinyIsTrainer = true;
 
-    calculateLeaveBlockedFromDeadlock(threadTrainerToMove->idTrainer);
+    calculateLeaveBlockedFromDeadlock(threadTrainerToMove);
 }

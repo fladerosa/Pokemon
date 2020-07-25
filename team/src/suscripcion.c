@@ -3,7 +3,6 @@
 #include "team.h"
 
 void* connection_broker_global_suscribe() {
-    threadSubscribeList = list_create();
     connection_broker_suscribe_to_appeared_pokemon(APPEARED_POKEMON);
     connection_broker_suscribe_to_caught_pokemon(CAUGHT_POKEMON);
     connection_broker_suscribe_to_localized_pokemon(LOCALIZED_POKEMON);
@@ -59,7 +58,9 @@ void suscribeOnThreadList(args_pthread* arguments){
             structAppearedPokemon = malloc(sizeof(threadSubscribe));
             structAppearedPokemon->idQueue = APPEARED_POKEMON;
             structAppearedPokemon->socket = *arguments->socket;
+            pthread_mutex_lock(&threadSubscribeList_mutex);
             list_add(threadSubscribeList, structAppearedPokemon);
+            pthread_mutex_unlock(&threadSubscribeList_mutex);
             log_info(optional_logger, "Queue subscription request APPEARED_POKEMON successfully.\n");
             connect_client(*arguments->socket,APPEARED_POKEMON);
             break;
@@ -67,7 +68,9 @@ void suscribeOnThreadList(args_pthread* arguments){
             structCaughtPokemon = malloc(sizeof(threadSubscribe));
             structCaughtPokemon->idQueue = CAUGHT_POKEMON;
             structCaughtPokemon->socket = *arguments->socket;
+            pthread_mutex_lock(&threadSubscribeList_mutex);
             list_add(threadSubscribeList, structCaughtPokemon);
+            pthread_mutex_unlock(&threadSubscribeList_mutex);
             log_info(optional_logger, "Queue subscription request CAUGHT_POKEMON successfully.\n");
             connect_client(*arguments->socket,CAUGHT_POKEMON);
             break;
@@ -75,7 +78,9 @@ void suscribeOnThreadList(args_pthread* arguments){
             structLocalizedPokemon = malloc(sizeof(threadSubscribe));
             structLocalizedPokemon->idQueue = LOCALIZED_POKEMON;
             structLocalizedPokemon->socket = *arguments->socket;
+            pthread_mutex_lock(&threadSubscribeList_mutex);
             list_add(threadSubscribeList, structLocalizedPokemon);
+            pthread_mutex_unlock(&threadSubscribeList_mutex);
             log_info(optional_logger, "Queue subscription request LOCALIZED_POKEMON successfully.\n");
             connect_client(*arguments->socket,LOCALIZED_POKEMON);
             break;
@@ -139,24 +144,29 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             log_info(obligatory_logger, "Pokemon Appeared: %s, position: (%d,%d)", appeared_pokemon_Message->pokemon, appeared_pokemon_Message->position.posx, appeared_pokemon_Message->position.posy);
             send_ack(client_fd, *id_message);
 
+            pthread_mutex_lock(&pokemonCompareGlobalObjetive_mutex);
             pokemonCompareGlobalObjetive = malloc(strlen(appeared_pokemon_Message->pokemon)+1);
             strcpy(pokemonCompareGlobalObjetive, appeared_pokemon_Message->pokemon);
-            if(list_any_satisfy(globalObjetive, analyzePokemonInGlobal)){
+            bool anyPokemonInGlobalObjetive = list_any_satisfy(globalObjetive, analyzePokemonInGlobal);
+            free(pokemonCompareGlobalObjetive);
+            pthread_mutex_unlock(&pokemonCompareGlobalObjetive_mutex);
+            
+            if(anyPokemonInGlobalObjetive){
                 t_pokemon_on_map* newPokemonAppeared = malloc(sizeof(t_pokemon_on_map));
                 newPokemonAppeared->state = P_FREE;
                 newPokemonAppeared->position.posx = appeared_pokemon_Message->position.posx;
                 newPokemonAppeared->position.posy = appeared_pokemon_Message->position.posy;
                 newPokemonAppeared->pokemon = malloc(strlen(appeared_pokemon_Message->pokemon)+1);
+                pthread_mutex_lock(&pokemonsOnMap_mutex);
                 newPokemonAppeared->id = list_size(pokemonsOnMap) + 1;
                 strcpy(newPokemonAppeared->pokemon, appeared_pokemon_Message->pokemon);
-
                 list_add(pokemonsOnMap, newPokemonAppeared);
+                pthread_mutex_unlock(&pokemonsOnMap_mutex);
 
                 sem_post(&plannerSemaphore);
             }
             free(appeared_pokemon_Message->pokemon);
             free_appeared_pokemon(appeared_pokemon_Message);
-            free(pokemonCompareGlobalObjetive);
             break;
         case CAUGHT_POKEMON:;
 			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, id_message, id_message_correlational, false);
@@ -171,7 +181,8 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             localized_Pokemon_Message->pokemon[localized_Pokemon_Message->sizePokemon] = '\0';
             int indexOfPokemonToLocalyze = getIndexPokemonToLocalizedByMessage(*id_message);
             if(indexOfPokemonToLocalyze != -1){
-                list_remove(pokemonsToLocalize, indexOfPokemonToLocalyze);
+                //list_remove(pokemonsToLocalize, indexOfPokemonToLocalyze);
+                list_remove_and_destroy_element(pokemonsToLocalize, indexOfPokemonToLocalyze, (void*)destroy_pokemonsToLocalize);
                 log_info(obligatory_logger, "Receiving Message Localized pokemon");
                 log_info(obligatory_logger, "Pokemon %s", localized_Pokemon_Message->pokemon);
                 
@@ -185,7 +196,9 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             break;
          case CONNECTION:;
             connection* connectionMessage = stream_to_connection(stream);
+            pthread_mutex_lock(&threadSubscribeList_mutex);
             threadSubscribe* thread = list_find_with_args(threadSubscribeList, compareSockets, (void*)client_fd);
+            pthread_mutex_unlock(&threadSubscribeList_mutex);
             thread->idConnection = connectionMessage->id_connection;
 
             suscribirseA(thread->idQueue, client_fd);
@@ -200,20 +213,9 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
     free(id_message_correlational);
 }
 bool compareSockets(void* element, void* args){
-    
     threadSubscribe* thread = (threadSubscribe*) element;
     
     return thread->socket == (uint32_t) args;
-}
-void close_sockets() {
-    close(socket_team);  
-    close(socket_broker);
-}
-
-void retry_on_x_time() {
-    uint32_t time_in = config_values.tiempo_reconexion;  
-    while(time_in != 0)
-        time_in--;        
 }
 
 void* send_get_pokemon_global_team(){
@@ -221,16 +223,19 @@ void* send_get_pokemon_global_team(){
     uint32_t* id_message = malloc(sizeof(uint32_t));
     get_pokemon* getPokemonMessage;
     void* stream;
-    uint32_t total_global = list_size(globalObjetive);
     char* pokemonToSend;
-    pokemonsToLocalize = list_create();
-    
-    for(int i=0; i< total_global; i++) {
+    pthread_mutex_lock(&pokemonCompareGlobalObjetive_mutex);
+    int globalObjetiveCount = list_size(globalObjetive);
+    pthread_mutex_unlock(&pokemonCompareGlobalObjetive_mutex);
+
+    for(int i=0; i< globalObjetiveCount; i++) {
+        pthread_mutex_lock(&pokemonCompareGlobalObjetive_mutex);
         pokemonToSend = (char*)list_get(globalObjetive, i);
         getPokemonMessage = malloc(sizeof(get_pokemon));
-        getPokemonMessage->pokemon = malloc(strlen(pokemonToSend));
+        getPokemonMessage->pokemon = malloc(strlen(pokemonToSend)+1);
         strcpy(getPokemonMessage->pokemon, pokemonToSend);
-        getPokemonMessage->sizePokemon = strlen(getPokemonMessage->pokemon);
+        getPokemonMessage->sizePokemon = strlen(getPokemonMessage->pokemon)+1;
+        pthread_mutex_unlock(&pokemonCompareGlobalObjetive_mutex);
         *id_message = -1;
         stream =get_pokemon_to_stream(getPokemonMessage, id_message);
 
@@ -240,7 +245,8 @@ void* send_get_pokemon_global_team(){
 
         send(client_fd, buffer, bytes, 0);
         free(buffer);
-        free_get_pokemon(getPokemonMessage);
+        free(getPokemonMessage->pokemon);
+        free(getPokemonMessage);
         free_package(packageToSend);
         log_info(optional_logger, "Pokemon %s: ", pokemonToSend);
 
@@ -251,7 +257,10 @@ void* send_get_pokemon_global_team(){
         log_info(optional_logger, "Id mensaje get: %d", acknowledgementMessage->id_message);
 
         addPokemonToLocalize(pokemonToSend, acknowledgementMessage->id_message);
+        free(buffer);
+        free(acknowledgementMessage);
     }
+    free(id_message);
     return NULL;
 }
 
@@ -269,7 +278,7 @@ void addPokemonToLocalize(char* pokemon, uint32_t idMessage){
     if(!pokemonExists){
         pokemonToLocalizeAux = malloc(sizeof(t_pokemonToLocalized));
         pokemonToLocalizeAux->idMessage = idMessage;
-        pokemonToLocalizeAux->pokemon = malloc(strlen(pokemon));
+        pokemonToLocalizeAux->pokemon = malloc(strlen(pokemon)+1);
         strcpy(pokemonToLocalizeAux->pokemon, pokemon);
         list_add(pokemonsToLocalize, pokemonToLocalizeAux);
     }
@@ -291,18 +300,23 @@ int getIndexPokemonToLocalizedByMessage(uint32_t id_message){
 
 void processCaughtPokemon(uint32_t id_message, uint32_t success){
     t_threadTrainer* threadTrainerAux;
-    for(int i=0; i<list_size(threadsTrainers); i++){
+    pthread_mutex_lock(&threadsTrainers_mutex);
+    int threadsTrainersCount = list_size(threadsTrainers);
+    pthread_mutex_unlock(&threadsTrainers_mutex);
+    for(int i=0; i<threadsTrainersCount; i++){
+        pthread_mutex_lock(&threadsTrainers_mutex);
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
+        pthread_mutex_unlock(&threadsTrainers_mutex);
         if(threadTrainerAux->idMessageCatch == id_message){
             if(success == 1){
-                //catch_succesfull
-                catch_succesfull(threadTrainerAux->idTrainer);
+                catch_succesfull(threadTrainerAux);
                 return;
             }else{
-                //I switch state BLOCKED_BY_BROKER to BLOCKED
-                //And delete pokemon
+                pthread_mutex_lock(&threadsTrainers_mutex);
                 threadTrainerAux->state = BLOCKED;
                 removePokemonOnMap(threadTrainerAux->positionTo);
+                sem_post(&plannerSemaphore);
+                pthread_mutex_unlock(&threadsTrainers_mutex);
             }
         }
     }
