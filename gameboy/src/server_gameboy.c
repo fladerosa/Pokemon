@@ -95,6 +95,29 @@ void send_message(char** message, int socket_cliente,t_log*  optional_logger){
             paquete->buffer->stream = get_pokemon_to_stream(getPokemonMessage, id_message);
             free_get_pokemon(getPokemonMessage);
             break;
+        case LOCALIZED_POKEMON:;
+            t_list* positions = list_create();
+            uint32_t sizePositions = atoi(message[4]);
+            for (int i = 0; i < sizePositions; i++){
+                t_position* position = malloc(sizeof(position));
+                position->posx = atoi(message[i*2 + 5]);
+                position->posy = atoi(message[i*2 + 6]);
+                list_add(positions, position);
+            }
+            if(strcmp(receiver, "TEAM") == 0){
+                *id_correlational = atoi(message[6 + sizePositions*2]);
+                *id_message = atoi(message[5 + sizePositions*2]);
+            }else{
+                *id_message = -1;
+                *id_correlational = atoi(message[5 + sizePositions*2]);
+            }
+                
+            localized_pokemon* localizedPokemonMessage = init_localized_pokemon(message[3], positions);
+            paquete->codigo_operacion = LOCALIZED_POKEMON;
+            paquete->buffer->size = size_of_localized_pokemon(localizedPokemonMessage);
+            paquete->buffer->stream = localized_pokemon_to_stream(localizedPokemonMessage, id_message, id_correlational);
+            free_localized_pokemon(localizedPokemonMessage);
+            break;
         case SUSCRIPTOR:;
             subscribe* subscriber = init_subscribe(stringToEnum(message[2]));
 
