@@ -234,7 +234,7 @@ void* send_get_pokemon_global_team(){
         getPokemonMessage = malloc(sizeof(get_pokemon));
         getPokemonMessage->pokemon = malloc(strlen(pokemonToSend)+1);
         strcpy(getPokemonMessage->pokemon, pokemonToSend);
-        getPokemonMessage->sizePokemon = strlen(getPokemonMessage->pokemon)+1;
+        getPokemonMessage->sizePokemon = strlen(getPokemonMessage->pokemon);
         pthread_mutex_unlock(&pokemonCompareGlobalObjetive_mutex);
         *id_message = -1;
         stream =get_pokemon_to_stream(getPokemonMessage, id_message);

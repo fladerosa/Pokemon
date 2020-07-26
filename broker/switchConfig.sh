@@ -8,8 +8,8 @@ helpFunction()
    echo -e "\tcomp2"
    echo -e "\tbs1"
    echo -e "\tbs2"
-   echo -e "\tcompleta"
-
+   echo -e "\tcompleta1"
+   echo -e "\tcompleta2"
    exit 1 # Exit script after printing help
 }
 
@@ -44,8 +44,12 @@ case $1 in
         echo -e "Seteando config de Buddy System Parte 2"
         echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=BS\nALGORITMO_REEMPLAZO=LRU\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
         ;;
-    completa)
-        echo -e "Seteando config de Prueba Integradora"
+    completa1)
+        echo -e "Seteando config de Prueba Integradora 1"
+        echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=PARTICIONES\nALGORITMO_REEMPLAZO=FIFO\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
+        ;;
+    completa2)
+        echo -e "Seteando config de Prueba Integradora 2"
         echo -e "TAMANO_MEMORIA=64\nTAMANO_MINIMO_PARTICION=4\nALGORITMO_MEMORIA=BS\nALGORITMO_REEMPLAZO=FIFO\nALGORITMO_PARTICION_LIBRE=FF\nFRECUENCIA_COMPACTACION=1" >>  ./cfg/broker.config
         ;;
     ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent

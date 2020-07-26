@@ -248,9 +248,10 @@ void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage, ui
 
     memcpy(stream + forward, &(localizedPokemonMessage->sizePokemon), sizeof(uint32_t));
     forward += sizeof(uint32_t);
-    memcpy(stream + forward, localizedPokemonMessage->pokemon, strlenNewLine(localizedPokemonMessage->pokemon));
-    forward += strlenNewLine(localizedPokemonMessage->pokemon);
-    memcpy(stream + forward, &((*localizedPokemonMessage->positions).elements_count), sizeof(uint32_t));
+    memcpy(stream + forward, localizedPokemonMessage->pokemon, localizedPokemonMessage->sizePokemon);
+    forward += localizedPokemonMessage->sizePokemon;
+    uint32_t amount_positions = list_size(localizedPokemonMessage->positions);
+    memcpy(stream + forward, &amount_positions, sizeof(uint32_t));
     forward += sizeof(uint32_t);
 
     for(int i = 0; i < (*localizedPokemonMessage->positions).elements_count; i++){

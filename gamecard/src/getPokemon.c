@@ -56,7 +56,7 @@ void getPokemonTallGrass(threadPokemonMessage* threadGetPokemonMessage){
 
     if(threadGetPokemonMessage->client_fd != 0){
         localized_pokemon* localizedPokemon = malloc(sizeof(localized_pokemon));
-        localizedPokemon->pokemon = stream;
+        localizedPokemon->pokemon = getPokemon->pokemon;
         localizedPokemon->sizePokemon = getPokemon->sizePokemon;
         localizedPokemon->positions = listPosiciones; 
 
