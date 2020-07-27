@@ -471,7 +471,7 @@ void free_get_pokemon(get_pokemon* pokemon){
 }
 
 void free_localized_pokemon(localized_pokemon* pokemon){
-    if(pokemon->pokemon) free(pokemon->pokemon);
+   // if(pokemon->pokemon) free(pokemon->pokemon);
     if(pokemon->positions) list_destroy_and_destroy_elements(pokemon->positions, free);
     free(pokemon);
 }
