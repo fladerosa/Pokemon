@@ -137,7 +137,7 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
 
     switch(code){
         case APPEARED_POKEMON:;
-            appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, NULL, false); 
+            appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, id_message_correlational, false); 
             appeared_pokemon_Message->pokemon = realloc(appeared_pokemon_Message->pokemon, appeared_pokemon_Message->sizePokemon+1);
             appeared_pokemon_Message->pokemon[appeared_pokemon_Message->sizePokemon] = '\0';
             log_info(obligatory_logger, "Receiving Message Appeared pokemon.");
@@ -178,8 +178,9 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             break;
         case LOCALIZED_POKEMON:;
             localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, id_message, id_message_correlational, false);
+            localized_Pokemon_Message->pokemon = realloc(localized_Pokemon_Message->pokemon, localized_Pokemon_Message->sizePokemon+1);
             localized_Pokemon_Message->pokemon[localized_Pokemon_Message->sizePokemon] = '\0';
-            int indexOfPokemonToLocalyze = getIndexPokemonToLocalizedByMessage(*id_message);
+            int indexOfPokemonToLocalyze = getIndexPokemonToLocalizedByMessage(*id_message_correlational);
             if(indexOfPokemonToLocalyze != -1){
                 //list_remove(pokemonsToLocalize, indexOfPokemonToLocalyze);
                 list_remove_and_destroy_element(pokemonsToLocalize, indexOfPokemonToLocalyze, (void*)destroy_pokemonsToLocalize);
@@ -192,6 +193,7 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
                 }
                 send_ack(client_fd, *id_message);
             }
+            free(localized_Pokemon_Message->pokemon);
             free_localized_pokemon(localized_Pokemon_Message);
             break;
          case CONNECTION:;

@@ -22,7 +22,7 @@ new_pokemon* stream_to_new_pokemon(void* stream, uint32_t* id_message, bool is_b
 }
 
 uint32_t size_of_new_pokemon(new_pokemon* newPokemonMessage){
-    return sizeof(uint32_t) * 5 + strlenNewLine(newPokemonMessage->pokemon);
+    return sizeof(uint32_t) * 5 + newPokemonMessage->sizePokemon;
 }
 
 void* new_pokemon_to_stream(new_pokemon* newPokemonMessage, uint32_t* id_message){
@@ -33,8 +33,8 @@ void* new_pokemon_to_stream(new_pokemon* newPokemonMessage, uint32_t* id_message
 
     memcpy(stream + forward, &(newPokemonMessage->sizePokemon), sizeof(uint32_t));
     forward += sizeof(uint32_t);    
-    memcpy(stream + forward, newPokemonMessage->pokemon, strlenNewLine(newPokemonMessage->pokemon));
-    forward += strlenNewLine(newPokemonMessage->pokemon);
+    memcpy(stream + forward, newPokemonMessage->pokemon, newPokemonMessage->sizePokemon);
+    forward += newPokemonMessage->sizePokemon;
     memcpy(stream + forward, &((newPokemonMessage->position).posx), sizeof(uint32_t));
     forward += sizeof(uint32_t);
     memcpy(stream + forward, &((newPokemonMessage->position).posy), sizeof(uint32_t));
@@ -69,7 +69,7 @@ appeared_pokemon* stream_to_appeared_pokemon(void* stream, uint32_t* id_message,
 }
 
 uint32_t size_of_appeared_pokemon(appeared_pokemon* appearedPokemonMessage){
-    return sizeof(uint32_t ) * 5 + strlenNewLine(appearedPokemonMessage->pokemon);
+    return sizeof(uint32_t ) * 5 + appearedPokemonMessage->sizePokemon;
 }
 
 void* appeared_pokemon_to_stream(appeared_pokemon* appearedPokemonMessage, uint32_t* id_message, uint32_t* id_correlational){
@@ -80,8 +80,8 @@ void* appeared_pokemon_to_stream(appeared_pokemon* appearedPokemonMessage, uint3
 
     memcpy(stream + forward, &(appearedPokemonMessage->sizePokemon), sizeof(uint32_t));
     forward += sizeof(uint32_t);
-    memcpy(stream + forward, appearedPokemonMessage->pokemon, strlenNewLine(appearedPokemonMessage->pokemon));
-    forward += strlenNewLine(appearedPokemonMessage->pokemon);
+    memcpy(stream + forward, appearedPokemonMessage->pokemon, appearedPokemonMessage->sizePokemon);
+    forward += appearedPokemonMessage->sizePokemon;
     memcpy(stream + forward, &((appearedPokemonMessage->position).posx), sizeof(uint32_t));
     forward += sizeof(uint32_t);
     memcpy(stream + forward, &((appearedPokemonMessage->position).posy), sizeof(uint32_t));
@@ -114,7 +114,7 @@ catch_pokemon* stream_to_catch_pokemon(void* stream, uint32_t* id_message, bool 
 }
 
 uint32_t size_of_catch_pokemon(catch_pokemon* catchPokemonMessage){
-    return sizeof(uint32_t ) * 4 + strlenNewLine(catchPokemonMessage->pokemon);
+    return sizeof(uint32_t ) * 4 + catchPokemonMessage->sizePokemon;
 }
 
 void* catch_pokemon_to_stream(catch_pokemon* catchPokemonMessage, uint32_t* id_message){
@@ -125,8 +125,8 @@ void* catch_pokemon_to_stream(catch_pokemon* catchPokemonMessage, uint32_t* id_m
 
     memcpy(stream + forward, &(catchPokemonMessage->sizePokemon), sizeof(uint32_t));
     forward += sizeof(uint32_t);
-    memcpy(stream + forward, catchPokemonMessage->pokemon, strlenNewLine(catchPokemonMessage->pokemon));
-    forward += strlenNewLine(catchPokemonMessage->pokemon);
+    memcpy(stream + forward, catchPokemonMessage->pokemon, catchPokemonMessage->sizePokemon );
+    forward += catchPokemonMessage->sizePokemon;
     memcpy(stream + forward, &((catchPokemonMessage->position).posx), sizeof(uint32_t));
     forward += sizeof(uint32_t);
     memcpy(stream + forward, &((catchPokemonMessage->position).posy), sizeof(uint32_t));
@@ -187,7 +187,7 @@ get_pokemon* stream_to_get_pokemon(void* stream, uint32_t* id_message, bool is_b
 }
 
 uint32_t size_of_get_pokemon(get_pokemon* getPokemonMessage){
-    return sizeof(uint32_t ) * 2 + strlenNewLine(getPokemonMessage->pokemon);
+    return sizeof(uint32_t ) * 2 + getPokemonMessage->sizePokemon;
 }
 
 void* get_pokemon_to_stream(get_pokemon* getPokemonMessage, uint32_t* id_message){
@@ -198,8 +198,8 @@ void* get_pokemon_to_stream(get_pokemon* getPokemonMessage, uint32_t* id_message
 
     memcpy(stream + forward, &(getPokemonMessage->sizePokemon), sizeof(uint32_t));
     forward += sizeof(uint32_t);
-    memcpy(stream + forward, getPokemonMessage->pokemon, strlenNewLine(getPokemonMessage->pokemon));
-    forward += strlenNewLine(getPokemonMessage->pokemon);
+    memcpy(stream + forward, getPokemonMessage->pokemon, getPokemonMessage->sizePokemon);
+    forward += getPokemonMessage->sizePokemon;
     memcpy(stream + forward, id_message, sizeof(uint32_t));
     forward += sizeof(uint32_t);
 
@@ -237,7 +237,7 @@ localized_pokemon* stream_to_localized_pokemon(void* stream, uint32_t* id_messag
 }
 
 uint32_t size_of_localized_pokemon(localized_pokemon* localizedPokemonMessage){
-    return sizeof(uint32_t) * 4 + strlenNewLine(localizedPokemonMessage->pokemon) + sizeof(uint32_t) * 2 * (*localizedPokemonMessage->positions).elements_count;
+    return sizeof(uint32_t) * 4 + localizedPokemonMessage->sizePokemon + sizeof(uint32_t) * 2 * (*localizedPokemonMessage->positions).elements_count;
 }
 
 void* localized_pokemon_to_stream(localized_pokemon* localizedPokemonMessage, uint32_t* id_message, uint32_t* id_correlational){
