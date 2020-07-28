@@ -427,7 +427,6 @@ bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux){
 		buffer = malloc(sizeOfBuffer);
 		recv(client_fd, buffer, sizeOfBuffer, MSG_WAITALL);
 		ack* acknowledgementMessage = stream_to_ack(buffer+8);
-		log_info(optional_logger, "Id mensaje catch: %d", acknowledgementMessage->id_message);
 		pthread_mutex_lock(&threadsTrainers_mutex);
 		threadTrainerAux->idMessageCatch = acknowledgementMessage->id_message;
 		pthread_mutex_unlock(&threadsTrainers_mutex);

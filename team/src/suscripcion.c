@@ -140,8 +140,7 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             appeared_pokemon* appeared_pokemon_Message = stream_to_appeared_pokemon(stream, id_message, id_message_correlational, false); 
             appeared_pokemon_Message->pokemon = realloc(appeared_pokemon_Message->pokemon, appeared_pokemon_Message->sizePokemon+1);
             appeared_pokemon_Message->pokemon[appeared_pokemon_Message->sizePokemon] = '\0';
-            log_info(obligatory_logger, "Receiving Message Appeared pokemon.");
-            log_info(obligatory_logger, "Pokemon Appeared: %s, position: (%d,%d)", appeared_pokemon_Message->pokemon, appeared_pokemon_Message->position.posx, appeared_pokemon_Message->position.posy);
+            log_info(obligatory_logger, "Receiving Message Appeared pokemon, Pokemon Appeared: %s, position: (%d,%d)", appeared_pokemon_Message->pokemon, appeared_pokemon_Message->position.posx, appeared_pokemon_Message->position.posy);
             send_ack(client_fd, *id_message);
 
             pthread_mutex_lock(&pokemonCompareGlobalObjetive_mutex);
@@ -171,6 +170,7 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
         case CAUGHT_POKEMON:;
 			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, id_message, id_message_correlational, false);
             log_info(obligatory_logger, "Receiving Message Caught pokemon, Result %d", caught_Pokemon_Message->success);
+log_info(optional_logger, "Receiving Message Caught pokemon, success: %d, id-message-correlational: %d", caught_Pokemon_Message->success, *id_message_correlational);
             processCaughtPokemon(*id_message_correlational, caught_Pokemon_Message->success);
             
             send_ack(client_fd, *id_message);
@@ -180,18 +180,41 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             localized_pokemon* localized_Pokemon_Message = stream_to_localized_pokemon(stream, id_message, id_message_correlational, false);
             localized_Pokemon_Message->pokemon = realloc(localized_Pokemon_Message->pokemon, localized_Pokemon_Message->sizePokemon+1);
             localized_Pokemon_Message->pokemon[localized_Pokemon_Message->sizePokemon] = '\0';
+log_info(optional_logger, "Receiving Message Localized pokemon, pokemon: %s, id-message-correlational: %d", localized_Pokemon_Message->pokemon, *id_message_correlational);
             int indexOfPokemonToLocalyze = getIndexPokemonToLocalizedByMessage(*id_message_correlational);
             if(indexOfPokemonToLocalyze != -1){
-                //list_remove(pokemonsToLocalize, indexOfPokemonToLocalyze);
-                list_remove_and_destroy_element(pokemonsToLocalize, indexOfPokemonToLocalyze, (void*)destroy_pokemonsToLocalize);
-                log_info(obligatory_logger, "Receiving Message Localized pokemon");
-                log_info(obligatory_logger, "Pokemon %s", localized_Pokemon_Message->pokemon);
+                log_info(obligatory_logger, "Receiving Message Localized pokemon, pokemon: %s", localized_Pokemon_Message->pokemon);
+                bool mustPlan = false;
                 
                 for(int i = 0; i<list_size(localized_Pokemon_Message->positions); i++) {
                     t_position* positionAux = list_get(localized_Pokemon_Message->positions, i);
                     log_info(obligatory_logger,"Find in position: (%d,%d)", positionAux->posx, positionAux->posy);
+
+                    pthread_mutex_lock(&pokemonCompareGlobalObjetive_mutex);
+                    pokemonCompareGlobalObjetive = malloc(strlen(localized_Pokemon_Message->pokemon)+1);
+                    strcpy(pokemonCompareGlobalObjetive, localized_Pokemon_Message->pokemon);
+                    bool anyPokemonInGlobalObjetive = list_any_satisfy(globalObjetive, analyzePokemonInGlobal);
+                    free(pokemonCompareGlobalObjetive);
+                    pthread_mutex_unlock(&pokemonCompareGlobalObjetive_mutex);
+                    
+                    if(anyPokemonInGlobalObjetive){
+                        mustPlan = true;
+                        t_pokemon_on_map* newPokemonAppeared = malloc(sizeof(t_pokemon_on_map));
+                        newPokemonAppeared->state = P_FREE;
+                        newPokemonAppeared->position.posx = positionAux->posx;
+                        newPokemonAppeared->position.posy = positionAux->posy;
+                        newPokemonAppeared->pokemon = malloc(strlen(localized_Pokemon_Message->pokemon)+1);
+                        pthread_mutex_lock(&pokemonsOnMap_mutex);
+                        newPokemonAppeared->id = list_size(pokemonsOnMap) + 1;
+                        strcpy(newPokemonAppeared->pokemon, localized_Pokemon_Message->pokemon);
+                        list_add(pokemonsOnMap, newPokemonAppeared);
+                        pthread_mutex_unlock(&pokemonsOnMap_mutex);
+                    }
                 }
+                if(mustPlan) sem_post(&plannerSemaphore);
                 send_ack(client_fd, *id_message);
+                //list_remove(pokemonsToLocalize, indexOfPokemonToLocalyze);
+                //list_remove_and_destroy_element(pokemonsToLocalize, indexOfPokemonToLocalyze, (void*)destroy_pokemonsToLocalize);
             }
             free(localized_Pokemon_Message->pokemon);
             free_localized_pokemon(localized_Pokemon_Message);
@@ -256,7 +279,7 @@ void* send_get_pokemon_global_team(){
         buffer = malloc(sizeOfBuffer);
         recv(client_fd, buffer, sizeOfBuffer, MSG_WAITALL);
         ack* acknowledgementMessage = stream_to_ack(buffer+8);
-        log_info(optional_logger, "Id mensaje get: %d", acknowledgementMessage->id_message);
+        log_info(optional_logger, "Send get pokemon: Id-message: %d", acknowledgementMessage->id_message);
 
         addPokemonToLocalize(pokemonToSend, acknowledgementMessage->id_message);
         free(buffer);
@@ -292,8 +315,10 @@ int getIndexPokemonToLocalizedByMessage(uint32_t id_message){
 
     for(int i=0; i<list_size(pokemonsToLocalize) && result == -1; i++){
         pokemonToLocalizeAux = (t_pokemonToLocalized*)list_get(pokemonsToLocalize, i);
+log_info(optional_logger, "Seek localized by message: Id-message: %d, id pokemon to localize: %d", id_message,pokemonToLocalizeAux->idMessage);
         if(pokemonToLocalizeAux->idMessage == id_message){
             result = i;
+            log_info(optional_logger, "Founded: index: %d", result);
         }
     }
 

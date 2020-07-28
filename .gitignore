@@ -57,21 +57,10 @@ dkms.conf
 
 broker/broker
 team/team
+team2/team
 gamecard/gamecard
-<<<<<<< HEAD
-<<<<<<< HEAD
 gameboy/gameboy
-=======
-gameboy/gameboy
->>>>>>> master
-=======
-gameboy/gameboy
-
 so-commons-library/
-<<<<<<< HEAD
->>>>>>> master
-=======
-
 broker/cfg/*.tmp
 broker/cfg/*.txt
->>>>>>> master
+
