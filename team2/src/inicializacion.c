@@ -126,6 +126,8 @@ void load_values_config() {
     config_values.puerto_broker= config_get_string_value(config, "PUERTO_BROKER");
     config_values.ip_team = config_get_string_value(config, "IP_TEAM");
     config_values.puerto_team = config_get_string_value(config, "PUERTO_TEAM");
+
+log_info(optional_logger, "Algorithm: %s - Quantum: %d - ALPHA: %f - ESTIMACION INICIAL: %d", config_values.algoritmo_planificacion, config_values.quantum, config_values.alpha, config_values.estimacion_inicial);
 }
 
 void assign_data_trainer() {

@@ -34,6 +34,7 @@ void calculateTrainerInExit(t_threadTrainer*);
 void writeTrainerMetrics(t_threadTrainer*);
 bool trainerStateIsExit(void* threadTrainer);
 void writeTeamMetrics();
+void writePokemonsOfTrainer(t_trainer* trainerAux);
 void finishTeam();
 
 //algoritmos de planificacion 

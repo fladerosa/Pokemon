@@ -127,14 +127,14 @@ void setTrainerToExec_SJF(){
 	t_threadTrainer* threadTrainerSelected = NULL;
 
 	pthread_mutex_lock(&threadsTrainers_mutex);
-    for(int i=0; i < list_size(threadsTrainers) && threadTrainerSelected == NULL; i++){
+    for(int i=0; i < list_size(threadsTrainers); i++){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
 		if(threadTrainerAux->state == READY){	
 			previusEstimator = threadTrainerAux->valueEstimator;
 			cyclesNeeded = calculateDistance(threadTrainerAux->trainer->position, threadTrainerAux->positionTo);
 
 			threadTrainerAux->valueEstimator = previusEstimator * config_values.alpha + cyclesNeeded * (1 - config_values.alpha);
-		
+log_info(optional_logger, "Trainer %d: estimator: %f", threadTrainerAux->trainer->id_trainer, threadTrainerAux->valueEstimator);
 			if((estimator == -1 || estimator > threadTrainerAux->valueEstimator) && threadTrainerAux->state == READY){
 				estimator = threadTrainerAux->valueEstimator;
 				threadTrainerSelected = threadTrainerAux;
@@ -143,6 +143,7 @@ void setTrainerToExec_SJF(){
     }
 
 	if(threadTrainerSelected != NULL){
+log_info(optional_logger, "Selected Trainer %d: estimator: %f", threadTrainerSelected->trainer->id_trainer, threadTrainerSelected->valueEstimator);
 		threadTrainerSelected->state = EXEC;
 		sem_post(&(threadTrainerSelected->semaphoreAction));
 		log_info(obligatory_logger, "Entrenador %d, cambia de READY a EXEC, porque es el siguiente a ejecutar", threadTrainerSelected->trainer->id_trainer);
@@ -225,12 +226,23 @@ void writeTeamMetrics(){
         threadTrainerAux = (t_threadTrainer*)list_get(threadsTrainers, i);
         totalCycleCpuTeam += threadTrainerAux->cpuCycleCount;
         totalContextSwitch += threadTrainerAux->contextSwitchCount;
-               
+        
+		writePokemonsOfTrainer(threadTrainerAux->trainer);
     }
 	log_info(obligatory_logger, "Algorithm: %s ", config_values.algoritmo_planificacion); 
 	log_info(obligatory_logger, "Total Cycle CPU by TEAM: %d", totalCycleCpuTeam);
 	log_info(obligatory_logger, "Total Context Switch by Team: %d", totalContextSwitch);
 	log_info(obligatory_logger, "Total Deadlocks by Team: %d", deadlockCount);
+}
+
+void writePokemonsOfTrainer(t_trainer* trainerAux){
+	log_info(optional_logger, "Trainer %d result: ", trainerAux->id_trainer);
+	for(int i=0; i<list_size(trainerAux->pokemonOwned); i++){
+		log_info(optional_logger, "Pokemon owned: %s", (char*)list_get(trainerAux->pokemonOwned, i));
+	}
+	for(int i=0; i<list_size(trainerAux->pokemonNeeded); i++){
+		log_info(optional_logger, "Pokemon needed: %s", (char*)list_get(trainerAux->pokemonNeeded, i));
+	}
 }
 
 void finishTeam(){
@@ -430,6 +442,7 @@ bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux){
 		pthread_mutex_lock(&threadsTrainers_mutex);
 		threadTrainerAux->idMessageCatch = acknowledgementMessage->id_message;
 		pthread_mutex_unlock(&threadsTrainers_mutex);
+log_info(optional_logger, "Send catch pokemon: Pokemon: %s - Id-message: %d", pokemon->pokemon, acknowledgementMessage->id_message);
 
 		close(client_fd);
 		free(id_message);

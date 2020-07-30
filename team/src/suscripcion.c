@@ -52,6 +52,7 @@ args_pthread* thread_suscribe_arguments(op_code code, uint32_t socket) {
 
 void suscribeOnThreadList(args_pthread* arguments){
     suscribirseA(arguments->codigoCola,*arguments->socket);
+    uint32_t socket = 0;
     
     switch(arguments->codigoCola){
         case APPEARED_POKEMON:
@@ -61,8 +62,11 @@ void suscribeOnThreadList(args_pthread* arguments){
             pthread_mutex_lock(&threadSubscribeList_mutex);
             list_add(threadSubscribeList, structAppearedPokemon);
             pthread_mutex_unlock(&threadSubscribeList_mutex);
-            log_info(optional_logger, "Queue subscription request APPEARED_POKEMON successfully.\n");
-            connect_client(*arguments->socket,APPEARED_POKEMON);
+            socket = *arguments->socket;
+            free(arguments->socket);
+            free(arguments);
+            connect_client(socket,APPEARED_POKEMON);
+            //connect_client(*arguments->socket,APPEARED_POKEMON);
             break;
         case CAUGHT_POKEMON:
             structCaughtPokemon = malloc(sizeof(threadSubscribe));
@@ -71,8 +75,11 @@ void suscribeOnThreadList(args_pthread* arguments){
             pthread_mutex_lock(&threadSubscribeList_mutex);
             list_add(threadSubscribeList, structCaughtPokemon);
             pthread_mutex_unlock(&threadSubscribeList_mutex);
-            log_info(optional_logger, "Queue subscription request CAUGHT_POKEMON successfully.\n");
-            connect_client(*arguments->socket,CAUGHT_POKEMON);
+            socket = *arguments->socket;
+            free(arguments->socket);
+            free(arguments);
+            connect_client(socket,CAUGHT_POKEMON);
+            //connect_client(*arguments->socket,CAUGHT_POKEMON);
             break;
         case LOCALIZED_POKEMON:
             structLocalizedPokemon = malloc(sizeof(threadSubscribe));
@@ -81,8 +88,11 @@ void suscribeOnThreadList(args_pthread* arguments){
             pthread_mutex_lock(&threadSubscribeList_mutex);
             list_add(threadSubscribeList, structLocalizedPokemon);
             pthread_mutex_unlock(&threadSubscribeList_mutex);
-            log_info(optional_logger, "Queue subscription request LOCALIZED_POKEMON successfully.\n");
-            connect_client(*arguments->socket,LOCALIZED_POKEMON);
+            socket = *arguments->socket;
+            free(arguments->socket);
+            free(arguments);
+            connect_client(socket,LOCALIZED_POKEMON);
+            //connect_client(*arguments->socket,LOCALIZED_POKEMON);
             break;
         default:
             break;
@@ -228,9 +238,6 @@ log_info(optional_logger, "Receiving Message Localized pokemon, pokemon: %s, id-
 
             suscribirseA(thread->idQueue, client_fd);
 
-            log_info(optional_logger, "Established Connection."); 
-            log_info(optional_logger, "This is the id connection: %d", connectionMessage->id_connection);
-            log_info(optional_logger, "Subscribing to queues %d, %d and & %d", APPEARED_POKEMON, CAUGHT_POKEMON, LOCALIZED_POKEMON);
             break;
     }
     free(stream);
@@ -270,16 +277,15 @@ void* send_get_pokemon_global_team(){
 
         send(client_fd, buffer, bytes, 0);
         free(buffer);
-        free(getPokemonMessage->pokemon);
-        free(getPokemonMessage);
-        free_package(packageToSend);
-        log_info(optional_logger, "Pokemon %s: ", pokemonToSend);
 
         uint32_t sizeOfBuffer = sizeof(uint32_t) * 3;
         buffer = malloc(sizeOfBuffer);
         recv(client_fd, buffer, sizeOfBuffer, MSG_WAITALL);
         ack* acknowledgementMessage = stream_to_ack(buffer+8);
-        log_info(optional_logger, "Send get pokemon: Id-message: %d", acknowledgementMessage->id_message);
+        log_info(optional_logger, "Send get pokemon: Pokemon: %s - Id-message: %d", getPokemonMessage->pokemon, acknowledgementMessage->id_message);
+        free(getPokemonMessage->pokemon);
+        free(getPokemonMessage);
+        free_package(packageToSend);
 
         addPokemonToLocalize(pokemonToSend, acknowledgementMessage->id_message);
         free(buffer);
@@ -315,10 +321,9 @@ int getIndexPokemonToLocalizedByMessage(uint32_t id_message){
 
     for(int i=0; i<list_size(pokemonsToLocalize) && result == -1; i++){
         pokemonToLocalizeAux = (t_pokemonToLocalized*)list_get(pokemonsToLocalize, i);
-log_info(optional_logger, "Seek localized by message: Id-message: %d, id pokemon to localize: %d", id_message,pokemonToLocalizeAux->idMessage);
+
         if(pokemonToLocalizeAux->idMessage == id_message){
             result = i;
-            log_info(optional_logger, "Founded: index: %d", result);
         }
     }
 

@@ -107,9 +107,10 @@ bool completeCycleDeadlock(){
                 deadlockNode->pokemon = malloc(strlen(pokemonNeededAux)+1);
                 strcpy(deadlockNode->pokemon, pokemonNeededAux);
                 list_add(cycleDeadLock, (void*)deadlockNode);
-//log_cycle();
+
                 if(existsDeadlock()){
                     list_destroy(pokemonsNeeded);
+                    log_cycle();
                     return true;
                 }else{
                     if(!completeCycleDeadlock()){
@@ -164,12 +165,13 @@ bool existsDeadlock(){
 }
 
 void setInterchangePokemon(){
-    t_cycleDeadlock* cycleDeadlockAux = (t_cycleDeadlock*)list_get(cycleDeadLock, 0);
-    t_threadTrainer* threadTrainerToMove = (t_threadTrainer*)list_get(threadsTrainers, cycleDeadlockAux->idTrainer - 1);
-    cycleDeadlockAux = (t_cycleDeadlock*)list_get(cycleDeadLock, 1);
-    t_threadTrainer* threadTrainerWithDestiny = (t_threadTrainer*)list_get(threadsTrainers, cycleDeadlockAux->idTrainer - 1);
+    t_cycleDeadlock* cycleDeadlockFrom = (t_cycleDeadlock*)list_get(cycleDeadLock, 0);
+    t_threadTrainer* threadTrainerToMove = (t_threadTrainer*)list_get(threadsTrainers, cycleDeadlockFrom->idTrainer - 1);
+    t_cycleDeadlock* cycleDeadlockTo = (t_cycleDeadlock*)list_get(cycleDeadLock, 1);
+    t_threadTrainer* threadTrainerWithDestiny = (t_threadTrainer*)list_get(threadsTrainers, cycleDeadlockTo->idTrainer - 1);
 
     log_info(obligatory_logger, "El entrenador %d intercambiará con el entrenador %d", threadTrainerToMove->trainer->id_trainer, threadTrainerWithDestiny->trainer->id_trainer);
+log_info(optional_logger, "Interchange pokemon: From: Trainer: %d, pokemon: %s - To: Trainer: %d, pokemon: %s", cycleDeadlockFrom->idTrainer, cycleDeadlockFrom->pokemon, cycleDeadlockTo->idTrainer, cycleDeadlockTo->pokemon);
 
     threadTrainerToMove->positionTo.posx = threadTrainerWithDestiny->trainer->position.posx;
     threadTrainerToMove->positionTo.posy = threadTrainerWithDestiny->trainer->position.posy;
