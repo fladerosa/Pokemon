@@ -134,6 +134,8 @@ void setTrainerToExec_SJF(){
 			cyclesNeeded = calculateDistance(threadTrainerAux->trainer->position, threadTrainerAux->positionTo);
 
 			threadTrainerAux->valueEstimator = previusEstimator * config_values.alpha + cyclesNeeded * (1 - config_values.alpha);
+log_info(optional_logger, "Trainer %d: from: (%d,%d) - to: (%d,%d)", threadTrainerAux->trainer->id_trainer, threadTrainerAux->trainer->position.posx,threadTrainerAux->trainer->position.posy,threadTrainerAux->positionTo.posx,threadTrainerAux->positionTo.posy);
+log_info(optional_logger, "Trainer %d: previus estimator: %f * alpha: %f + cycles: %d * (1 - alpha: %f)", threadTrainerAux->trainer->id_trainer, previusEstimator, config_values.alpha, cyclesNeeded, config_values.alpha);
 log_info(optional_logger, "Trainer %d: estimator: %f", threadTrainerAux->trainer->id_trainer, threadTrainerAux->valueEstimator);
 			if((estimator == -1 || estimator > threadTrainerAux->valueEstimator) && threadTrainerAux->state == READY){
 				estimator = threadTrainerAux->valueEstimator;

@@ -151,7 +151,6 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             appeared_pokemon_Message->pokemon = realloc(appeared_pokemon_Message->pokemon, appeared_pokemon_Message->sizePokemon+1);
             appeared_pokemon_Message->pokemon[appeared_pokemon_Message->sizePokemon] = '\0';
             log_info(obligatory_logger, "Receiving Message Appeared pokemon, Pokemon Appeared: %s, position: (%d,%d)", appeared_pokemon_Message->pokemon, appeared_pokemon_Message->position.posx, appeared_pokemon_Message->position.posy);
-            send_ack(client_fd, *id_message);
 
             pthread_mutex_lock(&pokemonCompareGlobalObjetive_mutex);
             pokemonCompareGlobalObjetive = malloc(strlen(appeared_pokemon_Message->pokemon)+1);
@@ -176,6 +175,7 @@ void reception_message_queue_subscription(uint32_t code, uint32_t sizeofstruct, 
             }
             free(appeared_pokemon_Message->pokemon);
             free_appeared_pokemon(appeared_pokemon_Message);
+            send_ack(client_fd, *id_message);
             break;
         case CAUGHT_POKEMON:;
 			caught_pokemon* caught_Pokemon_Message = stream_to_caught_pokemon(stream, id_message, id_message_correlational, false);
