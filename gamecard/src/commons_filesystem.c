@@ -43,7 +43,7 @@ char* crearBloque(new_pokemon* newPokemon){
             strcat(writeBinary,quantity);
             strcat(writeBinary, "\n");
 
-            fwrite(writeBinary, strlen(writeBinary) + 2, 1, binary);
+            fwrite(writeBinary, strlen(writeBinary) + 1, 1, binary);
 
             fclose(binary);
         
