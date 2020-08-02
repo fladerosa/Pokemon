@@ -92,6 +92,7 @@ void queue_message_sender(void* args){
         pthread_mutex_lock(queue->m_subscribers_modify);
         for(int i=0; i<list_size(queue->subscribers); i++){
             t_connection* conn = list_get(queue->subscribers, i);
+            pthread_mutex_lock(&m_connections);
             if(conn->is_connected){
                 log_info(obligatory_logger, "Se envía el mensaje ID %d al proceso con ID %d", message->id, conn->id_connection);
                 void* mensaje = memory.data + message->offset;
@@ -119,7 +120,12 @@ void queue_message_sender(void* args){
                 pthread_mutex_lock(message->m_receivers_modify);
                 list_add(message->receivers, receiver);
                 pthread_mutex_unlock(message->m_receivers_modify);
+                free(stream);
+                free(a_enviar);
+                free(package->buffer);
+                free(package);
             }
+            pthread_mutex_unlock(&m_connections);
         }
         pthread_mutex_unlock(queue->m_subscribers_modify);
     }
