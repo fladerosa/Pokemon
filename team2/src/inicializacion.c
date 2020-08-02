@@ -107,7 +107,7 @@ void create_obligatory_logger() {
  
  void create_optional_logger() {        
     char* log_optional_config = config_get_string_value(config, "LOG_FILE_OPTIONAL");
-    optional_logger = log_create(log_optional_config, "TEAM", 1, LOG_LEVEL_INFO);
+    optional_logger = log_create(log_optional_config, "TEAM", 0, LOG_LEVEL_INFO);
     if(optional_logger == NULL) {
         error_show("Error creating TEAM process optional logger %s\n", log_optional_config);
         exit(LOG_FAIL);

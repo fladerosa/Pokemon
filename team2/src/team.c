@@ -355,7 +355,7 @@ void interchangePokemon(t_threadTrainer* threadTrainerFrom){
 		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a EXIT, porque cumplió sus objetivos individuales luego de intercambio", trainerFrom->id_trainer);
 	}else{
 		threadTrainerFrom->state = BLOCKED;
-		threadTrainerFrom->contextSwitchCount++;
+		//threadTrainerFrom->contextSwitchCount++;
 		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque le falta cumplir su objetivo", trainerFrom->id_trainer);
 	}
 	pthread_mutex_unlock(&threadsTrainers_mutex);
@@ -420,7 +420,7 @@ bool sendCatch(t_pokemon_on_map* pokemon, t_threadTrainer* threadTrainerAux){
 	if(connect(client_fd, server_info->ai_addr, server_info->ai_addrlen) != -1){
 		pthread_mutex_lock(&threadsTrainers_mutex);
 		threadTrainerAux->state = BLOCKED_BY_BROKER;
-		threadTrainerAux->contextSwitchCount++;
+		//threadTrainerAux->contextSwitchCount++;
 		log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque espera resultado de catch", threadTrainerAux->trainer->id_trainer);
 		pthread_mutex_unlock(&threadsTrainers_mutex);
 
@@ -487,7 +487,7 @@ void catch_succesfull(t_threadTrainer* threadTrainerAux){
 	}else{
 		pthread_mutex_lock(&threadsTrainers_mutex);
 		if(threadTrainerAux->state != BLOCKED_BY_BROKER){
-			threadTrainerAux->contextSwitchCount++;
+			//threadTrainerAux->contextSwitchCount++;
 			log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a BLOCKED, porque le falta capturar más pokemon", trainerAux->id_trainer);
 		}
 		threadTrainerAux->state = BLOCKED;
@@ -542,7 +542,7 @@ void execThreadTrainerSetedRR(t_threadTrainer* threadTrainerChosen){
 		if(!reachDestiny && usedCycle == config_values.quantum){
 			pthread_mutex_lock(&threadsTrainers_mutex);
 			threadTrainerChosen->state = READY;
-			threadTrainerChosen->contextSwitchCount++;
+			//threadTrainerChosen->contextSwitchCount++;
 			threadTrainerChosen->incomingTime = time(NULL);
 			log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a READY, porque se le acabó el QUANTUM", threadTrainerChosen->trainer->id_trainer);
 			pthread_mutex_unlock(&threadsTrainers_mutex);
@@ -578,7 +578,7 @@ void execThreadTrainerSetedSJF_CD(t_threadTrainer* threadTrainerChosen){
 			if(countPokemonOnReady != calculatePokemonsOnReady()){
 				pthread_mutex_lock(&threadsTrainers_mutex);
 				threadTrainerChosen->state = READY;
-				threadTrainerChosen->contextSwitchCount++;
+				//threadTrainerChosen->contextSwitchCount++;
 				threadTrainerChosen->incomingTime = time(NULL);
 				log_info(obligatory_logger, "Entrenador %d, cambia de EXEC a READY, porque apareció un entrenador con estimador menor que está en READY", threadTrainerChosen->trainer->id_trainer);
 				pthread_mutex_unlock(&threadsTrainers_mutex);
