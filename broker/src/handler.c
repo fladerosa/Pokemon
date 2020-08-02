@@ -14,7 +14,7 @@ void process_request(uint32_t cod_op, uint32_t sizeofstream, uint32_t client_fd)
             if (message != NULL){
                 send_ack(client_fd, message == (void*)1 ? 0 : message->id);
                 if (message != (void*) 1) {
-                    log_info(obligatory_logger, "Se agrega un mensaje a la cola de mensajes %d", cod_op);
+                    log_info(obligatory_logger, "Se agrega el mensaje ID %d a la cola de mensajes %d", message->id, cod_op);
                     add_message_to_queue(message, cod_op);
                 }
             }

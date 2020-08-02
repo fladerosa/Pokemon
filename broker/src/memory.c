@@ -60,8 +60,11 @@ t_data* seekPartitionAvailable(uint32_t sizeData){
             compact();
         }else{
             destroyPartition();
-            if(strcmp(memory.configuration.memoryAlgorithm, "BS") == 0)
+            if(strcmp(memory.configuration.memoryAlgorithm, "BS") == 0){
+                pthread_mutex_lock(memory.m_partitions_modify);
                 BS_compact();
+                pthread_mutex_unlock(memory.m_partitions_modify);
+            }
         }
         return seekPartitionAvailable(partition_size);
     }else{
@@ -154,7 +157,6 @@ bool partition_size_validation(void* data, void* sizeData){
 
 void BS_compact(){
     //Debería unir solo cuando son particiones del "mismo bloque"
-    pthread_mutex_lock(memory.m_partitions_modify);
     uint32_t sizeList =  list_size(memory.partitions);
     t_data* previousPartition = NULL;
     t_data* dataAux;
@@ -186,7 +188,6 @@ void BS_compact(){
         }
     }
     if(mustFinish) BS_compact();
-    pthread_mutex_unlock(memory.m_partitions_modify);
 }
 
 bool sortByState(void* elem1, void* elem2){
@@ -414,7 +415,10 @@ bool isRepeated(uint32_t id_corr){
     bool matchesIdCorrelational(void* elem){
         return ((t_data*) elem)->id_correlational == id_corr && id_corr != 0;
     }
-    return list_count_satisfying(memory.partitions, matchesIdCorrelational) > 1;
+    pthread_mutex_lock(memory.m_partitions_modify);
+    bool res = list_count_satisfying(memory.partitions, matchesIdCorrelational) > 1;
+    pthread_mutex_unlock(memory.m_partitions_modify);
+    return res;
 }
 
 t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream){
@@ -455,26 +459,29 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
         default:;
     }
     log_debug(optional_logger, "Creating new partition at position: %d", freePartition->offset);
-    log_info(obligatory_logger, "Se almacena un mensaje en memoria en la posicion: %d", freePartition->offset);
     void* data = memory.data + freePartition->offset;
     memcpy(data, stream, sizeofdata);
     pthread_mutex_lock(&m_id_message);
     id_message++;
     freePartition->id = id_message;
     pthread_mutex_unlock(&m_id_message);
+    log_info(obligatory_logger, "Se almacena el mensaje ID %d en memoria en la posicion: %d", freePartition->id, freePartition->offset);
+    pthread_mutex_lock(memory.m_partitions_modify);
     freePartition->size = sizeofdata;
     freePartition->idQueue = id_queue;
     freePartition->receivers = list_create();
     freePartition->m_receivers_modify = malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init(freePartition->m_receivers_modify,NULL);
-    pthread_mutex_unlock(&m_new_partition);
+    pthread_mutex_unlock(memory.m_partitions_modify);
     if (isRepeated(freePartition->id_correlational)){
         log_info(optional_logger, 
             "No se va a agregar a la cola de mensajes %d el mensaje de la posicion %d porque el id_correlativo %d ya se encontraba en memoria.",
             id_queue, freePartition->offset, freePartition->id_correlational
         );
+        pthread_mutex_unlock(&m_new_partition);
         return (void*)1;
     } else {
+        pthread_mutex_unlock(&m_new_partition);
         return freePartition;
     }
 } 
@@ -520,6 +527,7 @@ void send_all_messages(t_connection* conn, uint32_t id_queue){
             pthread_mutex_lock(message->m_receivers_modify);
             list_add(message->receivers, receiver);
             pthread_mutex_unlock(message->m_receivers_modify);
+            free(stream);
             free(package->buffer);
             free(package);
             free(a_enviar);

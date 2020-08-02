@@ -1,7 +1,7 @@
 helpFunction()
 {
    echo ""
-   echo "Como se usa: $0 nombreConfig , donde nombreConfig puede ser:"
+   echo "Use: $0 nombreConfig , where nombreConfig could be:"
   echo -e "\tfifo"
    echo -e "\trr"
    echo -e "\tsjf_sd"
@@ -18,19 +18,19 @@ fi
 
 case $1 in
     fifo)
-        echo -e "Seteando config de Algoritmo FIFO"
+        echo -e "Setting config to Algorithm FIFO"
         echo -e "ALGORITMO_PLANIFICACION=FIFO\nQUANTUM=0\nALPHA=0" >>  ./cfg/team.config
         ;;
     rr)
-        echo -e "Seteando config de Algoritmo Round Robin"
+        echo -e "Setting config to Algorithm Round Robin"
         echo -e "ALGORITMO_PLANIFICACION=RR\nQUANTUM=2\nALPHA=0"  >>  ./cfg/team.config
         ;;
     sjf_sd)
-        echo -e "Seteando config de Algoritmo SJF sin desalojo"
+        echo -e "Setting config to Algorithm SJF sin desalojo"
         echo -e "ALGORITMO_PLANIFICACION=SJF-SD\nQUANTUM=0\nALPHA=0.5" >>  ./cfg/team.config
         ;;
     sjf_cd)
-        echo -e "Seteando config de Algoritmo SJF con desalojo"
+        echo -e "Setting config to Algorithm SJF con desalojo"
         echo -e "ALGORITMO_PLANIFICACION=SJF-CD\nQUANTUM=0\nALPHA=0.5" >>  ./cfg/team.config
         ;;
     ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
@@ -39,6 +39,6 @@ esac
 # Print helpFunction in case parameters are empty
 if [ -z "$1" ]
 then
-   echo "Falta el nombre de lo que queres cambiar";
+   echo "Choose the algorithm to configure in file";
    helpFunction
 fi
