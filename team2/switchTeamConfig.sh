@@ -16,11 +16,11 @@ fi
 
 case $1 in
     rr)
-        echo -e "Setting config to Algorithm Round Robin"
+        echo -e "Setting config to Algorithm Round Robin Global Test Team"
         echo -e "ALGORITMO_PLANIFICACION=RR\nQUANTUM=1\nALPHA=0"  >>  ./cfg/team.config
         ;;
     sjf_cd)
-        echo -e "Setting config to Algorithm SJF con desalojo"
+        echo -e "Setting config to Algorithm SJF con desalojo Global Test Team"
         echo -e "ALGORITMO_PLANIFICACION=SJF-CD\nQUANTUM=0\nALPHA=0.5" >>  ./cfg/team.config
         ;;
     ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
@@ -29,6 +29,6 @@ esac
 # Print helpFunction in case parameters are empty
 if [ -z "$1" ]
 then
-   echo "CSettinghoose the algorithm to configure in file";
+   echo "Choose the algorithm to configure in file";
    helpFunction
 fi
