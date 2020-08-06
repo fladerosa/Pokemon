@@ -26,7 +26,7 @@ SHARED_DEPS = $(wildcard $(SHARED_IDIR)/*.h)
 SHARED_SRC = $(wildcard $(SHARED_SRCDIR)/*.c)
 SHARED_OBJ = $(patsubst $(SHARED_SRCDIR)/%.c,$(SHARED_ODIR)/%.o,$(SHARED_SRC))
 
-team: $(OBJ) $(SHARED_OBJ)
+team2: $(OBJ) $(SHARED_OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean

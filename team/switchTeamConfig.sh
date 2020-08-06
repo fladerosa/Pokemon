@@ -6,6 +6,7 @@ helpFunction()
    echo -e "\tfifo_pc"
    echo -e "\trr"
    echo -e "\tsjf_sd"
+   echo -e "\tsjf_sd_pc"
    echo -e "\tsjf_cd"
 
    exit 1 # Exit script after printing help
@@ -33,6 +34,10 @@ case $1 in
     sjf_sd)
         echo -e "Setting config to Algorithm SJF sin desalojo Unit Test Team"
         echo -e "POSICIONES_ENTRENADORES=[1|3,2|3,3|2]\nALGORITMO_PLANIFICACION=SJF-SD\nQUANTUM=0\nALPHA=0.5" >>  ./cfg/team.config
+        ;;
+    sjf_sd_pc)
+        echo -e "Setting config to Algorithm SJF sin desalojo Global Test Team"
+        echo -e "POSICIONES_ENTRENADORES=[1|3,2|3,2|2]\nALGORITMO_PLANIFICACION=SJF-SD\nQUANTUM=0\nALPHA=0.5" >>  ./cfg/team.config
         ;;
     sjf_cd)
         echo -e "Setting config to Algorithm SJF con desalojo Unit Test Team"
