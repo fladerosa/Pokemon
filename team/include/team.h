@@ -15,6 +15,8 @@ t_position positionCompare;
 t_list* cycleDeadLock;
 
 void calculateTrainerFromNewToReady();
+bool noOneChasingPokemon(char* pokemonChased);
+bool pokemonIsGlobalObjetive(char* pokemonAsked);
 void calculateTrainerToReady(enum_process_state threadTrainerState);
 t_threadTrainer* getClosestTrainer(t_position position, enum_process_state threadTrainerState);
 uint32_t calculateDistance(t_position positionFrom, t_position positionTo);
