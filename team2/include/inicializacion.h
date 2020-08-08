@@ -68,6 +68,10 @@ pthread_t plannerThread;
 pthread_t brokerSuscriptionThread;
 pthread_t sendGetPokemonThread;
 
+pthread_mutex_t localized_mutex;
+pthread_mutex_t appeared_mutex;
+pthread_mutex_t caught_mutex;
+
 void* planTrainers();
 void create_mutex();
 void destroy_mutex();

@@ -35,6 +35,9 @@ void create_mutex(){
     pthread_mutex_init(&pokemonsOnMap_mutex, NULL);
     pthread_mutex_init(&threadSubscribeList_mutex, NULL);
     pthread_mutex_init(&threadsTrainers_mutex, NULL);
+    pthread_mutex_init(&localized_mutex, NULL);
+    pthread_mutex_init(&appeared_mutex, NULL);
+    pthread_mutex_init(&caught_mutex, NULL);
 
 }
 void destroy_mutex(){
@@ -44,6 +47,9 @@ void destroy_mutex(){
     pthread_mutex_destroy(&pokemonsOnMap_mutex);
     pthread_mutex_destroy(&threadSubscribeList_mutex);
     pthread_mutex_destroy(&threadsTrainers_mutex);
+    pthread_mutex_destroy(&localized_mutex);
+    pthread_mutex_destroy(&appeared_mutex);
+    pthread_mutex_destroy(&caught_mutex);
 }
 void validateEndTeam(){
     for(int i=0; i<list_size(threadsTrainers); i++){

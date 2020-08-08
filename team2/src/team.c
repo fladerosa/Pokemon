@@ -22,7 +22,7 @@ void calculateTrainerToReady(enum_process_state threadTrainerState){
 	pthread_mutex_lock(&pokemonsOnMap_mutex);
     for(int i = 0; i < list_size(pokemonsOnMap) && continueFor; i++){
         pokemonOnMapAux = (t_pokemon_on_map*)list_get(pokemonsOnMap, i);
-        if(pokemonOnMapAux->state == P_FREE){
+        if(pokemonOnMapAux->state == P_FREE && noOneChasingPokemon(pokemonOnMapAux->pokemon) && pokemonIsGlobalObjetive(pokemonOnMapAux->pokemon)){
             threadTrainerAux = getClosestTrainer(pokemonOnMapAux->position, threadTrainerState);
 			pthread_mutex_lock(&threadsTrainers_mutex);
             if(threadTrainerAux != NULL && !isCandidateDeadlock(threadTrainerAux->trainer)){
@@ -45,6 +45,28 @@ void calculateTrainerToReady(enum_process_state threadTrainerState){
         }
     }
 	pthread_mutex_unlock(&pokemonsOnMap_mutex);
+}
+
+bool pokemonIsGlobalObjetive(char* pokemonAsked){
+	//Remove the global objetive
+	pthread_mutex_lock(&pokemonCompareGlobalObjetive_mutex);
+	pokemonCompareGlobalObjetive = malloc(strlen(pokemonAsked)+1);
+	strcpy(pokemonCompareGlobalObjetive, pokemonAsked);
+	bool result = list_any_satisfy(globalObjetive, analyzePokemonInGlobal);
+	free(pokemonCompareGlobalObjetive);
+	pthread_mutex_unlock(&pokemonCompareGlobalObjetive_mutex);
+	return result;
+}
+
+bool noOneChasingPokemon(char* pokemonChased){
+	t_pokemon_on_map* pokemonOnMapAux;
+	for(int i = 0; i < list_size(pokemonsOnMap); i++){
+        pokemonOnMapAux = (t_pokemon_on_map*)list_get(pokemonsOnMap, i);
+        if(pokemonOnMapAux->state == P_CHASING && strcmp(pokemonOnMapAux->pokemon, pokemonChased) == 0){
+            return false;
+        }
+    }
+	return true;
 }
 
 t_threadTrainer* getClosestTrainer(t_position position, enum_process_state threadTrainerState){
@@ -213,6 +235,13 @@ void calculateTrainerInExit(t_threadTrainer* threadTrainerAux){
 void writeTrainerMetrics(t_threadTrainer* threadTrainerAux){
 	log_info(obligatory_logger, "Trainer: %d", threadTrainerAux->trainer->id_trainer);
 	log_info(obligatory_logger, "Total Cycle CPU by Trainer %d: %d", threadTrainerAux->trainer->id_trainer, threadTrainerAux->cpuCycleCount);
+
+	t_threadTrainer* threadTrainerAux2;
+	for(int i = 0; i<list_size(threadsTrainers); i++){
+        threadTrainerAux2 = (t_threadTrainer*)list_get(threadsTrainers, i);
+           
+		writePokemonsOfTrainer(threadTrainerAux2->trainer);
+    }
 }
 
 bool trainerStateIsExit(void* threadTrainer){
