@@ -3,6 +3,7 @@
 void process_request(uint32_t cod_op, uint32_t sizeofstream, uint32_t client_fd) {
 	void* stream = malloc(sizeofstream);
     if (recv(client_fd, stream, sizeofstream, MSG_WAITALL)<=0){free(stream); return;}
+    pthread_mutex_lock(&m_new_partition);
     switch(cod_op){
         case NEW_POKEMON:;
         case APPEARED_POKEMON:;
@@ -41,6 +42,7 @@ void process_request(uint32_t cod_op, uint32_t sizeofstream, uint32_t client_fd)
         default:;
             log_info(optional_logger,"Received invalid operation code.");
     }
+    pthread_mutex_unlock(&m_new_partition);
 
     free(stream);
 }

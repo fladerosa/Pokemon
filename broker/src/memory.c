@@ -422,7 +422,6 @@ bool isRepeated(uint32_t id_corr){
 }
 
 t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, void* stream){
-    pthread_mutex_lock(&m_new_partition);
     uint32_t sizeofdata;
     t_data* freePartition;
     switch(id_queue){
@@ -446,7 +445,6 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
             "El tamano del mensaje (%db) es mayor a la capacidad de la memoria(%db). Se ignorara el mensaje.",
             sizeofdata, memory.configuration.size
         );
-        pthread_mutex_unlock(&m_new_partition);
         return (void*) 1;
     }
     freePartition = seekPartitionAvailable(sizeofdata);
@@ -460,13 +458,13 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
     }
     log_debug(optional_logger, "Creating new partition at position: %d", freePartition->offset);
     void* data = memory.data + freePartition->offset;
+    pthread_mutex_lock(memory.m_partitions_modify);
     memcpy(data, stream, sizeofdata);
     pthread_mutex_lock(&m_id_message);
     id_message++;
     freePartition->id = id_message;
     pthread_mutex_unlock(&m_id_message);
     log_info(obligatory_logger, "Se almacena el mensaje ID %d en memoria en la posicion: %d", freePartition->id, freePartition->offset);
-    pthread_mutex_lock(memory.m_partitions_modify);
     freePartition->size = sizeofdata;
     freePartition->idQueue = id_queue;
     freePartition->receivers = list_create();
@@ -478,10 +476,8 @@ t_data* assign_and_return_message(uint32_t id_queue, uint32_t sizeofrawstream, v
             "No se va a agregar a la cola de mensajes %d el mensaje de la posicion %d porque el id_correlativo %d ya se encontraba en memoria.",
             id_queue, freePartition->offset, freePartition->id_correlational
         );
-        pthread_mutex_unlock(&m_new_partition);
         return (void*)1;
     } else {
-        pthread_mutex_unlock(&m_new_partition);
         return freePartition;
     }
 } 

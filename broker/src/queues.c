@@ -86,6 +86,7 @@ void queue_message_sender(void* args){
     //log_info(optional_logger, "Starting queue number %d", queue->id_queue);
     while(1){   
         sem_wait(queue->sem_message);
+        pthread_mutex_lock(memory.m_partitions_modify);
         pthread_mutex_lock(queue->m_queue_modify);
         t_data* message = queue_pop(queue->messages);
         pthread_mutex_unlock(queue->m_queue_modify);
@@ -128,6 +129,7 @@ void queue_message_sender(void* args){
             pthread_mutex_unlock(&m_connections);
         }
         pthread_mutex_unlock(queue->m_subscribers_modify);
+        pthread_mutex_unlock(memory.m_partitions_modify);
     }
 }
 
